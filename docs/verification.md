@@ -93,7 +93,7 @@ The bridge benchmark starts one `hs bridge` process, warms it with a ping, then 
 - `npm run vscode:typecheck` succeeds with strict TypeScript settings.
 - `npm run vscode:package` bundles the compiler with esbuild and produces `build/vscode/hsharp-vscode.vsix`.
 - The VSIX packages the extension manifest, language configuration, grammar, snippets, and the bundled compiler.
-- `code --install-extension build/vscode/hsharp-vscode.vsix` succeeded (`hsharp.hsharp@0.1.0`).
+- `code --install-extension build/vscode/hsharp-vscode.vsix` succeeded (`hsharp.hsharp@0.1.0`). `npm run vscode:install` performs the same install and suppresses an upstream VS Code 1.143 CLI `DEP0169 url.parse()` warning; the extension bundle contains no `url.parse` usage.
 - Interactive UI behavior (semantic colors, live preview webview, status bar) still requires verification in a running VS Code window.
 ### End-to-end demonstration
 

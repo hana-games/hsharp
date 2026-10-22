@@ -20,6 +20,7 @@
     "vscode:build": "node editors/vscode/build.mjs",
     "vscode:typecheck": "tsc -p editors/vscode/tsconfig.json",
     "vscode:package": "npm run vscode:build && node editors/vscode/package-vsix.mjs",
+    "vscode:install": "npm run vscode:package && node editors/vscode/install.mjs",
     "doctor": "npm run build && node dist/cli/index.js doctor",
     "demo": "npm run build && node dist/cli/index.js demo"
   },

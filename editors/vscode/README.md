@@ -12,12 +12,20 @@ The extension **bundles the h# compiler into the extension host**. No `hs` proce
 
 ## Install
 
-Build the bundled extension and package a VSIX from the repository root:
+Build the bundled extension and install it from the repository root:
 
 ```powershell
 npm install
+npm run vscode:install
+```
+
+The installer packages the extension, installs `build/vscode/hsharp-vscode.vsix`, and suppresses an upstream VS Code 1.143 CLI deprecation warning (`url.parse()` in `cliProcessMain.js`). The h# bundle does not use `url.parse`.
+
+You can also install manually:
+
+```powershell
 npm run vscode:package
-code --install-extension build/vscode/hsharp-vscode.vsix
+code --install-extension build/vscode/hsharp-vscode.vsix --force
 ```
 
 Restart VS Code, then open any `.hs` file.

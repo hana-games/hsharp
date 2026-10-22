@@ -180,9 +180,10 @@ Build and install the extension from the repository root:
 
 ```powershell
 npm install
-npm run vscode:package
-code --install-extension build/vscode/hsharp-vscode.vsix
+npm run vscode:install
 ```
+
+This packages the VSIX and installs it. The installer suppresses an upstream VS Code 1.143 CLI deprecation warning from `url.parse()`; the h# extension bundle does not use that API.
 
 Restart VS Code, open any `.hs` file, then run **h#: Show Generated Code** from the command palette or use the editor-title button. The preview updates as you type and switches between C#, Rust, Go, and Java.
 

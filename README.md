@@ -124,9 +124,10 @@ Build and install it from the repository root:
 
 ```powershell
 npm install
-npm run vscode:package
-code --install-extension build/vscode/hsharp-vscode.vsix
+npm run vscode:install
 ```
+
+This packages `build/vscode/hsharp-vscode.vsix` and installs it. If you install manually with `code --install-extension`, VS Code 1.143 may print an upstream `DEP0169 url.parse()` warning from its own CLI; `npm run vscode:install` suppresses that warning, and the h# bundle does not use `url.parse`.
 
 Open any `.hs` file, then run **h#: Show Generated Code** from the command palette or use the editor-title button.
 
