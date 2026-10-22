@@ -26,7 +26,7 @@ node dist/cli/index.js test --all-targets
 node dist/cli/index.js demo
 ```
 
-`npm test` runs the unit suite and the full conformance suite in sequence.
+`npm test` runs the unit suite, the VS Code extension typecheck, the bridge protocol test, and the full conformance suite in sequence.
 
 ## Results
 
@@ -88,13 +88,13 @@ Pinned failure-node checks are included for addition, subtraction, multiplicatio
 
 The bridge benchmark starts one `hs bridge` process, warms it with a ping, then performs 100 sequential analyze + C# generation requests with unique text. Every response contained the expected generated project. Raw report: `reports/benchmark.json`.
 
-### Visual Studio extension
+### Visual Studio Code extension
 
-- `dotnet build editors/visual-studio/HSharp.VisualStudio.csproj -c Release` succeeds with 0 warnings and 0 errors.
-- The produced VSIX contains `HSharp.VisualStudio.dll`, its pkgdef, the extension and source manifests, and `Newtonsoft.Json.dll`.
-- The pkgdef registers the h# tool window and Tools > Options page.
-- Visual Studio IDE runtime interaction was not executed: the machine has VS 18 Build Tools but no Visual Studio IDE.
-
+- `npm run vscode:typecheck` succeeds with strict TypeScript settings.
+- `npm run vscode:package` bundles the compiler with esbuild and produces `build/vscode/hsharp-vscode.vsix`.
+- The VSIX packages the extension manifest, language configuration, grammar, snippets, and the bundled compiler.
+- `code --install-extension build/vscode/hsharp-vscode.vsix` succeeded (`hsharp.hsharp@0.1.0`).
+- Interactive UI behavior (semantic colors, live preview webview, status bar) still requires verification in a running VS Code window.
 ### End-to-end demonstration
 
 `hs demo` output:
@@ -140,8 +140,8 @@ They performed differential fuzzing and targeted reproductions. Confirmed defect
 
 ## What did not run
 
-- Visual Studio IDE runtime integration (no IDE installed; the VSIX builds and validates).
-- No continuous-editor or language-server (LSP) verification beyond the included VSIX.
+- Visual Studio Code interactive UI verification (the extension is packaged and installed, but editor rendering and webview behavior were not driven by an automated UI test).
+- No continuous-editor or language-server (LSP) verification beyond the included VS Code extension.
 - No performance benchmarking beyond the committed editor latency budgets; no target-project build/run benchmark and no memory profiling.
 - No cross-platform run: verification is on Windows x64. Generated projects use portable source but the build/run paths were only executed there.
 - No committed property-based fuzzing. Review-time fuzzing was not retained as a repeatable script.

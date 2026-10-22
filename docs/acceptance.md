@@ -14,8 +14,8 @@ This checklist maps Section 10.1 of the execution plan to evidence in the reposi
 | Concurrent changes to canonical source are detected | Met | `E_IMPORT_STALE_BASE` unit test; profile changes produce `E_IMPORT_PROFILE_CHANGED` |
 | Static diagnostics identify locations in user source | Met | Diagnostics carry `file:line:column`; `hs check local/... --profile my-syntax` points into the personal file |
 | One command reproduces verification and writes a report | Met | `hs test --all-targets` (or `npm test`); writes `reports/conformance.{json,md}` |
-| Real-time analysis and generated-code preview backend | Met | `hs bridge`; 100-request protocol test; benchmark budgets in `reports/benchmark.json` |
-| Visual Studio extension | Met (build/package) | `editors/visual-studio` builds a VSIX with classifier, diagnostics, preview, options; IDE runtime verification pending |
+| Real-time analysis and generated-code preview backend | Met | Bundled `HSharpAnalyzer`; 100-request bridge protocol test; benchmark budgets in `reports/benchmark.json` |
+| Visual Studio Code extension | Met (package/install) | `editors/vscode` packages and installs a VSIX with semantic tokens, diagnostics, and preview; interactive UI verification pending |
 | Tool and dependency versions are recorded | Met | `docs/getting-started.md`, `reports/environment.json`, pinned `package.json`/`package-lock.json` |
 | Generated files require no manual corrections | Met | All generated projects build from a clean directory without edits; conformance fails on any build error |
 

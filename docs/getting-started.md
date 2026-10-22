@@ -15,7 +15,7 @@ The POC was built and verified with these versions. Pin them for reproducible re
 | Go | 1.27.0 | 1.22 or later |
 | Java | Microsoft OpenJDK 21.0.12.1 | `javac` and `java` on PATH |
 
-For the Visual Studio extension: Visual Studio 2022 or 2026 x64 with the Visual Studio extension development workload, plus the .NET Framework 4.7.2 targeting pack (restored by NuGet). Building the VSIX was verified with Visual Studio 18 Build Tools and .NET SDK 10.
+For the Visual Studio Code extension: VS Code 1.85 or later. Building the extension uses the repository's Node dependencies; no external `hs` process is required at runtime.
 
 `npm install` uses the committed `package-lock.json`. Runtime dependencies: none.
 
@@ -174,27 +174,23 @@ hs build local/my.hs --profile profiles/my-profile.json --target rust --entry ca
 
 Profile validation errors identify the exact problem. Checking canonical source directly with a personal profile is rejected because canonical source uses the standard keyword spellings.
 
-## 8. Visual Studio extension
+## 8. Visual Studio Code extension
 
 Build and install the extension from the repository root:
 
 ```powershell
-npm run build
-npm link
-npm run vsix
+npm install
+npm run vscode:package
+code --install-extension build/vscode/hsharp-vscode.vsix
 ```
 
-The VSIX is written to:
+Restart VS Code, open any `.hs` file, then run **h#: Show Generated Code** from the command palette or use the editor-title button. The preview updates as you type and switches between C#, Rust, Go, and Java.
 
-```text
-editors/visual-studio/bin/Release/net472/HSharp.VisualStudio.vsix
-```
+The extension bundles the compiler into the extension host. No `hs` command or Node subprocess is needed at runtime.
 
-Double-click it (or open it with `VSIXInstaller.exe`) and restart Visual Studio. Open any `.hs` file, then choose **View > Other Windows > h# Generated Code**.
+For development, build with `npm run vscode:build`, open `editors/vscode` in VS Code, and press F5.
 
-The preview updates as you type, shows diagnostics, and switches between C#, Rust, Go, and Java. Configure the bridge command, profile path, and debounce under **Tools > Options > h# > General**.
-
-Full details: [`editors/visual-studio/README.md`](../editors/visual-studio/README.md).
+Full details: [`editors/vscode/README.md`](../editors/vscode/README.md).
 
 ## 9. Troubleshooting
 

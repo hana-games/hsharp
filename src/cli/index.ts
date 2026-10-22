@@ -487,7 +487,7 @@ explicitly; there is no implicit personal preference.
 
 Editor integration:
   hs bridge   line-delimited JSON over stdin/stdout for live analysis and
-              generated-code preview. See editors/visual-studio/README.md.`;
+              generated-code preview. See editors/vscode/README.md.`;
 }
 
 try {

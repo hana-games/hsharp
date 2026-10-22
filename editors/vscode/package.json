@@ -1,0 +1,150 @@
+{
+  "name": "hsharp",
+  "displayName": "h#",
+  "description": "h# language support: profile-aware highlighting, live diagnostics, and real-time generated-code preview for C#, Rust, Go, and Java.",
+  "version": "0.1.0",
+  "publisher": "hsharp",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "hsharp",
+    "h#",
+    "language",
+    "code generation",
+    "csharp",
+    "rust",
+    "go",
+    "java"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:hsharp",
+    "onCommand:hsharp.showPreview"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "hsharp",
+        "aliases": [
+          "h#",
+          "hsharp"
+        ],
+        "extensions": [
+          ".hs"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "hsharp",
+        "scopeName": "source.hsharp",
+        "path": "./syntaxes/hsharp.tmLanguage.json"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "hsharp",
+        "scopes": {
+          "keyword": [
+            "keyword.control.hsharp"
+          ],
+          "type": [
+            "storage.type.hsharp"
+          ]
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "hsharp",
+        "path": "./snippets/hsharp.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "hsharp.showPreview",
+        "title": "h#: Show Generated Code",
+        "category": "h#"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "hsharp.showPreview",
+          "when": "editorLangId == hsharp"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "hsharp.showPreview",
+          "when": "editorLangId == hsharp",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "h#",
+      "properties": {
+        "hsharp.profilePath": {
+          "type": "string",
+          "default": "",
+          "description": "Profile JSON used for diagnostics, highlighting, and preview. Empty means standard syntax. Relative paths are resolved against the first workspace folder."
+        },
+        "hsharp.entry": {
+          "type": "string",
+          "default": "",
+          "description": "Entry function for the generated preview. Empty infers main or a single function."
+        },
+        "hsharp.debounceMs": {
+          "type": "number",
+          "default": 120,
+          "minimum": 30,
+          "maximum": 2000,
+          "description": "Delay after the last edit before analysis and preview refresh."
+        },
+        "hsharp.diagnostics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show h# compiler diagnostics in the editor."
+        },
+        "hsharp.previewTarget": {
+          "type": "string",
+          "enum": [
+            "csharp",
+            "rust",
+            "go",
+            "java"
+          ],
+          "enumDescriptions": [
+            "C#",
+            "Rust",
+            "Go",
+            "Java"
+          ],
+          "default": "csharp",
+          "description": "Target selected when the generated-code preview opens."
+        }
+      }
+    }
+  },
+  "files": [
+    "dist/extension.js",
+    "dist/extension.js.map",
+    "language-configuration.json",
+    "syntaxes/hsharp.tmLanguage.json",
+    "snippets/hsharp.json",
+    "README.md",
+    "CHANGELOG.md"
+  ]
+}

@@ -5,19 +5,17 @@ h# is designed so an edit can be checked and translated within an editor frame, 
 ## Architecture
 
 ```text
-Visual Studio
-  |  one persistent process
-  v
-hs bridge  (Node)
-  |  line-delimited JSON
-  v
-HSharpAnalyzer (in-process)
-  |  parse -> check -> choose entry -> emit targets
-  v
-diagnostics + generated files + timings
+VS Code extension host
+  bundled HSharpAnalyzer
+    parse -> check -> choose entry -> emit targets
+    -> diagnostics + generated files + timings
+
+External editors / automation (optional)
+  hs bridge  (Node, line-delimited JSON)
+    -> the same HSharpAnalyzer
 ```
 
-`hs bridge` starts once. It keeps the active profile cached (validated by file mtime and size) and handles each edit in the same Node process. Node startup is paid on the first request, not on every change.
+The VS Code extension imports the compiler directly, so each edit is handled in the extension host without a subprocess or IPC. `hs bridge` remains available for other editors and automation; it keeps one Node process alive and caches the active profile.
 
 The editor sends the full current document. Parsing is context-free and single-pass, so a full reparse currently costs less than an incremental index for normal files. There is no background compiler state that can become stale.
 
@@ -56,18 +54,18 @@ Budgets are intentionally much looser than current measurements to avoid false f
 1. **Single pass lexer and recursive-descent parser.** No parser toolkit, no regex per character in identifier/number scanning, and trivia is retained without rescanning.
 2. **Typed AST only.** There is no separate optimization IR or tree-to-tree lowering for the POC.
 3. **String-based code generation.** Backends emit directly from typed nodes; no external formatter or process is involved.
-4. **Persistent process.** The editor bridge removes 50–100 ms Node startup from every edit.
+4. **No process per edit.** VS Code runs the analyzer in the extension host; the optional bridge removes Node startup for external editors.
 5. **Profile cache.** Profile validation/parsing is skipped until the profile file changes.
 6. **Four targets in one request.** Generation is cheap enough that the preview fetches all four and switches targets without another round-trip.
-7. **Debounce.** Editor taggers wait for a configurable idle period, so bursts of typing produce one request.
+7. **Debounce.** Editor integrations wait for a configurable idle period, so bursts of typing produce one analysis.
 
 ## Warm vs. cold
 
-The first bridge request includes process start and CLI module loading. On the development machine that is roughly 50–100 ms. Subsequent requests use the measured sub-millisecond path. The benchmark sends a `ping` before measuring so it reports warm latency.
+In VS Code, module loading happens once when the extension activates; subsequent analyses use the measured path. The first bridge request for external editors includes process start and CLI module loading (roughly 50–100 ms); the benchmark warms the bridge before measuring.
 
 ## Large files
 
-The 500-function benchmark is a synthetic file with one function per 100 bytes. Analysis and generation are linear in source size. Files substantially larger than this will exceed a frame budget, but the editor remains responsive because analysis runs in the bridge process, not on the Visual Studio UI thread. Further work:
+The 500-function benchmark is a synthetic file with one function per 100 bytes. Analysis and generation are linear in source size. Files substantially larger than this will exceed a frame budget, but VS Code stays responsive because analysis runs in the extension-host process, not the renderer/UI process. Further work:
 
 - Incremental reparse keyed by edit ranges.
 - A cached typed AST for unchanged functions.
@@ -76,7 +74,7 @@ The 500-function benchmark is a synthetic file with one function per 100 bytes. 
 
 ## What is not measured
 
-- Visual Studio UI rendering time for classification and tag updates.
+- VS Code rendering time for semantic tokens, diagnostics, and the preview webview.
 - End-to-end latency on a machine without a warm file system cache.
 - Memory consumption for very large documents.
 - Generated project compilation time (this is target toolchain work, not editor latency).
@@ -91,4 +89,4 @@ node dist/testing/benchmark.js --json
 
 The benchmark writes `reports/benchmark.json`. CI should treat a failed budget as a regression.
 
-The real-time integration is described in [`editors/visual-studio/README.md`](../editors/visual-studio/README.md).
+The real-time integration is described in [`editors/vscode/README.md`](../editors/vscode/README.md).

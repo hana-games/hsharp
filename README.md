@@ -70,7 +70,7 @@ The reference interpreter and all four generated programs return the same result
 | Personal workflow | Export, edit, reimport, stale-base and changed-profile detection, manifest refresh |
 | Backends | C#, Go, Rust, Java — generated, compiled, executed |
 | Verification | 29 positive cases, 27 negative cases, 19 unit tests + bridge test, 0 failed/blocked |
-| Editor support | Visual Studio extension with live diagnostics and generated-code preview |
+| Editor support | Visual Studio Code extension with live diagnostics and generated-code preview |
 | Performance | Sub-millisecond warm analyze + four-target generation; a few ms bridge round-trip |
 | Documentation | Core spec, grammar, profiles, protocol, decisions, limitations, verification, roadmap |
 
@@ -112,25 +112,25 @@ Canonical source is always interpreted with the standard profile. A personal pro
 
 ## Editor support
 
-A Visual Studio extension is included under [`editors/visual-studio`](editors/visual-studio/README.md). It provides:
+A Visual Studio Code extension is included under [`editors/vscode`](editors/vscode/README.md). It bundles the compiler into the extension host and provides:
 
 - profile-aware syntax highlighting;
-- live diagnostics as editor squiggles;
+- live diagnostics with source locations;
 - a **real-time generated-code preview** for C#, Rust, Go, and Java;
-- target switching and copy-to-clipboard;
-- a persistent `hs bridge` process, avoiding a Node startup per keystroke.
+- target switching without recompiling;
+- status-bar analysis timing and error count.
 
-Build it from the repository root:
+Build and install it from the repository root:
 
 ```powershell
-npm run build
-npm link
-npm run vsix
+npm install
+npm run vscode:package
+code --install-extension build/vscode/hsharp-vscode.vsix
 ```
 
-The VSIX is written to `editors/visual-studio/bin/Release/net472/HSharp.VisualStudio.vsix`. Open it to install, then use **View > Other Windows > h# Generated Code**.
+Open any `.hs` file, then run **h#: Show Generated Code** from the command palette or use the editor-title button.
 
-Measured warm latency is **sub-millisecond** for analysis + four-target generation and a few milliseconds at most for a complete bridge round-trip including C# generation. See [`docs/performance.md`](docs/performance.md).
+The extension imports the same analyzer used by the CLI, so no external `hs` process is needed. Measured warm latency is **sub-millisecond** for analysis + four-target generation. See [`docs/performance.md`](docs/performance.md).
 
 ## How it works
 
@@ -221,7 +221,7 @@ On success the manifest is refreshed, so the edit/import cycle can continue. See
 | `src/testing/` | Unit tests, conformance runner, reports |
 | `src/cli/` | `hs` command line |
 | `src/service/` | Fast in-process analyzer and editor bridge |
-| `editors/visual-studio/` | Visual Studio VSIX extension |
+| `editors/vscode/` | Visual Studio Code extension |
 | `profiles/` | Standard, supplied personal, and user-created profiles |
 | `examples/` | Demonstration programs |
 | `tests/conformance/` | Positive/negative programs and independent expectations |
@@ -255,7 +255,7 @@ See [`ROADMAP.md`](ROADMAP.md) for dependencies, acceptance evidence, risks, and
 - [Code generation](spec/code-generation.md)
 - [Design decisions](docs/decisions.md)
 - [Performance and real-time analysis](docs/performance.md)
-- [Visual Studio extension](editors/visual-studio/README.md)
+- [Visual Studio Code extension](editors/vscode/README.md)
 - [Verification evidence](docs/verification.md)
 - [POC acceptance](docs/acceptance.md)
 - [Limitations and next steps](docs/limitations.md)

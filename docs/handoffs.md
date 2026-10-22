@@ -21,12 +21,12 @@ The execution plan asks every handoff to state what works, what verification ran
 - 27 negative cases, all produced the expected diagnostic.
 - `hs demo` produced `33` through the reference interpreter and all four compiled targets.
 - Performance budgets passed via `npm run bench`; real-time bridge measured at sub-millisecond to low-millisecond round-trips.
-- Visual Studio VSIX built with 0 warnings and 0 errors; runtime IDE interaction was not executed because no IDE is installed.
+- Visual Studio Code extension bundled, packaged, and installed; interactive UI behavior was not driven by an automated test.
 - Two independent code reviews with differential fuzzing; 16 confirmed defects were fixed and the suite re-run.
 
 **Limitations remaining**
 
-See `docs/limitations.md`. The main ones are the small core, keyword-only profiles, single-file programs, an initial Visual Studio extension that still needs IDE runtime verification, no automatic merging, and no broad performance claims beyond the measured editor latency.
+See `docs/limitations.md`. The main ones are the small core, keyword-only profiles, single-file programs, an initial Visual Studio Code extension that still needs interactive verification, no automatic merging, and no broad performance claims beyond the measured editor latency.
 
 **Blockers**
 

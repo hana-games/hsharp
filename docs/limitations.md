@@ -43,8 +43,8 @@ The POC intentionally covers a small language core. The following limits are kno
 
 ## Editor integration
 
-- The Visual Studio extension is built and packaged, but editor interaction was not executed on this machine because the Visual Studio IDE is not installed. VSIX install and UI behavior require verification in a full Visual Studio instance.
-- The extension supports Visual Studio 2022–2026 x64. ARM64 packaging is not provided.
+- The Visual Studio Code extension is packaged and installed, but interactive editor behavior (semantic colors, live preview webview, status bar) was not verified in a running VS Code window.
+- The extension is a workspace extension for desktop VS Code; it is not a web extension.
 - `.hs` is shared with Haskell; another extension may claim the file association.
 - No completion, go-to-definition, code actions, debugging, or project-system integration yet.
 - The preview is read-only and concatenates generated files with path headers.

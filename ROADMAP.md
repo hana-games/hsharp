@@ -21,8 +21,8 @@ Known limits are listed in [`docs/limitations.md`](docs/limitations.md). The ori
 
 - Persistent `hs bridge` analyzer with profile caching and line-delimited JSON.
 - Measured latency budgets (`npm run bench`, `reports/benchmark.json`): 0.05 ms warm analysis + four-target generation, 0.44 ms bridge round-trip.
-- Initial Visual Studio extension: syntax highlighting, live diagnostics, generated-code preview.
-- The full editor workflow still needs validation in a Visual Studio IDE and remains part of phases 0.2 and 0.6.
+- Initial Visual Studio Code extension: syntax highlighting, live diagnostics, generated-code preview.
+- The full editor workflow still needs validation in a running VS Code window and remains part of phases 0.2 and 0.6.
 
 ## Guiding principles
 
@@ -143,7 +143,7 @@ Dependencies: 0.3 and 0.4; a stable portable data model.
 
 **Goal:** deliver the central product promise beyond keyword substitution.
 
-An initial Visual Studio integration (highlighting, diagnostics, generated-code preview over `hs bridge`) exists. This phase extends it into a general editor platform:
+An initial Visual Studio Code integration (highlighting, diagnostics, generated-code preview over the bundled compiler) exists. This phase extends it into a general editor platform:
 
 Scope:
 

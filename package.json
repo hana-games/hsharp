@@ -15,9 +15,11 @@
     "check": "npm run build && node dist/cli/index.js check examples/calculate.hs",
     "test:unit": "npm run build && node dist/testing/unit.js",
     "test:bridge": "node dist/testing/bridge-test.js",
-    "test": "npm run test:unit && npm run test:bridge && node dist/cli/index.js test --all-targets",
+    "test": "npm run test:unit && npm run vscode:typecheck && npm run test:bridge && node dist/cli/index.js test --all-targets",
     "bench": "npm run build && node dist/testing/benchmark.js",
-    "vsix": "dotnet build editors/visual-studio/HSharp.VisualStudio.csproj -c Release",
+    "vscode:build": "node editors/vscode/build.mjs",
+    "vscode:typecheck": "tsc -p editors/vscode/tsconfig.json",
+    "vscode:package": "npm run vscode:build && node editors/vscode/package-vsix.mjs",
     "doctor": "npm run build && node dist/cli/index.js doctor",
     "demo": "npm run build && node dist/cli/index.js demo"
   },
@@ -26,6 +28,9 @@
   },
   "devDependencies": {
     "typescript": "7.0.2",
-    "@types/node": "24.10.1"
+    "@types/node": "24.10.1",
+    "@types/vscode": "1.85.0",
+    "@vscode/vsce": "4.0.0",
+    "esbuild": "0.28.2"
   }
 }
