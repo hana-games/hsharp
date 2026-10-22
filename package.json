@@ -14,7 +14,10 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "check": "npm run build && node dist/cli/index.js check examples/calculate.hs",
     "test:unit": "npm run build && node dist/testing/unit.js",
-    "test": "npm run test:unit && node dist/cli/index.js test --all-targets",
+    "test:bridge": "node dist/testing/bridge-test.js",
+    "test": "npm run test:unit && npm run test:bridge && node dist/cli/index.js test --all-targets",
+    "bench": "npm run build && node dist/testing/benchmark.js",
+    "vsix": "dotnet build editors/visual-studio/HSharp.VisualStudio.csproj -c Release",
     "doctor": "npm run build && node dist/cli/index.js doctor",
     "demo": "npm run build && node dist/cli/index.js demo"
   },

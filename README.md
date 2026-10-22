@@ -4,7 +4,7 @@
 
 h# is a small programming language with a shared semantic core, declarative per-user keyword syntax, and source generation for four target ecosystems. Programs are parsed and checked once, then executed by a reference interpreter and translated into ordinary C#, Go, Rust, and Java projects that the target toolchains compile themselves.
 
-The proof of concept is complete and verified: **29 conformance cases × 4 profiles × 4 targets = 464 real compilations and executions**, plus 27 negative cases and 19 unit tests.
+The proof of concept is complete and verified: **29 conformance cases × 4 profiles × 4 targets = 464 real target executions**, plus 27 negative cases, 19 unit tests, and a bridge protocol test.
 
 - **Language:** h# (aliases: `hsharp`, `hcharp`, `hs`)
 - **CLI:** `hs` (aliases: `hsharp`, `hcharp`)
@@ -69,7 +69,9 @@ The reference interpreter and all four generated programs return the same result
 | Profiles | Keyword customization, validation, token-aware conversion, comment preservation |
 | Personal workflow | Export, edit, reimport, stale-base and changed-profile detection, manifest refresh |
 | Backends | C#, Go, Rust, Java — generated, compiled, executed |
-| Verification | 29 positive cases, 27 negative cases, 19 unit tests, 0 failed/blocked |
+| Verification | 29 positive cases, 27 negative cases, 19 unit tests + bridge test, 0 failed/blocked |
+| Editor support | Visual Studio extension with live diagnostics and generated-code preview |
+| Performance | Sub-millisecond warm analyze + four-target generation; a few ms bridge round-trip |
 | Documentation | Core spec, grammar, profiles, protocol, decisions, limitations, verification, roadmap |
 
 ## Quick start
@@ -104,8 +106,31 @@ hs build examples/calculate.hs --target rust --entry calculate --run --args 10,t
 | `hs test --all-targets` | Run the complete conformance suite and write reports |
 | `hs doctor` | Detect and version-check all four toolchains |
 | `hs demo` | Run export → edit → reimport → reference + four targets |
+| `hs bridge` | Line-delimited JSON over stdio for editor integrations |
 
 Canonical source is always interpreted with the standard profile. A personal profile is selected explicitly; there is no implicit local preference.
+
+## Editor support
+
+A Visual Studio extension is included under [`editors/visual-studio`](editors/visual-studio/README.md). It provides:
+
+- profile-aware syntax highlighting;
+- live diagnostics as editor squiggles;
+- a **real-time generated-code preview** for C#, Rust, Go, and Java;
+- target switching and copy-to-clipboard;
+- a persistent `hs bridge` process, avoiding a Node startup per keystroke.
+
+Build it from the repository root:
+
+```powershell
+npm run build
+npm link
+npm run vsix
+```
+
+The VSIX is written to `editors/visual-studio/bin/Release/net472/HSharp.VisualStudio.vsix`. Open it to install, then use **View > Other Windows > h# Generated Code**.
+
+Measured warm latency is **sub-millisecond** for analysis + four-target generation and a few milliseconds at most for a complete bridge round-trip including C# generation. See [`docs/performance.md`](docs/performance.md).
 
 ## How it works
 
@@ -150,10 +175,12 @@ hs test --all-targets
 ```
 
 - 19 unit tests: profiles, conversion, semantics, manifest lifecycle, diagnostics.
+- Bridge protocol test: ping, analyze with four targets, invalid syntax, malformed request, shutdown.
 - 29 positive cases over 4 profiles and 4 targets.
 - 27 negative program/profile cases.
 - Independent expected outcomes, pinned overflow node IDs, process exit-status checks.
-- Reports: [`reports/conformance.md`](reports/conformance.md), [`reports/conformance.json`](reports/conformance.json), [`reports/environment.json`](reports/environment.json).
+- Performance budgets enforced by `npm run bench`; results in [`reports/benchmark.json`](reports/benchmark.json).
+- Reports: [`reports/conformance.md`](reports/conformance.md), [`reports/conformance.json`](reports/conformance.json), [`reports/environment.json`](reports/environment.json), [`reports/benchmark.json`](reports/benchmark.json).
 
 A missing or too-old toolchain marks a target **blocked** and makes the suite exit 2. It never reports a pass. `hs test --quick` is explicitly labelled interpreter-only.
 
@@ -193,6 +220,8 @@ On success the manifest is refreshed, so the edit/import cycle can continue. See
 | `src/harness/` | Toolchain detection, generated-project build/run |
 | `src/testing/` | Unit tests, conformance runner, reports |
 | `src/cli/` | `hs` command line |
+| `src/service/` | Fast in-process analyzer and editor bridge |
+| `editors/visual-studio/` | Visual Studio VSIX extension |
 | `profiles/` | Standard, supplied personal, and user-created profiles |
 | `examples/` | Demonstration programs |
 | `tests/conformance/` | Positive/negative programs and independent expectations |
@@ -225,6 +254,8 @@ See [`ROADMAP.md`](ROADMAP.md) for dependencies, acceptance evidence, risks, and
 - [Execution protocol](spec/execution-protocol.md)
 - [Code generation](spec/code-generation.md)
 - [Design decisions](docs/decisions.md)
+- [Performance and real-time analysis](docs/performance.md)
+- [Visual Studio extension](editors/visual-studio/README.md)
 - [Verification evidence](docs/verification.md)
 - [POC acceptance](docs/acceptance.md)
 - [Limitations and next steps](docs/limitations.md)

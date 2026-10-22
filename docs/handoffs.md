@@ -16,15 +16,17 @@ The execution plan asks every handoff to state what works, what verification ran
 **Verification that actually ran**
 
 - `npm run build` (TypeScript 7.0.2).
-- 19/19 unit tests.
+- 19/19 unit tests, plus a bridge protocol smoke test.
 - 29 positive conformance cases × 4 profiles × 4 targets = 464 target executions, all passed with 0 blocked.
 - 27 negative cases, all produced the expected diagnostic.
 - `hs demo` produced `33` through the reference interpreter and all four compiled targets.
+- Performance budgets passed via `npm run bench`; real-time bridge measured at sub-millisecond to low-millisecond round-trips.
+- Visual Studio VSIX built with 0 warnings and 0 errors; runtime IDE interaction was not executed because no IDE is installed.
 - Two independent code reviews with differential fuzzing; 16 confirmed defects were fixed and the suite re-run.
 
 **Limitations remaining**
 
-See `docs/limitations.md`. The main ones are the small core, keyword-only profiles, single-file programs, no editor integration, no automatic merging, and no performance evidence.
+See `docs/limitations.md`. The main ones are the small core, keyword-only profiles, single-file programs, an initial Visual Studio extension that still needs IDE runtime verification, no automatic merging, and no broad performance claims beyond the measured editor latency.
 
 **Blockers**
 

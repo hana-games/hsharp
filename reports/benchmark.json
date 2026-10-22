@@ -1,0 +1,72 @@
+{
+  "schema": "hs-benchmark/1",
+  "generatedAt": "2026-10-22T13:31:25.386Z",
+  "node": "v24.21.0",
+  "platform": "win32-x64",
+  "compilerVersion": "0.1.0",
+  "budgets": {
+    "analyzeSmall": 2,
+    "analyzeLarge": 150,
+    "emitSmallAll": 8,
+    "emitLargeAll": 150,
+    "bridgeRoundtrip": 30,
+    "previewSmall": 25
+  },
+  "measurements": [
+    {
+      "name": "analyze small document",
+      "iterations": 1000,
+      "totalMs": 85.906,
+      "averageMs": 0.086,
+      "budgetMs": 2,
+      "pass": true,
+      "detail": "246 chars"
+    },
+    {
+      "name": "analyze 500 functions",
+      "iterations": 50,
+      "totalMs": 1705.941,
+      "averageMs": 34.119,
+      "budgetMs": 150,
+      "pass": true,
+      "detail": "57819 chars"
+    },
+    {
+      "name": "generate all four small",
+      "iterations": 500,
+      "totalMs": 71.704,
+      "averageMs": 0.143,
+      "budgetMs": 8,
+      "pass": true,
+      "detail": "C# + Rust + Go + Java"
+    },
+    {
+      "name": "generate all four 500 functions",
+      "iterations": 20,
+      "totalMs": 847.985,
+      "averageMs": 42.399,
+      "budgetMs": 150,
+      "pass": true,
+      "detail": "C# + Rust + Go + Java"
+    },
+    {
+      "name": "analyze + generate all four",
+      "iterations": 500,
+      "totalMs": 40.034,
+      "averageMs": 0.08,
+      "budgetMs": 25,
+      "pass": true,
+      "detail": "cold preview pipeline"
+    },
+    {
+      "name": "bridge analyze + C# over stdio",
+      "iterations": 100,
+      "totalMs": 80.443,
+      "averageMs": 0.804,
+      "budgetMs": 30,
+      "pass": true,
+      "detail": "persistent process, one JSON line per edit"
+    }
+  ],
+  "pass": true
+}

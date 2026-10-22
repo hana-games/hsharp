@@ -102,10 +102,10 @@ export function lex(text: string, profile: Profile, file: string): LexResult {
       continue;
     }
 
-    if (/[A-Za-z_]/.test(char)) {
+    if (isIdentifierStart(charCodeAt(text, i))) {
       const start = i;
       i += 1;
-      while (i < text.length && /[A-Za-z0-9_]/.test(text[i])) i++;
+      while (i < text.length && isIdentifierPart(charCodeAt(text, i))) i++;
       const word = text.slice(start, i);
       const role = active.get(word);
       if (role !== undefined) {
@@ -128,10 +128,10 @@ export function lex(text: string, profile: Profile, file: string): LexResult {
       continue;
     }
 
-    if (/[0-9]/.test(char)) {
+    if (isDigit(charCodeAt(text, i))) {
       const start = i;
       i += 1;
-      while (i < text.length && /[0-9]/.test(text[i])) i++;
+      while (i < text.length && isDigit(charCodeAt(text, i))) i++;
       push("integer", start, i);
       continue;
     }
@@ -192,4 +192,20 @@ export function eofSpan(file: string, text: string): SourceSpan {
   const line = lines.length;
   const column = (lines[lines.length - 1]?.length ?? 0) + 1;
   return spanAt(file, line, column, text.length);
+}
+
+function charCodeAt(text: string, index: number): number {
+  return index < text.length ? text.charCodeAt(index) : -1;
+}
+
+function isIdentifierStart(code: number): boolean {
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122) || code === 95;
+}
+
+function isIdentifierPart(code: number): boolean {
+  return isIdentifierStart(code) || (code >= 48 && code <= 57);
+}
+
+function isDigit(code: number): boolean {
+  return code >= 48 && code <= 57;
 }

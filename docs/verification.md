@@ -32,7 +32,7 @@ node dist/cli/index.js demo
 
 ### Unit suite
 
-**19/19 passed.** Coverage:
+**19/19 passed**, plus a bridge protocol smoke test. Coverage:
 
 - standard profile matches canonical keywords;
 - normalized AST equivalence across all four profiles;
@@ -49,7 +49,8 @@ node dist/cli/index.js demo
 - interpreter rejects non-i32 harness arguments;
 - BOM-prefixed source is accepted;
 - leading zeros and grouped comparisons follow the core rules;
-- generated target names are deterministic and independent of source names.
+- generated target names are deterministic and independent of source names;
+- bridge protocol: ping, four-target analysis, invalid syntax, malformed request, graceful shutdown.
 
 ### Conformance suite
 
@@ -71,6 +72,28 @@ Reports:
 - `reports/conformance.md` (human-readable tables and failure details).
 
 Pinned failure-node checks are included for addition, subtraction, multiplication, and negation overflow cases, so a backend cannot emit a generic `node: 0` and still pass.
+
+### Performance and editor bridge
+
+`npm run bench` passed all latency budgets:
+
+| Measurement | Latest run | Budget |
+|---|---:|---:|
+| Analyze 246-character document | 0.086 ms | 2 ms |
+| Analyze 500 functions (57,819 chars) | 34.119 ms | 150 ms |
+| Generate all four targets, small document | 0.143 ms | 8 ms |
+| Generate all four targets, 500 functions | 42.399 ms | 150 ms |
+| Analyze + generate all four targets | 0.080 ms | 25 ms |
+| Persistent bridge: analyze + C# over stdio | 0.804 ms | 30 ms |
+
+The bridge benchmark starts one `hs bridge` process, warms it with a ping, then performs 100 sequential analyze + C# generation requests with unique text. Every response contained the expected generated project. Raw report: `reports/benchmark.json`.
+
+### Visual Studio extension
+
+- `dotnet build editors/visual-studio/HSharp.VisualStudio.csproj -c Release` succeeds with 0 warnings and 0 errors.
+- The produced VSIX contains `HSharp.VisualStudio.dll`, its pkgdef, the extension and source manifests, and `Newtonsoft.Json.dll`.
+- The pkgdef registers the h# tool window and Tools > Options page.
+- Visual Studio IDE runtime interaction was not executed: the machine has VS 18 Build Tools but no Visual Studio IDE.
 
 ### End-to-end demonstration
 
@@ -117,7 +140,8 @@ They performed differential fuzzing and targeted reproductions. Confirmed defect
 
 ## What did not run
 
-- No continuous-editor or language-server verification (not implemented).
-- No performance benchmarking.
+- Visual Studio IDE runtime integration (no IDE installed; the VSIX builds and validates).
+- No continuous-editor or language-server (LSP) verification beyond the included VSIX.
+- No performance benchmarking beyond the committed editor latency budgets; no target-project build/run benchmark and no memory profiling.
 - No cross-platform run: verification is on Windows x64. Generated projects use portable source but the build/run paths were only executed there.
 - No committed property-based fuzzing. Review-time fuzzing was not retained as a repeatable script.

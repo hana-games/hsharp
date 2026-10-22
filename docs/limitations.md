@@ -39,11 +39,21 @@ The POC intentionally covers a small language core. The following limits are kno
 - Go requires 1.22 or later because of the generated `go.mod`.
 - Rust builds with `--offline` and no external crates.
 - Generated programs accept entry arguments from the command line; there is no richer FFI or host embedding.
-- No performance claims are made. The checked-operation and result-record strategy prioritizes portability and explicit failure behavior.
+- Editor latency is measured and budgeted (`reports/benchmark.json`), but the compiler makes no broad performance claims. The checked-operation and result-record strategy prioritizes portability and explicit failure behavior.
+
+## Editor integration
+
+- The Visual Studio extension is built and packaged, but editor interaction was not executed on this machine because the Visual Studio IDE is not installed. VSIX install and UI behavior require verification in a full Visual Studio instance.
+- The extension supports Visual Studio 2022–2026 x64. ARM64 packaging is not provided.
+- `.hs` is shared with Haskell; another extension may claim the file association.
+- No completion, go-to-definition, code actions, debugging, or project-system integration yet.
+- The preview is read-only and concatenates generated files with path headers.
+- No in-IDE build/run command; use `hs build` in a terminal.
+- Analysis reparses the whole document on each edit. This is fast for normal files but is not yet incremental.
 
 ## Verification
 
-- The committed corpus is small (29 positive cases, 27 negative program/profile cases, 19 unit tests). It covers the specified rules and boundaries but is not a proof of correctness.
+- The committed corpus is small (29 positive cases, 27 negative program/profile cases, 19 unit tests, one bridge protocol test). It covers the specified rules and boundaries but is not a proof of correctness.
 - Fuzzing was performed during review but is not part of the committed test command. A reproducible generator with recorded seeds is a next step.
 - Target artifacts are compiled once per program/entry and executed per profile; independent compilation per profile is unnecessary because generated code is profile-independent.
 - Semantics of concurrency, shared memory, ecosystem interoperability, and large applications are completely out of scope.

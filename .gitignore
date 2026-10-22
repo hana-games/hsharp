@@ -2,4 +2,6 @@ node_modules/
 dist/
 build/
 local/
+editors/*/bin/
+editors/*/obj/
 *.log

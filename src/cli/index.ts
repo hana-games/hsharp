@@ -16,6 +16,7 @@ import { evaluate } from "../reference/interpreter";
 import { chooseEntry } from "../semantic/entry";
 import { exportSyntax, importSyntax } from "../syntax/transfer";
 import { runConformance } from "../testing/conformance";
+import { runBridge } from "../service/bridge";
 
 interface Cli {
   positionals: string[];
@@ -141,6 +142,8 @@ function main(argv: string[]): number {
       return commandDoctor(cli);
     case "demo":
       return commandDemo(cli);
+    case "bridge":
+      return commandBridge();
     default:
       console.error(`unknown command "${command}"`);
       console.error(usage());
@@ -383,8 +386,7 @@ function commandDoctor(cli: Cli): number {
   return toolchains.every((tool) => tool.available) ? 0 : 2;
 }
 
-function commandDemo(_cli: Cli): number {
-  const root = process.cwd();
+function commandDemo(_cli: Cli): number {  const root = process.cwd();
   const work = resolve(root, "local", "demo");
   mkdirSync(work, { recursive: true });
   const canonical = resolve(work, "calculate.hs");
@@ -459,6 +461,11 @@ function commandDemo(_cli: Cli): number {
   return blocked > 0 ? 2 : 0;
 }
 
+function commandBridge(): number {
+  runBridge();
+  return 0;
+}
+
 function usage(): string {
   return `hs ${COMPILER_VERSION} - shared program meaning, personal syntax, four targets
 
@@ -473,9 +480,14 @@ Usage:
             [--report-dir <dir>] [--json]
   hs doctor [--json]
   hs demo
+  hs bridge
 
 Canonical source uses the standard profile. A profile is always selected
-explicitly; there is no implicit personal preference.`;
+explicitly; there is no implicit personal preference.
+
+Editor integration:
+  hs bridge   line-delimited JSON over stdin/stdout for live analysis and
+              generated-code preview. See editors/visual-studio/README.md.`;
 }
 
 try {

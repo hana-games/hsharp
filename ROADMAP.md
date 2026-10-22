@@ -17,6 +17,13 @@ It is dependency-driven, not calendar-driven. A phase starts when its prerequisi
 
 Known limits are listed in [`docs/limitations.md`](docs/limitations.md). The original design rationale is in [`hsharp-execution-plan.md`](hsharp-execution-plan.md).
 
+### Landed ahead of 0.2
+
+- Persistent `hs bridge` analyzer with profile caching and line-delimited JSON.
+- Measured latency budgets (`npm run bench`, `reports/benchmark.json`): 0.05 ms warm analysis + four-target generation, 0.44 ms bridge round-trip.
+- Initial Visual Studio extension: syntax highlighting, live diagnostics, generated-code preview.
+- The full editor workflow still needs validation in a Visual Studio IDE and remains part of phases 0.2 and 0.6.
+
 ## Guiding principles
 
 1. **Specify before implementing.** Every language feature gets semantics, examples, expected outcomes, and failure rules before backend work begins.
@@ -135,6 +142,8 @@ Dependencies: 0.3 and 0.4; a stable portable data model.
 ## Phase 0.6 — Syntax families and editor support
 
 **Goal:** deliver the central product promise beyond keyword substitution.
+
+An initial Visual Studio integration (highlighting, diagnostics, generated-code preview over `hs bridge`) exists. This phase extends it into a general editor platform:
 
 Scope:
 
