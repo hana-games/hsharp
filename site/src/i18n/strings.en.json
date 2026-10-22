@@ -1178,5 +1178,21 @@
   "Canonical source": "Canonical source",
   "Supplied personal profile": "Supplied personal profile",
   "Compact notation": "Compact notation",
-  "User-created profile": "User-created profile"
+  "User-created profile": "User-created profile",
+  "Surface tokens in": "Surface tokens in",
+  "7 roles": "7 roles",
+  "Semantic contract": "Semantic contract",
+  "Only keyword tokens. Operators, types, braces, and semicolons stay fixed.": "Only keyword tokens. Operators, types, braces, and semicolons stay fixed.",
+  "same core": "same core",
+  "0 changes": "0 changes",
+  "Typed AST": "Typed AST",
+  "Same structure": "Same structure",
+  "Same left-to-right order": "Same left-to-right order",
+  "Overflow behavior": "Overflow behavior",
+  "Same failure nodes": "Same failure nodes",
+  "Generated targets": "Generated targets",
+  "Same four backend projects": "Same four backend projects",
+  "Identifiers": "Identifiers",
+  "Program names are untouched": "Program names are untouched",
+  "Comments are preserved separately. Source locations are not compared.": "Comments are preserved separately. Source locations are not compared."
 }

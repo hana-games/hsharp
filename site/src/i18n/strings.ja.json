@@ -1188,5 +1188,21 @@
   "Canonical source": "正規ソース",
   "Supplied personal profile": "提供された個人プロファイル",
   "Compact notation": "簡潔な記法",
-  "User-created profile": "ユーザー作成プロファイル"
+  "User-created profile": "ユーザー作成プロファイル",
+  "Surface tokens in": "表層トークン",
+  "7 roles": "7 ロール",
+  "Semantic contract": "セマンティック契約",
+  "Only keyword tokens. Operators, types, braces, and semicolons stay fixed.": "変わるのはキーワードトークンだけです。演算子、型、波かっこ、セミコロンは固定です。",
+  "same core": "同じコア",
+  "0 changes": "変更 0",
+  "Typed AST": "型付き AST",
+  "Same structure": "同じ構造",
+  "Same left-to-right order": "同じ左から右の順序",
+  "Overflow behavior": "オーバーフロー動作",
+  "Same failure nodes": "同じ失敗ノード",
+  "Generated targets": "生成ターゲット",
+  "Same four backend projects": "同じ 4 つのバックエンドプロジェクト",
+  "Identifiers": "識別子",
+  "Program names are untouched": "プログラム名は変更されません",
+  "Comments are preserved separately. Source locations are not compared.": "コメントは別途保持されます。ソース位置は比較されません。"
 }

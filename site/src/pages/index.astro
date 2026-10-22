@@ -15,6 +15,24 @@ const featured = ["demo-bonus-true", "function-call", "overflow-add-max"]
   .map((id) => siteData.examples.find((example) => example.id === id))
   .filter((example): example is NonNullable<typeof example> => Boolean(example));
 
+const surfaceChanges = [
+  { from: "fn", to: "function" },
+  { from: "let", to: "value" },
+  { from: "if", to: "when" },
+  { from: "else", to: "otherwise" },
+  { from: "return", to: "give" },
+  { from: "true", to: "yes" },
+  { from: "false", to: "no" },
+];
+
+const invariants = [
+  { title: "Typed AST", note: "Same structure" },
+  { title: "Evaluation order", note: "Same left-to-right order" },
+  { title: "Overflow behavior", note: "Same failure nodes" },
+  { title: "Generated targets", note: "Same four backend projects" },
+  { title: "Identifiers", note: "Program names are untouched" },
+];
+
 function prettyId(id: string) {
   return id.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join(" ");
 }
@@ -263,24 +281,66 @@ function prettyId(id: string) {
         <span>profile-independent · comments preserved separately</span>
       </div>
 
-      <div class="grid grid-2" style="margin-top:1.4rem;">
-        <div class="card reveal">
-          <div class="eyebrow">What changes</div>
-          <div class="ast-list">
-            <div><span>fn</span><span>function</span></div>
-            <div><span>let</span><span>value</span></div>
-            <div><span>if</span><span>when</span></div>
-            <div><span>return</span><span>give</span></div>
+      <div class="semantic-diff reveal">
+        <div class="semantic-diff-pane changes-pane">
+          <div class="semantic-diff-head">
+            <span class="semantic-diff-icon">Aa</span>
+            <div>
+              <div class="eyebrow">What changes</div>
+              <p>Surface tokens in <code>my-syntax</code></p>
+            </div>
+            <span class="semantic-diff-count">7 roles</span>
           </div>
+
+          <div class="change-grid">
+            {
+              surfaceChanges.map((change) => (
+                <div class="change-chip">
+                  <code data-i18n-skip>{change.from}</code>
+                  <span class="change-arrow">→</span>
+                  <code data-i18n-skip class="change-to">{change.to}</code>
+                </div>
+              ))
+            }
+          </div>
+
+          <p class="semantic-diff-foot">
+            Only keyword tokens. Operators, types, braces, and semicolons stay fixed.
+          </p>
         </div>
-        <div class="card reveal">
-          <div class="eyebrow">What does not</div>
-          <div class="ast-list">
-            <div><span>typed AST</span><span>identical</span></div>
-            <div><span>evaluation order</span><span>identical</span></div>
-            <div><span>overflow behavior</span><span>identical</span></div>
-            <div><span>generated targets</span><span>identical</span></div>
+
+        <div class="semantic-diff-divider" aria-hidden="true">
+          <span>=</span>
+          <small>same core</small>
+        </div>
+
+        <div class="semantic-diff-pane invariants-pane">
+          <div class="semantic-diff-head">
+            <span class="semantic-diff-icon check">✓</span>
+            <div>
+              <div class="eyebrow">What does not</div>
+              <p>Semantic contract</p>
+            </div>
+            <span class="semantic-diff-count zero">0 changes</span>
           </div>
+
+          <ul class="invariant-list">
+            {
+              invariants.map((invariant) => (
+                <li>
+                  <span class="invariant-check">✓</span>
+                  <span>
+                    <strong>{invariant.title}</strong>
+                    <small>{invariant.note}</small>
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+
+          <p class="semantic-diff-foot">
+            Comments are preserved separately. Source locations are not compared.
+          </p>
         </div>
       </div>
     </div>
