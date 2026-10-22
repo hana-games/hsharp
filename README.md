@@ -1,13 +1,29 @@
 # h#
 
-The h# language is a small programming language with one shared semantic core, user-selected keyword syntax, and source generation for **C#, Go, Rust, and Java**.
+**One semantic core. Your notation. C#, Go, Rust, and Java output.**
 
-This repository contains the executable proof of concept described in [`hsharp-execution-plan.md`](hsharp-execution-plan.md). An h# program is parsed and checked once, then:
+h# is a small programming language with a shared semantic core, declarative per-user keyword syntax, and source generation for four target ecosystems. Programs are parsed and checked once, then executed by a reference interpreter and translated into ordinary C#, Go, Rust, and Java projects that the target toolchains compile themselves.
 
-- the reference interpreter produces an outcome;
-- four backends generate ordinary target projects;
-- the target toolchains compile and execute those projects;
-- the conformance runner compares every result with expectations written independently in the test manifest.
+The proof of concept is complete and verified: **29 conformance cases × 4 profiles × 4 targets = 464 real compilations and executions**, plus 27 negative cases and 19 unit tests.
+
+- **Language:** h# (aliases: `hsharp`, `hcharp`, `hs`)
+- **CLI:** `hs` (aliases: `hsharp`, `hcharp`)
+- **Source files:** `.hs`
+- **Status:** POC 0.1 — see [`ROADMAP.md`](ROADMAP.md)
+
+---
+
+## Why h#
+
+- **Shared meaning.** Types, evaluation order, checked arithmetic, and failure behavior come from one specification, not four independent implementations.
+- **Personal notation.** A profile changes the seven keyword roles without changing the program's meaning. Profiles are validated JSON data, never executable grammar.
+- **Four real outputs.** Generated projects are compiled and executed by .NET, Cargo, Go, and `javac`. Nothing is simulated.
+- **Explicit failures.** Overflow is detected after every operation and reported as `E_OVERFLOW` with the failing source node.
+- **Lossless syntax conversion.** Conversion rewrites keyword tokens only; comments, identifiers, whitespace, and the rest of the text survive.
+
+## Example
+
+Canonical source:
 
 ```text
 fn calculate(x: i32, bonus: bool) -> i32 {
@@ -21,7 +37,7 @@ fn calculate(x: i32, bonus: bool) -> i32 {
 }
 ```
 
-The same program in a personal profile (`profiles/my-syntax.json`):
+The same program in `profiles/my-syntax.json`:
 
 ```text
 function calculate(x: i32, bonus: bool) -> i32 {
@@ -35,23 +51,30 @@ function calculate(x: i32, bonus: bool) -> i32 {
 }
 ```
 
-`calculate(10, true)` is `32` in every profile and on every target.
+`calculate(10, true)` produces:
+
+```json
+{"status":"ok","type":"i32","value":32}
+```
+
+The reference interpreter and all four generated programs return the same result.
 
 ## Status
 
-The POC is complete and verified on this machine:
-
-- 29 positive conformance cases, each executed through **4 profiles × 4 targets** (464 target executions).
-- 27 negative program/profile cases.
-- 19 unit tests covering profiles, conversion, export/import, checked arithmetic, and diagnostics.
-- Real compilation and execution with .NET 10, Rust, Go, and Java.
-- Export/reimport with comment preservation, stale-base detection, and changed-profile detection.
-
-See [`docs/verification.md`](docs/verification.md) and [`reports/conformance.md`](reports/conformance.md).
+| Area | State |
+|---|---|
+| Core language | `i32`, `bool`, functions, calls, immutable locals, `if`/`else`, returns |
+| Semantics | Checked arithmetic, left-to-right evaluation, short-circuit `&&`/`||` |
+| Static checks | Types, arity, names, missing returns, acyclic call graph, chained comparisons |
+| Profiles | Keyword customization, validation, token-aware conversion, comment preservation |
+| Personal workflow | Export, edit, reimport, stale-base and changed-profile detection, manifest refresh |
+| Backends | C#, Go, Rust, Java — generated, compiled, executed |
+| Verification | 29 positive cases, 27 negative cases, 19 unit tests, 0 failed/blocked |
+| Documentation | Core spec, grammar, profiles, protocol, decisions, limitations, verification, roadmap |
 
 ## Quick start
 
-Prerequisites are pinned in [`docs/getting-started.md`](docs/getting-started.md). On Windows:
+Pinned versions and setup details are in [`docs/getting-started.md`](docs/getting-started.md).
 
 ```powershell
 npm install
@@ -62,54 +85,135 @@ node dist/cli/index.js demo
 node dist/cli/index.js test --all-targets
 ```
 
-`npm test` runs the unit suite and the full conformance suite.
+Install the command once with `npm link`; `hs`, `hsharp`, and `hcharp` all invoke the same CLI.
 
-To install the command, run `npm link` once from the repository root. The primary command is `hs`; `hsharp` and `hcharp` are equivalent aliases.
+```powershell
+hs doctor
+hs check examples/calculate.hs
+hs build examples/calculate.hs --target rust --entry calculate --run --args 10,true
+```
 
 ## Commands
 
-```text
-hs check <file> [--profile <profile.json>] [--json]
-
-hs build <file> --target <csharp|rust|go|java> [--out <dir>]
-          [--entry <function>] [--profile <profile.json>] [--run] [--args a,b]
-
-hs syntax export <canonical.hs> --profile <profile.json> --out <personal.hs>
-                  [--manifest <file>]
-hs syntax import <personal.hs> [--manifest <file>] [--dry-run]
-
-hs test [--all-targets] [--targets csharp,rust,go,java] [--quick]
-         [--report-dir <dir>] [--json]
-
-hs doctor [--json]
-hs demo
-```
+| Command | Purpose |
+|---|---|
+| `hs check <file>` | Parse and check; print located diagnostics |
+| `hs build <file> --target <t>` | Generate a target project; `--run` compiles and executes it |
+| `hs syntax export <canonical> --profile <p> --out <personal>` | Write personal notation plus a fingerprint manifest |
+| `hs syntax import <personal>` | Validate the base/profile, diff, and reimport an edit |
+| `hs test --all-targets` | Run the complete conformance suite and write reports |
+| `hs doctor` | Detect and version-check all four toolchains |
+| `hs demo` | Run export → edit → reimport → reference + four targets |
 
 Canonical source is always interpreted with the standard profile. A personal profile is selected explicitly; there is no implicit local preference.
+
+## How it works
+
+```mermaid
+flowchart LR
+    S["Source + explicit profile"] --> L["Lexer + parser"]
+    L --> C["Semantic checker"]
+    C --> T["Typed AST"]
+    T --> R["Reference interpreter"]
+    T --> B["C#, Rust, Go, Java backends"]
+    B --> X["Target toolchains"]
+    R --> O["Normalized outcome"]
+    X --> O
+```
+
+Key properties:
+
+- Generated code depends on the typed AST, not source spelling. All profiles produce the same target project.
+- Target names come only from compiler-assigned IDs (`f1`, `v2`, `tN`), so source names cannot collide with host reserved words.
+- Every generated function returns an internal success/failure record. Checked arithmetic propagates failures to the execution boundary.
+- Generated programs do not call the TypeScript interpreter.
+
+More detail: [`spec/core.md`](spec/core.md), [`spec/profiles.md`](spec/profiles.md), [`spec/code-generation.md`](spec/code-generation.md).
+
+## Generated projects
+
+| Target | Files | Verification |
+|---|---|---|
+| C# | `HsProgram.csproj`, `Program.cs` | `dotnet build` + `dotnet bin/HsProgram.dll` |
+| Rust | `Cargo.toml`, `src/main.rs` | `cargo build --release --offline` + binary |
+| Go | `go.mod`, `main.go` | `go build` + binary |
+| Java | `HsProgram.java` | `javac` + `java -cp bin HsProgram` |
+
+Generated projects are written under `build/` by default and contain no external dependencies.
+
+## Verification
+
+```powershell
+npm test
+# or
+hs test --all-targets
+```
+
+- 19 unit tests: profiles, conversion, semantics, manifest lifecycle, diagnostics.
+- 29 positive cases over 4 profiles and 4 targets.
+- 27 negative program/profile cases.
+- Independent expected outcomes, pinned overflow node IDs, process exit-status checks.
+- Reports: [`reports/conformance.md`](reports/conformance.md), [`reports/conformance.json`](reports/conformance.json), [`reports/environment.json`](reports/environment.json).
+
+A missing or too-old toolchain marks a target **blocked** and makes the suite exit 2. It never reports a pass. `hs test --quick` is explicitly labelled interpreter-only.
+
+Full evidence: [`docs/verification.md`](docs/verification.md).
+
+## Personal syntax workflow
+
+```powershell
+hs syntax export examples/calculate.hs `
+  --profile profiles/my-syntax.json `
+  --out local/calculate.hs
+
+# edit local/calculate.hs in the personal notation
+hs check local/calculate.hs --profile profiles/my-syntax.json
+hs syntax import local/calculate.hs
+```
+
+The export manifest records SHA-256 fingerprints for the canonical file, profile, and personal file. Reimport rejects:
+
+- a canonical file changed after export (`E_IMPORT_STALE_BASE`);
+- a changed profile (`E_IMPORT_PROFILE_CHANGED`);
+- a manifest belonging to another personal file;
+- invalid or unchecked personal source.
+
+On success the manifest is refreshed, so the edit/import cycle can continue. See [`spec/profiles.md`](spec/profiles.md).
 
 ## Repository layout
 
 | Location | Contents |
 |---|---|
-| `spec/` | Core rules, grammar, profiles, execution protocol, code generation |
+| `spec/` | Core semantics, grammar, profiles, execution protocol, code generation |
 | `src/contracts/` | AST, diagnostics, tokens, outcomes, shared interfaces |
 | `src/frontend/` | Lexer, parser, profile validation, keyword conversion |
 | `src/semantic/` | Scopes, types, return analysis, call-graph checks, entry selection |
-| `src/reference/` | BigInt-based reference interpreter |
-| `src/backends/` | C#, Rust, Go, and Java generators |
+| `src/reference/` | BigInt reference interpreter |
+| `src/backends/` | C#, Rust, Go, Java generators |
 | `src/harness/` | Toolchain detection, generated-project build/run |
-| `src/testing/` | Unit tests and conformance runner |
+| `src/testing/` | Unit tests, conformance runner, reports |
 | `src/cli/` | `hs` command line |
 | `profiles/` | Standard, supplied personal, and user-created profiles |
 | `examples/` | Demonstration programs |
-| `tests/conformance/` | Positive and negative cases with independent expectations |
+| `tests/conformance/` | Positive/negative programs and independent expectations |
 | `tests/negative/` | Profiles that must be rejected |
-| `reports/` | Generated environment and conformance reports |
+| `reports/` | Environment and conformance evidence |
 | `docs/` | Getting started, decisions, verification, acceptance, limitations |
+| `ROADMAP.md` | Phase plan and exit evidence |
 
-## Design in one paragraph
+## Roadmap
 
-h# source is parsed with a profile-driven lexer into a located source AST, checked into a typed AST with stable symbol IDs, and interpreted by a BigInt reference implementation. Each backend lowers the typed AST to an imperative form where every arithmetic operation is checked and every function returns an internal success/failure record. Booleans are represented as `0`/`1` internally; source-level types are enforced statically. Names in generated code come only from compiler-assigned IDs (`f1`, `v2`, `t0`), so program identifiers can never collide with host-language reserved words. Generated programs do not call the TypeScript interpreter.
+| Phase | Theme |
+|---|---|
+| 0.2 | Verification hardening: seeded property tests, cross-platform CI |
+| 0.3 | Records, strings, lists, variants, `Option`, `Result` |
+| 0.4 | Loops, recursion, controlled mutation, generics |
+| 0.5 | Multi-file modules and host-ecosystem embedding |
+| 0.6 | Syntax families, CST/printer, LSP, continuous personalized editing |
+| 0.7 | Async and concurrency |
+| 1.0 | Extensions, measured performance, compatibility policy |
+
+See [`ROADMAP.md`](ROADMAP.md) for dependencies, acceptance evidence, risks, and non-goals.
 
 ## Documentation
 
@@ -117,7 +221,7 @@ h# source is parsed with a profile-driven lexer into a located source AST, check
 - [Getting started](docs/getting-started.md)
 - [Core semantics](spec/core.md)
 - [Grammar](spec/grammar.md)
-- [Profiles](spec/profiles.md)
+- [Profiles and export/import](spec/profiles.md)
 - [Execution protocol](spec/execution-protocol.md)
 - [Code generation](spec/code-generation.md)
 - [Design decisions](docs/decisions.md)
@@ -125,3 +229,12 @@ h# source is parsed with a profile-driven lexer into a located source AST, check
 - [POC acceptance](docs/acceptance.md)
 - [Limitations and next steps](docs/limitations.md)
 - [Agent handoffs and reviews](docs/handoffs.md)
+- [Original execution plan](hsharp-execution-plan.md)
+
+## Limitations
+
+The POC intentionally covers a small core: no strings, collections, records, loops, recursion, mutation, modules, generics, I/O, or concurrency. Profiles customize keywords only; braces and operators are fixed. Export/import is batch-oriented, not continuous editor integration. Verification currently runs on Windows x64.
+
+The `.hs` extension is also used by Haskell, so editor file associations may need configuration.
+
+See [`docs/limitations.md`](docs/limitations.md) for the complete list and prioritized next work.
