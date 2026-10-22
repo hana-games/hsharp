@@ -1,16 +1,18 @@
 {
-  "name": "uni",
+  "name": "hsharp",
   "version": "0.1.0",
   "private": true,
-  "description": "Uni: shared semantic core with customizable syntax and C#, Go, Rust, and Java code generation",
+  "description": "h#: shared semantic core with customizable syntax and C#, Go, Rust, and Java code generation",
   "bin": {
-    "uni": "dist/cli/index.js"
+    "hs": "dist/cli/index.js",
+    "hsharp": "dist/cli/index.js",
+    "hcharp": "dist/cli/index.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "check": "npm run build && node dist/cli/index.js check examples/calculate.uni",
+    "check": "npm run build && node dist/cli/index.js check examples/calculate.hs",
     "test:unit": "npm run build && node dist/testing/unit.js",
     "test": "npm run test:unit && node dist/cli/index.js test --all-targets",
     "doctor": "npm run build && node dist/cli/index.js doctor",

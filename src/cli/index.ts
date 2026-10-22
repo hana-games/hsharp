@@ -124,7 +124,7 @@ function main(argv: string[]): number {
     return 0;
   }
   if (command === "version" || flagBool(cli, "version")) {
-    console.log(`uni ${COMPILER_VERSION} (core ${CORE_VERSION})`);
+    console.log(`hs ${COMPILER_VERSION} (core ${CORE_VERSION})`);
     return 0;
   }
 
@@ -150,7 +150,7 @@ function main(argv: string[]): number {
 
 function commandCheck(cli: Cli): number {
   const file = cli.positionals[1];
-  if (!file) throw new Error("usage: uni check <file> [--profile <profile.json>]");
+  if (!file) throw new Error("usage: hs check <file> [--profile <profile.json>]");
   const profile = loadProfileOrExit(flagString(cli, "profile"));
   const loaded = loadProgram(file, profile);
   const json = flagBool(cli, "json");
@@ -182,7 +182,7 @@ function commandCheck(cli: Cli): number {
 
 function commandBuild(cli: Cli): number {
   const file = cli.positionals[1];
-  if (!file) throw new Error("usage: uni build <file> --target <csharp|rust|go|java>");
+  if (!file) throw new Error("usage: hs build <file> --target <csharp|rust|go|java>");
   const target = targetFrom(flagString(cli, "target"));
   const profile = loadProfileOrExit(flagString(cli, "profile"));
   const loaded = loadProgram(file, profile);
@@ -241,7 +241,7 @@ function commandSyntax(cli: Cli): number {
   const subcommand = cli.positionals[1];
   if (subcommand === "export") return commandExport(cli);
   if (subcommand === "import") return commandImport(cli);
-  throw new Error("usage: uni syntax <export|import> ...");
+  throw new Error("usage: hs syntax <export|import> ...");
 }
 
 function commandExport(cli: Cli): number {
@@ -250,7 +250,7 @@ function commandExport(cli: Cli): number {
   const out = flagString(cli, "out");
   if (!file || !profile || !out) {
     throw new Error(
-      "usage: uni syntax export <canonical.uni> --profile <profile.json> --out <personal.uni> [--manifest <file>]",
+      "usage: hs syntax export <canonical.hs> --profile <profile.json> --out <personal.hs> [--manifest <file>]",
     );
   }
   const result = exportSyntax({
@@ -285,7 +285,7 @@ function commandExport(cli: Cli): number {
 function commandImport(cli: Cli): number {
   const file = cli.positionals[2];
   if (!file) {
-    throw new Error("usage: uni syntax import <personal.uni> [--manifest <file>] [--dry-run]");
+    throw new Error("usage: hs syntax import <personal.hs> [--manifest <file>] [--dry-run]");
   }
   const dryRun = flagBool(cli, "dry-run");
   const result = importSyntax({
@@ -358,7 +358,7 @@ function commandTest(cli: Cli): number {
 function commandDoctor(cli: Cli): number {
   const toolchains = detectToolchains(process.cwd());
   const payload = {
-    schema: "uni-environment/1",
+    schema: "hs-environment/1",
     generatedAt: new Date().toISOString(),
     compilerVersion: COMPILER_VERSION,
     coreVersion: CORE_VERSION,
@@ -387,10 +387,10 @@ function commandDemo(_cli: Cli): number {
   const root = process.cwd();
   const work = resolve(root, "local", "demo");
   mkdirSync(work, { recursive: true });
-  const canonical = resolve(work, "calculate.uni");
-  const personal = resolve(work, "calculate.personal.uni");
+  const canonical = resolve(work, "calculate.hs");
+  const personal = resolve(work, "calculate.personal.hs");
   const profile = resolve(root, "profiles", "my-syntax.json");
-  const source = resolve(root, "examples", "calculate.uni");
+  const source = resolve(root, "examples", "calculate.hs");
   copyFileSync(source, canonical);
 
   const exported = exportSyntax({ sourceFile: canonical, profileFile: profile, outputFile: personal });
@@ -460,19 +460,19 @@ function commandDemo(_cli: Cli): number {
 }
 
 function usage(): string {
-  return `uni ${COMPILER_VERSION} - shared program meaning, personal syntax, four targets
+  return `hs ${COMPILER_VERSION} - shared program meaning, personal syntax, four targets
 
 Usage:
-  uni check <file> [--profile <profile.json>] [--json]
-  uni build <file> --target <csharp|rust|go|java> [--out <dir>]
+  hs check <file> [--profile <profile.json>] [--json]
+  hs build <file> --target <csharp|rust|go|java> [--out <dir>]
             [--entry <function>] [--profile <profile.json>] [--run] [--args a,b]
-  uni syntax export <canonical.uni> --profile <profile.json> --out <personal.uni>
+  hs syntax export <canonical.hs> --profile <profile.json> --out <personal.hs>
             [--manifest <file>]
-  uni syntax import <personal.uni> [--manifest <file>] [--dry-run]
-  uni test [--all-targets] [--targets csharp,rust,go,java] [--quick]
+  hs syntax import <personal.hs> [--manifest <file>] [--dry-run]
+  hs test [--all-targets] [--targets csharp,rust,go,java] [--quick]
             [--report-dir <dir>] [--json]
-  uni doctor [--json]
-  uni demo
+  hs doctor [--json]
+  hs demo
 
 Canonical source uses the standard profile. A profile is always selected
 explicitly; there is no implicit personal preference.`;
@@ -481,6 +481,6 @@ explicitly; there is no implicit personal preference.`;
 try {
   process.exitCode = main(process.argv.slice(2));
 } catch (cause) {
-  console.error(`uni: ${(cause as Error).message}`);
+  console.error(`hs: ${(cause as Error).message}`);
   process.exitCode = 2;
 }

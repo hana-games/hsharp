@@ -45,7 +45,7 @@ test("standard profile matches canonical keywords", () => {
 });
 
 test("profile conversion preserves normalized AST for every profile", () => {
-  const source = readFileSync(resolve("examples", "calculate.uni"), "utf8");
+  const source = readFileSync(resolve("examples", "calculate.hs"), "utf8");
   const canonical = analyze(source, "<canonical>", STANDARD_PROFILE);
   assert.ok(canonical.program && canonical.tokens);
   for (const profile of profiles) {
@@ -143,9 +143,9 @@ test("short-circuit avoids evaluating a failing right operand", () => {
 
 test("export and reimport preserve comments and apply edits", () => {
   const dir = tempDir();
-  const canonical = join(dir, "canonical.uni");
-  const personal = join(dir, "personal.uni");
-  copyFileSync(resolve("examples", "calculate.uni"), canonical);
+  const canonical = join(dir, "canonical.hs");
+  const personal = join(dir, "personal.hs");
+  copyFileSync(resolve("examples", "calculate.hs"), canonical);
 
   const exported = exportSyntax({
     sourceFile: canonical,
@@ -173,9 +173,9 @@ test("export and reimport preserve comments and apply edits", () => {
 
 test("reimport rejects a stale canonical base", () => {
   const dir = tempDir();
-  const canonical = join(dir, "canonical.uni");
-  const personal = join(dir, "personal.uni");
-  copyFileSync(resolve("examples", "calculate.uni"), canonical);
+  const canonical = join(dir, "canonical.hs");
+  const personal = join(dir, "personal.hs");
+  copyFileSync(resolve("examples", "calculate.hs"), canonical);
   const exported = exportSyntax({
     sourceFile: canonical,
     profileFile: resolve("profiles", "my-syntax.json"),
@@ -190,10 +190,10 @@ test("reimport rejects a stale canonical base", () => {
 
 test("reimport rejects a changed profile", () => {
   const dir = tempDir();
-  const canonical = join(dir, "canonical.uni");
-  const personal = join(dir, "personal.uni");
+  const canonical = join(dir, "canonical.hs");
+  const personal = join(dir, "personal.hs");
   const profile = join(dir, "profile.json");
-  copyFileSync(resolve("examples", "calculate.uni"), canonical);
+  copyFileSync(resolve("examples", "calculate.hs"), canonical);
   copyFileSync(resolve("profiles", "my-syntax.json"), profile);
   const exported = exportSyntax({ sourceFile: canonical, profileFile: profile, outputFile: personal });
   assert.equal(exported.diagnostics.length, 0);
@@ -205,9 +205,9 @@ test("reimport rejects a changed profile", () => {
 
 test("a successful import refreshes the manifest for the next cycle", () => {
   const dir = tempDir();
-  const canonical = join(dir, "canonical.uni");
-  const personal = join(dir, "personal.uni");
-  copyFileSync(resolve("examples", "calculate.uni"), canonical);
+  const canonical = join(dir, "canonical.hs");
+  const personal = join(dir, "personal.hs");
+  copyFileSync(resolve("examples", "calculate.hs"), canonical);
   const exported = exportSyntax({
     sourceFile: canonical,
     profileFile: resolve("profiles", "my-syntax.json"),
@@ -232,17 +232,17 @@ test("a successful import refreshes the manifest for the next cycle", () => {
 
 test("a malformed manifest produces a diagnostic instead of throwing", () => {
   const dir = tempDir();
-  const personal = join(dir, "personal.uni");
+  const personal = join(dir, "personal.hs");
   writeFileSync(personal, "fn main() -> i32 { return 1; }\n", "utf8");
-  writeFileSync(`${personal}.manifest.json`, JSON.stringify({ schema: "uni-export/1" }), "utf8");
+  writeFileSync(`${personal}.manifest.json`, JSON.stringify({ schema: "hs-export/1" }), "utf8");
   const imported = importSyntax({ personalFile: personal });
   assert.ok(imported.diagnostics.some((diagnostic) => diagnostic.code === "E_IMPORT_MANIFEST"));
 });
 
 test("export refuses to overwrite the canonical source", () => {
   const dir = tempDir();
-  const canonical = join(dir, "canonical.uni");
-  copyFileSync(resolve("examples", "calculate.uni"), canonical);
+  const canonical = join(dir, "canonical.hs");
+  copyFileSync(resolve("examples", "calculate.hs"), canonical);
   const before = readFileSync(canonical, "utf8");
   const exported = exportSyntax({
     sourceFile: canonical,
@@ -286,8 +286,8 @@ test("leading zeros and grouped comparisons follow the core rules", () => {
 
 test("export rejects an identifier that collides with a profile keyword", () => {
   const dir = tempDir();
-  const canonical = join(dir, "collision.uni");
-  const personal = join(dir, "collision.personal.uni");
+  const canonical = join(dir, "collision.hs");
+  const personal = join(dir, "collision.personal.hs");
   writeFileSync(canonical, "fn function(x: i32) -> i32 { return x; }\n", "utf8");
   const exported = exportSyntax({
     sourceFile: canonical,

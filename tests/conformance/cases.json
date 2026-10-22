@@ -1,5 +1,5 @@
 {
-  "schema": "uni-conformance/1",
+  "schema": "hs-conformance/1",
   "profiles": [
     "../../profiles/standard.json",
     "../../profiles/my-syntax.json",
@@ -9,7 +9,7 @@
   "cases": [
     {
       "id": "demo-bonus-true",
-      "program": "programs/demo.uni",
+      "program": "programs/demo.hs",
       "entry": "calculate",
       "args": [10, true],
       "expected": { "status": "ok", "type": "i32", "value": 32 },
@@ -17,177 +17,177 @@
     },
     {
       "id": "demo-bonus-false",
-      "program": "programs/demo.uni",
+      "program": "programs/demo.hs",
       "entry": "calculate",
       "args": [10, false],
       "expected": { "status": "ok", "type": "i32", "value": 30 }
     },
     {
       "id": "function-call",
-      "program": "programs/calls.uni",
+      "program": "programs/calls.hs",
       "entry": "main",
       "args": [20],
       "expected": { "status": "ok", "type": "i32", "value": 22 }
     },
     {
       "id": "precedence",
-      "program": "programs/precedence.uni",
+      "program": "programs/precedence.hs",
       "args": [],
       "expected": { "status": "ok", "type": "i32", "value": 14 }
     },
     {
       "id": "parentheses",
-      "program": "programs/parentheses.uni",
+      "program": "programs/parentheses.hs",
       "args": [],
       "expected": { "status": "ok", "type": "i32", "value": 20 }
     },
     {
       "id": "left-associativity",
-      "program": "programs/associativity.uni",
+      "program": "programs/associativity.hs",
       "args": [],
       "expected": { "status": "ok", "type": "i32", "value": 5 }
     },
     {
       "id": "subtraction-grouping",
-      "program": "programs/subtraction_grouping.uni",
+      "program": "programs/subtraction_grouping.hs",
       "args": [],
       "expected": { "status": "ok", "type": "i32", "value": 7 }
     },
     {
       "id": "i32-minimum",
-      "program": "programs/bounds.uni",
+      "program": "programs/bounds.hs",
       "entry": "min_value",
       "args": [],
       "expected": { "status": "ok", "type": "i32", "value": -2147483648 }
     },
     {
       "id": "i32-maximum",
-      "program": "programs/bounds.uni",
+      "program": "programs/bounds.hs",
       "entry": "max_value",
       "args": [],
       "expected": { "status": "ok", "type": "i32", "value": 2147483647 }
     },
     {
       "id": "overflow-add-max",
-      "program": "programs/overflow_add.uni",
+      "program": "programs/overflow_add.hs",
       "args": [2147483647],
       "expected": { "status": "error", "code": "E_OVERFLOW", "node": 5 }
     },
     {
       "id": "add-at-max-boundary",
-      "program": "programs/overflow_add.uni",
+      "program": "programs/overflow_add.hs",
       "args": [2147483646],
       "expected": { "status": "ok", "type": "i32", "value": 2147483647 }
     },
     {
       "id": "overflow-subtract-min",
-      "program": "programs/overflow_sub.uni",
+      "program": "programs/overflow_sub.hs",
       "args": [-2147483648],
       "expected": { "status": "error", "code": "E_OVERFLOW", "node": 5 }
     },
     {
       "id": "overflow-multiply-min",
-      "program": "programs/overflow_mul.uni",
+      "program": "programs/overflow_mul.hs",
       "args": [-2147483648],
       "expected": { "status": "error", "code": "E_OVERFLOW", "node": 6 }
     },
     {
       "id": "multiply-negative-one",
-      "program": "programs/overflow_mul.uni",
+      "program": "programs/overflow_mul.hs",
       "args": [5],
       "expected": { "status": "ok", "type": "i32", "value": -5 }
     },
     {
       "id": "overflow-negate-min",
-      "program": "programs/overflow_neg.uni",
+      "program": "programs/overflow_neg.hs",
       "args": [-2147483648],
       "expected": { "status": "error", "code": "E_OVERFLOW", "node": 4 }
     },
     {
       "id": "negate-positive",
-      "program": "programs/overflow_neg.uni",
+      "program": "programs/overflow_neg.hs",
       "args": [5],
       "expected": { "status": "ok", "type": "i32", "value": -5 }
     },
     {
       "id": "short-circuit-and",
-      "program": "programs/short_circuit_and.uni",
+      "program": "programs/short_circuit_and.hs",
       "args": [2147483647],
       "expected": { "status": "ok", "type": "bool", "value": false },
       "notes": "The right operand would overflow but must not be evaluated."
     },
     {
       "id": "short-circuit-or",
-      "program": "programs/short_circuit_or.uni",
+      "program": "programs/short_circuit_or.hs",
       "args": [2147483647],
       "expected": { "status": "ok", "type": "bool", "value": true }
     },
     {
       "id": "comparison-true",
-      "program": "programs/comparisons.uni",
+      "program": "programs/comparisons.hs",
       "args": [1, 2],
       "expected": { "status": "ok", "type": "bool", "value": true }
     },
     {
       "id": "comparison-false",
-      "program": "programs/comparisons.uni",
+      "program": "programs/comparisons.hs",
       "args": [2, 1],
       "expected": { "status": "ok", "type": "bool", "value": false }
     },
     {
       "id": "bool-logic",
-      "program": "programs/bool_logic.uni",
+      "program": "programs/bool_logic.hs",
       "args": [true, false],
       "expected": { "status": "ok", "type": "bool", "value": true }
     },
     {
       "id": "if-else-negative",
-      "program": "programs/if_else.uni",
+      "program": "programs/if_else.hs",
       "args": [-5],
       "expected": { "status": "ok", "type": "i32", "value": -1 }
     },
     {
       "id": "if-else-zero",
-      "program": "programs/if_else.uni",
+      "program": "programs/if_else.hs",
       "args": [0],
       "expected": { "status": "ok", "type": "i32", "value": 0 }
     },
     {
       "id": "if-else-positive",
-      "program": "programs/if_else.uni",
+      "program": "programs/if_else.hs",
       "args": [5],
       "expected": { "status": "ok", "type": "i32", "value": 1 }
     },
     {
       "id": "target-reserved-names",
-      "program": "programs/target_names.uni",
+      "program": "programs/target_names.hs",
       "entry": "int",
       "args": [41],
       "expected": { "status": "ok", "type": "i32", "value": 42 },
-      "notes": "Uni names int/class/string must not leak into target identifiers."
+      "notes": "h# names int/class/string must not leak into target identifiers."
     },
     {
       "id": "comments-preserved",
-      "program": "programs/comments.uni",
+      "program": "programs/comments.hs",
       "args": [],
       "expected": { "status": "ok", "type": "i32", "value": 7 }
     },
     {
       "id": "dead-code-after-return",
-      "program": "programs/dead_code.uni",
+      "program": "programs/dead_code.hs",
       "args": [],
       "expected": { "status": "ok", "type": "i32", "value": 1 },
       "notes": "Unreachable declarations are checked but omitted from generated code."
     },
     {
       "id": "dead-code-after-if",
-      "program": "programs/dead_after_if.uni",
+      "program": "programs/dead_after_if.hs",
       "args": [1],
       "expected": { "status": "ok", "type": "i32", "value": 1 }
     },
     {
       "id": "grouped-comparison-equality",
-      "program": "programs/grouped_comparisons.uni",
+      "program": "programs/grouped_comparisons.hs",
       "args": [],
       "expected": { "status": "ok", "type": "bool", "value": true },
       "notes": "Explicit parentheses permit Boolean equality of comparison results."
@@ -196,102 +196,102 @@
   "negative": [
     {
       "id": "argument-type",
-      "program": "programs/neg_argument_type.uni",
+      "program": "programs/neg_argument_type.hs",
       "expectDiagnostic": "E_ARGUMENT_TYPE"
     },
     {
       "id": "argument-count",
-      "program": "programs/neg_arity.uni",
+      "program": "programs/neg_arity.hs",
       "expectDiagnostic": "E_ARITY"
     },
     {
       "id": "unknown-local-name",
-      "program": "programs/neg_unknown_name.uni",
+      "program": "programs/neg_unknown_name.hs",
       "expectDiagnostic": "E_UNKNOWN_NAME"
     },
     {
       "id": "unknown-function",
-      "program": "programs/neg_unknown_function.uni",
+      "program": "programs/neg_unknown_function.hs",
       "expectDiagnostic": "E_UNKNOWN_FUNCTION"
     },
     {
       "id": "missing-return",
-      "program": "programs/neg_missing_return.uni",
+      "program": "programs/neg_missing_return.hs",
       "expectDiagnostic": "E_MISSING_RETURN"
     },
     {
       "id": "direct-recursion",
-      "program": "programs/neg_recursion.uni",
+      "program": "programs/neg_recursion.hs",
       "expectDiagnostic": "E_RECURSION"
     },
     {
       "id": "indirect-recursion",
-      "program": "programs/neg_indirect_recursion.uni",
+      "program": "programs/neg_indirect_recursion.hs",
       "expectDiagnostic": "E_RECURSION"
     },
     {
       "id": "positive-min-literal",
-      "program": "programs/neg_positive_min.uni",
+      "program": "programs/neg_positive_min.hs",
       "expectDiagnostic": "E_INT_RANGE"
     },
     {
       "id": "chained-comparison",
-      "program": "programs/neg_chained.uni",
+      "program": "programs/neg_chained.hs",
       "expectDiagnostic": "E_CHAINED_COMPARISON"
     },
     {
       "id": "mixed-chained-comparison",
-      "program": "programs/neg_chained_mixed.uni",
+      "program": "programs/neg_chained_mixed.hs",
       "expectDiagnostic": "E_CHAINED_COMPARISON"
     },
     {
       "id": "non-boolean-condition",
-      "program": "programs/neg_condition.uni",
+      "program": "programs/neg_condition.hs",
       "expectDiagnostic": "E_CONDITION_TYPE"
     },
     {
       "id": "let-type-mismatch",
-      "program": "programs/neg_type_mismatch.uni",
+      "program": "programs/neg_type_mismatch.hs",
       "expectDiagnostic": "E_TYPE_MISMATCH"
     },
     {
       "id": "operator-operand-type",
-      "program": "programs/neg_operator_type.uni",
+      "program": "programs/neg_operator_type.hs",
       "expectDiagnostic": "E_OPERATOR_TYPE"
     },
     {
       "id": "redeclared-local",
-      "program": "programs/neg_redeclare.uni",
+      "program": "programs/neg_redeclare.hs",
       "expectDiagnostic": "E_REDECLARED_NAME"
     },
     {
       "id": "duplicate-function",
-      "program": "programs/neg_duplicate_function.uni",
+      "program": "programs/neg_duplicate_function.hs",
       "expectDiagnostic": "E_DUPLICATE_FUNCTION"
     },
     {
       "id": "return-type",
-      "program": "programs/neg_return_type.uni",
+      "program": "programs/neg_return_type.hs",
       "expectDiagnostic": "E_RETURN_TYPE"
     },
     {
       "id": "syntax-error",
-      "program": "programs/neg_syntax.uni",
+      "program": "programs/neg_syntax.hs",
       "expectDiagnostic": "E_SYNTAX"
     },
     {
       "id": "integer-range",
-      "program": "programs/neg_int_range.uni",
+      "program": "programs/neg_int_range.hs",
       "expectDiagnostic": "E_INT_RANGE"
     },
     {
       "id": "shadow-function",
-      "program": "programs/neg_shadow_function.uni",
+      "program": "programs/neg_shadow_function.hs",
       "expectDiagnostic": "E_NAME_SHADOWS_FUNCTION"
     },
     {
       "id": "duplicate-parameter",
-      "program": "programs/neg_duplicate_param.uni",
+      "program": "programs/neg_duplicate_param.hs",
       "expectDiagnostic": "E_DUPLICATE_PARAMETER"
     },
     {

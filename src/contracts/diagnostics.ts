@@ -42,10 +42,10 @@ export function hasErrors(diagnostics: Diagnostic[]): boolean {
   return diagnostics.some((d) => d.severity === "error");
 }
 
-export class UniDiagnosticError extends Error {
+export class HsDiagnosticError extends Error {
   constructor(readonly diagnostic: Diagnostic) {
     super(formatDiagnostic(diagnostic));
-    this.name = "UniDiagnosticError";
+    this.name = "HsDiagnosticError";
   }
 }
 

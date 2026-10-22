@@ -120,7 +120,7 @@ export function runConformance(options: ConformanceOptions): { report: Conforman
     : resolve(root, "tests", "conformance", "cases.json");
   const manifestDir = dirname(manifestPath);
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as ConformanceManifest;
-  if (manifest.schema !== "uni-conformance/1") {
+  if (manifest.schema !== "hs-conformance/1") {
     throw new Error(`unsupported conformance schema "${String(manifest.schema)}"`);
   }
   if (!Array.isArray(manifest.profiles) || manifest.profiles.length === 0) {
@@ -326,7 +326,7 @@ export function runConformance(options: ConformanceOptions): { report: Conforman
   const failed = failedRows + failedCases + failedNegative;
 
   const report: ConformanceReport = {
-    schema: "uni-conformance-report/1",
+    schema: "hs-conformance-report/1",
     mode: options.quick ? "interpreter-only" : "full",
     generatedAt: new Date().toISOString(),
     compilerVersion: COMPILER_VERSION,
@@ -418,7 +418,7 @@ function tail(text: string, lines: number): string {
 
 function renderMarkdown(report: ConformanceReport): string {
   const lines: string[] = [];
-  lines.push("# Uni Conformance Report");
+  lines.push("# h# Conformance Report");
   lines.push("");
   lines.push(`- Generated: ${report.generatedAt}`);
   lines.push(`- Compiler: ${report.compilerVersion} (core ${report.coreVersion})`);

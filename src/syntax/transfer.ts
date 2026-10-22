@@ -8,7 +8,7 @@ import { loadProfileFile, STANDARD_PROFILE, fingerprint } from "../frontend/prof
 import { analyze, loadProgram, loadSource } from "../pipeline";
 import { normalizeAst } from "../contracts/ast";
 
-export const MANIFEST_SCHEMA = "uni-export/1";
+export const MANIFEST_SCHEMA = "hs-export/1";
 
 export interface ExportManifest {
   schema: string;

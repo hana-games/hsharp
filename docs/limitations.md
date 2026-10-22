@@ -15,6 +15,7 @@ The POC intentionally covers a small language core. The following limits are kno
 ## Syntax profiles
 
 - Only the seven keyword roles are customizable. Type names, operators, braces, parentheses, semicolons, and precedence are fixed.
+- The `.hs` extension is also used by Haskell, so editors may associate h# files with Haskell unless configured otherwise.
 - Only the `braces` family exists. Explicit block markers and indentation families are future work.
 - A keyword-only profile cannot change call syntax or introduce declarative constructs.
 - Conversion is not continuous editing: there is no editor integration, live preview, cursor mapping, or incomplete-draft handling.

@@ -1,7 +1,7 @@
 {
-  "schema": "uni-conformance-report/1",
+  "schema": "hs-conformance-report/1",
   "mode": "full",
-  "generatedAt": "2026-10-22T02:24:29.569Z",
+  "generatedAt": "2026-10-22T12:45:23.233Z",
   "compilerVersion": "0.1.0",
   "coreVersion": "0.1",
   "nodeVersion": "v24.21.0",
@@ -4968,7 +4968,7 @@
     },
     {
       "id": "target-reserved-names",
-      "notes": "Uni names int/class/string must not leak into target identifiers.",
+      "notes": "h# names int/class/string must not leak into target identifiers.",
       "reference": {
         "status": "passed",
         "expected": {
@@ -5996,7 +5996,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_ARGUMENT_TYPE",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_argument_type.uni:6:23: error E_ARGUMENT_TYPE: argument 1 of \"takes_bool\" has type i32, expected bool"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_argument_type.hs:6:23: error E_ARGUMENT_TYPE: argument 1 of \"takes_bool\" has type i32, expected bool"
       ]
     },
     {
@@ -6004,7 +6004,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_ARITY",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_arity.uni:6:12: error E_ARITY: function \"add\" expects 2 argument(s), received 1"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_arity.hs:6:12: error E_ARITY: function \"add\" expects 2 argument(s), received 1"
       ]
     },
     {
@@ -6012,7 +6012,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_UNKNOWN_NAME",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_unknown_name.uni:2:12: error E_UNKNOWN_NAME: unknown name \"missing\""
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_unknown_name.hs:2:12: error E_UNKNOWN_NAME: unknown name \"missing\""
       ]
     },
     {
@@ -6020,7 +6020,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_UNKNOWN_FUNCTION",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_unknown_function.uni:2:12: error E_UNKNOWN_FUNCTION: unknown function \"unknown_function\""
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_unknown_function.hs:2:12: error E_UNKNOWN_FUNCTION: unknown function \"unknown_function\""
       ]
     },
     {
@@ -6028,7 +6028,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_MISSING_RETURN",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_missing_return.uni:1:4: error E_MISSING_RETURN: function \"main\" can reach the end without returning a value\n  hint: return a value of type i32 on every path"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_missing_return.hs:1:4: error E_MISSING_RETURN: function \"main\" can reach the end without returning a value\n  hint: return a value of type i32 on every path"
       ]
     },
     {
@@ -6036,7 +6036,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_RECURSION",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_recursion.uni:1:4: error E_RECURSION: call graph contains a cycle: loop_forever -> loop_forever\n  hint: the POC core rejects direct and indirect recursion"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_recursion.hs:1:4: error E_RECURSION: call graph contains a cycle: loop_forever -> loop_forever\n  hint: the POC core rejects direct and indirect recursion"
       ]
     },
     {
@@ -6044,7 +6044,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_RECURSION",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_indirect_recursion.uni:1:4: error E_RECURSION: call graph contains a cycle: first -> second -> first\n  hint: the POC core rejects direct and indirect recursion"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_indirect_recursion.hs:1:4: error E_RECURSION: call graph contains a cycle: first -> second -> first\n  hint: the POC core rejects direct and indirect recursion"
       ]
     },
     {
@@ -6052,7 +6052,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_INT_RANGE",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_positive_min.uni:2:12: error E_INT_RANGE: 2147483648 is out of range as a positive i32 literal\n  hint: write -2147483648 to represent the minimum value"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_positive_min.hs:2:12: error E_INT_RANGE: 2147483648 is out of range as a positive i32 literal\n  hint: write -2147483648 to represent the minimum value"
       ]
     },
     {
@@ -6060,7 +6060,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_CHAINED_COMPARISON",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_chained.uni:2:18: error E_CHAINED_COMPARISON: chained comparisons are rejected\n  hint: compare each pair separately and combine the Boolean results with && or ||"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_chained.hs:2:18: error E_CHAINED_COMPARISON: chained comparisons are rejected\n  hint: compare each pair separately and combine the Boolean results with && or ||"
       ]
     },
     {
@@ -6068,7 +6068,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_CHAINED_COMPARISON",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_chained_mixed.uni:2:18: error E_CHAINED_COMPARISON: chained comparisons are rejected\n  hint: compare each pair separately and combine the Boolean results with && or ||"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_chained_mixed.hs:2:18: error E_CHAINED_COMPARISON: chained comparisons are rejected\n  hint: compare each pair separately and combine the Boolean results with && or ||"
       ]
     },
     {
@@ -6076,7 +6076,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_CONDITION_TYPE",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_condition.uni:2:8: error E_CONDITION_TYPE: if condition must be bool, found i32"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_condition.hs:2:8: error E_CONDITION_TYPE: if condition must be bool, found i32"
       ]
     },
     {
@@ -6084,7 +6084,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_TYPE_MISMATCH",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_type_mismatch.uni:2:22: error E_TYPE_MISMATCH: cannot bind i32 to \"flag\" of type bool"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_type_mismatch.hs:2:22: error E_TYPE_MISMATCH: cannot bind i32 to \"flag\" of type bool"
       ]
     },
     {
@@ -6092,7 +6092,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_OPERATOR_TYPE",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_operator_type.uni:2:12: error E_OPERATOR_TYPE: operator \"+\" requires i32 operands, found bool and i32"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_operator_type.hs:2:12: error E_OPERATOR_TYPE: operator \"+\" requires i32 operands, found bool and i32"
       ]
     },
     {
@@ -6100,7 +6100,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_REDECLARED_NAME",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_redeclare.uni:3:9: error E_REDECLARED_NAME: name \"x\" is already visible in this scope"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_redeclare.hs:3:9: error E_REDECLARED_NAME: name \"x\" is already visible in this scope"
       ]
     },
     {
@@ -6108,7 +6108,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_DUPLICATE_FUNCTION",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_duplicate_function.uni:5:4: error E_DUPLICATE_FUNCTION: function \"main\" is declared more than once"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_duplicate_function.hs:5:4: error E_DUPLICATE_FUNCTION: function \"main\" is declared more than once"
       ]
     },
     {
@@ -6116,7 +6116,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_RETURN_TYPE",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_return_type.uni:2:12: error E_RETURN_TYPE: return value has type bool but the function returns i32"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_return_type.hs:2:12: error E_RETURN_TYPE: return value has type bool but the function returns i32"
       ]
     },
     {
@@ -6124,7 +6124,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_SYNTAX",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_syntax.uni:3:1: error E_SYNTAX: expected \";\" but found \"}\""
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_syntax.hs:3:1: error E_SYNTAX: expected \";\" but found \"}\""
       ]
     },
     {
@@ -6132,7 +6132,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_INT_RANGE",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_int_range.uni:2:13: error E_INT_RANGE: integer literal 2147483649 is outside the i32 range\n  hint: accepted range is -2147483648 through 2147483647"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_int_range.hs:2:13: error E_INT_RANGE: integer literal 2147483649 is outside the i32 range\n  hint: accepted range is -2147483648 through 2147483647"
       ]
     },
     {
@@ -6140,7 +6140,7 @@
       "status": "passed",
       "expectedDiagnostic": "E_NAME_SHADOWS_FUNCTION",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_shadow_function.uni:6:9: error E_NAME_SHADOWS_FUNCTION: local name \"helper\" shadows a function visible in this program\n  hint: choose a distinct name"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_shadow_function.hs:6:9: error E_NAME_SHADOWS_FUNCTION: local name \"helper\" shadows a function visible in this program\n  hint: choose a distinct name"
       ]
     },
     {
@@ -6148,8 +6148,8 @@
       "status": "passed",
       "expectedDiagnostic": "E_DUPLICATE_PARAMETER",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_duplicate_param.uni:1:17: error E_DUPLICATE_PARAMETER: parameter \"x\" is declared more than once",
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_duplicate_param.uni:1:17: error E_REDECLARED_NAME: name \"x\" is already visible in this scope"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_duplicate_param.hs:1:17: error E_DUPLICATE_PARAMETER: parameter \"x\" is declared more than once",
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_duplicate_param.hs:1:17: error E_REDECLARED_NAME: name \"x\" is already visible in this scope"
       ]
     },
     {

@@ -1,8 +1,8 @@
-# Uni
+# h#
 
-Uni is a small programming language with one shared semantic core, user-selected keyword syntax, and source generation for **C#, Go, Rust, and Java**.
+The h# language is a small programming language with one shared semantic core, user-selected keyword syntax, and source generation for **C#, Go, Rust, and Java**.
 
-This repository contains the executable proof of concept described in [`uni-ai-agent-execution-plan.md`](uni-ai-agent-execution-plan.md). A Uni program is parsed and checked once, then:
+This repository contains the executable proof of concept described in [`hsharp-execution-plan.md`](hsharp-execution-plan.md). An h# program is parsed and checked once, then:
 
 - the reference interpreter produces an outcome;
 - four backends generate ordinary target projects;
@@ -57,32 +57,32 @@ Prerequisites are pinned in [`docs/getting-started.md`](docs/getting-started.md)
 npm install
 npm run build
 
-node dist/cli/index.js check examples/calculate.uni
+node dist/cli/index.js check examples/calculate.hs
 node dist/cli/index.js demo
 node dist/cli/index.js test --all-targets
 ```
 
 `npm test` runs the unit suite and the full conformance suite.
 
-To use the shorter `uni` command, run `npm link` once from the repository root.
+To install the command, run `npm link` once from the repository root. The primary command is `hs`; `hsharp` and `hcharp` are equivalent aliases.
 
 ## Commands
 
 ```text
-uni check <file> [--profile <profile.json>] [--json]
+hs check <file> [--profile <profile.json>] [--json]
 
-uni build <file> --target <csharp|rust|go|java> [--out <dir>]
+hs build <file> --target <csharp|rust|go|java> [--out <dir>]
           [--entry <function>] [--profile <profile.json>] [--run] [--args a,b]
 
-uni syntax export <canonical.uni> --profile <profile.json> --out <personal.uni>
+hs syntax export <canonical.hs> --profile <profile.json> --out <personal.hs>
                   [--manifest <file>]
-uni syntax import <personal.uni> [--manifest <file>] [--dry-run]
+hs syntax import <personal.hs> [--manifest <file>] [--dry-run]
 
-uni test [--all-targets] [--targets csharp,rust,go,java] [--quick]
+hs test [--all-targets] [--targets csharp,rust,go,java] [--quick]
          [--report-dir <dir>] [--json]
 
-uni doctor [--json]
-uni demo
+hs doctor [--json]
+hs demo
 ```
 
 Canonical source is always interpreted with the standard profile. A personal profile is selected explicitly; there is no implicit local preference.
@@ -99,7 +99,7 @@ Canonical source is always interpreted with the standard profile. A personal pro
 | `src/backends/` | C#, Rust, Go, and Java generators |
 | `src/harness/` | Toolchain detection, generated-project build/run |
 | `src/testing/` | Unit tests and conformance runner |
-| `src/cli/` | `uni` command line |
+| `src/cli/` | `hs` command line |
 | `profiles/` | Standard, supplied personal, and user-created profiles |
 | `examples/` | Demonstration programs |
 | `tests/conformance/` | Positive and negative cases with independent expectations |
@@ -109,7 +109,7 @@ Canonical source is always interpreted with the standard profile. A personal pro
 
 ## Design in one paragraph
 
-Uni source is parsed with a profile-driven lexer into a located source AST, checked into a typed AST with stable symbol IDs, and interpreted by a BigInt reference implementation. Each backend lowers the typed AST to an imperative form where every arithmetic operation is checked and every function returns an internal success/failure record. Booleans are represented as `0`/`1` internally; source-level types are enforced statically. Names in generated code come only from compiler-assigned IDs (`f1`, `v2`, `t0`), so program identifiers can never collide with host-language reserved words. Generated programs do not call the TypeScript interpreter.
+h# source is parsed with a profile-driven lexer into a located source AST, checked into a typed AST with stable symbol IDs, and interpreted by a BigInt reference implementation. Each backend lowers the typed AST to an imperative form where every arithmetic operation is checked and every function returns an internal success/failure record. Booleans are represented as `0`/`1` internally; source-level types are enforced statically. Names in generated code come only from compiler-assigned IDs (`f1`, `v2`, `t0`), so program identifiers can never collide with host-language reserved words. Generated programs do not call the TypeScript interpreter.
 
 ## Documentation
 

@@ -78,9 +78,9 @@ Export performs an additional structural check: the converted text is parsed and
 ## 5. Export
 
 ```sh
-uni syntax export examples/calculate.uni \
+hs syntax export examples/calculate.hs \
   --profile profiles/my-syntax.json \
-  --out local/calculate.uni
+  --out local/calculate.hs
 ```
 
 The output file and manifest must be distinct from the canonical source and the profile; export refuses paths that would overwrite either.
@@ -89,17 +89,17 @@ The manifest is written next to the personal file as `<personal>.manifest.json` 
 
 ```json
 {
-  "schema": "uni-export/1",
+  "schema": "hs-export/1",
   "coreVersion": "0.1",
   "compilerVersion": "0.1.0",
-  "canonical": { "path": "../../examples/calculate.uni", "fingerprint": "sha256:..." },
+  "canonical": { "path": "../../examples/calculate.hs", "fingerprint": "sha256:..." },
   "profile": {
     "id": "my-syntax",
     "version": "1",
     "path": "../../profiles/my-syntax.json",
     "fingerprint": "sha256:..."
   },
-  "personal": { "path": "calculate.uni", "fingerprint": "sha256:..." }
+  "personal": { "path": "calculate.hs", "fingerprint": "sha256:..." }
 }
 ```
 
@@ -108,8 +108,8 @@ Paths are relative to the manifest directory. Fingerprints are SHA-256 over the 
 ## 6. Reimport
 
 ```sh
-uni syntax import local/calculate.uni
-uni syntax import local/calculate.uni --dry-run
+hs syntax import local/calculate.hs
+hs syntax import local/calculate.hs --dry-run
 ```
 
 Reimport:

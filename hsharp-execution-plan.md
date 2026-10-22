@@ -1,4 +1,4 @@
-# Uni: AI Agent Execution Plan
+# h#: AI Agent Execution Plan
 
 ## Purpose
 
@@ -6,7 +6,7 @@ Build a programming language with a shared semantic core, customizable syntax fo
 
 **The first objective is a small, executable proof of concept (POC), delivered through parallel agent work and verified with all four target toolchains.**
 
-“Uni” is a provisional name. Commands, file layouts, and configuration examples in this document describe interfaces to implement.
+The implementation is named **h#** (aliases: `hsharp`, `hcharp`, `hs`). Source files use the `.hs` extension. The command-line program is `hs`; `hsharp` and `hcharp` are equivalent aliases.
 
 AI agents build and verify the compiler. Once implemented, the compiler applies deterministic, versioned rules; ordinary compilation does not require a model call.
 
@@ -47,7 +47,7 @@ The product has four parts:
 
 **Syntax may vary between users. Program meaning remains shared.**
 
-The initial architecture is source-to-source compilation: Uni source is parsed, checked, and translated into a target project that the target's own tools compile.
+The initial architecture is source-to-source compilation: h# source is parsed, checked, and translated into a target project that the target's own tools compile.
 
 Importing existing projects and accessing target-specific libraries are separate capabilities with their own future work packages.
 
@@ -564,7 +564,7 @@ Start with roughly 20–30 small programs plus invalid configurations. This is a
 | Missing return on a reachable path | Rejected before generation |
 | Cycle in the call graph | Rejected before generation |
 | Two keyword roles with the same alias | Profile rejected |
-| Valid Uni name reserved by a target | Valid generated name and unchanged behavior |
+| Valid h# name reserved by a target | Valid generated name and unchanged behavior |
 | Comment containing a keyword | Comment preserved |
 | Canonical source changed after export | Reimport conflict reported |
 
@@ -610,20 +610,20 @@ This broader campaign must not delay the first complete demonstration without a 
 ### 10.2 Proposed CLI
 
 ```sh
-uni check examples/calculate.uni
+hs check examples/calculate.hs
 
-uni syntax export examples/calculate.uni \
+hs syntax export examples/calculate.hs \
   --profile profiles/my-syntax.json \
-  --out local/calculate.uni
+  --out local/calculate.hs
 
-uni check local/calculate.uni \
+hs check local/calculate.hs \
   --profile profiles/my-syntax.json
 
-uni syntax import local/calculate.uni
+hs syntax import local/calculate.hs
 
-uni build examples/calculate.uni --target rust
+hs build examples/calculate.hs --target rust
 
-uni test --all-targets
+hs test --all-targets
 ```
 
 The import command finds the base and profile in the associated manifest.
@@ -673,7 +673,7 @@ Start with a small, controlled set of exported signatures and types.
 
 Add selected adapters for serialization, dates, files, or networking according to the first real use case. Each adapter declares supported capabilities and normalizes failures.
 
-**Acceptance:** a small application in each ecosystem calls the same business rule generated from Uni.
+**Acceptance:** a small application in each ecosystem calls the same business rule generated from h#.
 
 Generating a target language and accessing all of its libraries require separate contracts.
 
@@ -794,7 +794,7 @@ The key acceleration is that backend agents can work against typed fixtures befo
 ## 14. Copyable Orchestrator Brief
 
 ```text
-Build the Uni POC described in this plan.
+Build the h# POC described in this plan.
 
 Priority: one program, configurable personal syntax, and four
 target implementations that actually compile and execute:

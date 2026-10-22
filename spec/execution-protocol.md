@@ -51,7 +51,7 @@ The conformance harness checks both the outcome and the process status: a succes
 | `failed` | The check ran and disagreed, or a generated project did not compile/run |
 | `blocked` | The required toolchain is unavailable or cannot target the generated project |
 
-Blocked checks make `uni test` exit 2 and prevent a full PASS. `uni test --quick` is explicitly labelled **interpreter-only** and does not claim target verification.
+Blocked checks make `hs test` exit 2 and prevent a full PASS. `hs test --quick` is explicitly labelled **interpreter-only** and does not claim target verification.
 
 ## 4. Generated function convention
 
@@ -70,7 +70,7 @@ A failing operation returns `Res.fail(1, node)`; callers check `ok` and immediat
 
 ## 5. Toolchain outcomes
 
-`uni doctor` records command names and versions. `uni test` resolves each command, checks the minimum version required by the generated project, and marks unavailable targets as blocked. In particular:
+`hs doctor` records command names and versions. `hs test` resolves each command, checks the minimum version required by the generated project, and marks unavailable targets as blocked. In particular:
 
 - C# generated projects require .NET SDK 10 or later (`net10.0`);
 - Go generated projects declare `go 1.22`;

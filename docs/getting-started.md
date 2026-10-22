@@ -17,7 +17,7 @@ The POC was built and verified with these versions. Pin them for reproducible re
 
 `npm install` uses the committed `package-lock.json`. Runtime dependencies: none.
 
-`uni doctor --json` writes `reports/environment.json` with the versions actually detected on the current machine.
+`hs doctor --json` writes `reports/environment.json` with the versions actually detected on the current machine.
 
 ### Installing missing toolchains on Windows
 
@@ -36,17 +36,21 @@ npm install
 npm run build
 ```
 
-The compiled CLI is `dist/cli/index.js`. Run it with `node dist/cli/index.js ...`, or install the `uni` command once:
+The compiled CLI is `dist/cli/index.js`. Run it with `node dist/cli/index.js ...`, or install the commands once:
 
 ```powershell
 npm link
-uni --help
+hs --help
+hsharp --help
+hcharp --help
 ```
+
+All three names invoke the same CLI.
 
 ## 3. Verify the environment
 
 ```powershell
-uni doctor
+hs doctor
 ```
 
 Every required toolchain must show `available`. If one is missing, conformance marks that target **blocked** and exits 2; it never reports a pass.
@@ -54,11 +58,11 @@ Every required toolchain must show `available`. If one is missing, conformance m
 ## 4. Check and run the demonstration
 
 ```powershell
-uni check examples/calculate.uni
-uni demo
+hs check examples/calculate.hs
+hs demo
 ```
 
-`uni demo` performs the complete workflow in `local/demo/`:
+`hs demo` performs the complete workflow in `local/demo/`:
 
 1. copies the canonical example;
 2. exports it to the `my-syntax` profile;
@@ -72,15 +76,15 @@ uni demo
 ### Check
 
 ```powershell
-uni check examples/calculate.uni
-uni check local/calculate.uni --profile profiles/my-syntax.json
+hs check examples/calculate.hs
+hs check local/calculate.hs --profile profiles/my-syntax.json
 ```
 
 ### Build a target
 
 ```powershell
-uni build examples/calculate.uni --target rust --entry calculate
-uni build examples/calculate.uni --target csharp --entry calculate --run --args 10,true
+hs build examples/calculate.hs --target rust --entry calculate
+hs build examples/calculate.hs --target csharp --entry calculate --run --args 10,true
 ```
 
 Generated projects are written under `build/<program>/<target>/` by default. They are ordinary projects; the target's own tools compile and run them.
@@ -88,7 +92,7 @@ Generated projects are written under `build/<program>/<target>/` by default. The
 ### Run the full conformance suite
 
 ```powershell
-uni test --all-targets
+hs test --all-targets
 ```
 
 Reports are written to `reports/conformance.json` and `reports/conformance.md`.
@@ -97,23 +101,23 @@ Reports are written to `reports/conformance.json` and `reports/conformance.md`.
 - exit 1: a case, build, run, or negative check failed;
 - exit 2: at least one target was blocked.
 
-`uni test --quick` checks the reference interpreter and profile structure only. Its report is explicitly labelled **interpreter-only**.
+`hs test --quick` checks the reference interpreter and profile structure only. Its report is explicitly labelled **interpreter-only**.
 
 ## 6. Personal syntax workflow
 
 ### Export
 
 ```powershell
-uni syntax export examples/calculate.uni `
+hs syntax export examples/calculate.hs `
   --profile profiles/my-syntax.json `
-  --out local/calculate.uni
+  --out local/calculate.hs
 ```
 
-This writes `local/calculate.uni` plus `local/calculate.uni.manifest.json`. The manifest records the canonical and profile fingerprints.
+This writes `local/calculate.hs` plus `local/calculate.hs.manifest.json`. The manifest records the canonical and profile fingerprints.
 
 ### Edit
 
-Edit `local/calculate.uni` in the personal notation, for example:
+Edit `local/calculate.hs` in the personal notation, for example:
 
 ```text
 function calculate(x: i32, bonus: bool) -> i32 {
@@ -130,7 +134,7 @@ function calculate(x: i32, bonus: bool) -> i32 {
 ### Check the personal file
 
 ```powershell
-uni check local/calculate.uni --profile profiles/my-syntax.json
+hs check local/calculate.hs --profile profiles/my-syntax.json
 ```
 
 Diagnostics point to the personal file's line and column.
@@ -138,7 +142,7 @@ Diagnostics point to the personal file's line and column.
 ### Reimport
 
 ```powershell
-uni syntax import local/calculate.uni
+hs syntax import local/calculate.hs
 ```
 
 Preview first with `--dry-run`. Reimport rejects:
@@ -161,9 +165,9 @@ Copy-Item profiles/casual.json profiles/my-profile.json
 Keep `"version": "1"`, `"core": "0.1"`, and `"family": "braces"`. Choose distinct words that do not collide with `i32` or `bool`, and do not reassign a canonical keyword to a different role. Then export canonical source into that notation before checking or editing it:
 
 ```powershell
-uni syntax export examples/calculate.uni --profile profiles/my-profile.json --out local/my.uni
-uni check local/my.uni --profile profiles/my-profile.json
-uni build local/my.uni --profile profiles/my-profile.json --target rust --entry calculate
+hs syntax export examples/calculate.hs --profile profiles/my-profile.json --out local/my.hs
+hs check local/my.hs --profile profiles/my-profile.json
+hs build local/my.hs --profile profiles/my-profile.json --target rust --entry calculate
 ```
 
 Profile validation errors identify the exact problem. Checking canonical source directly with a personal profile is rejected because canonical source uses the standard keyword spellings.
@@ -177,5 +181,5 @@ Profile validation errors identify the exact problem. Checking canonical source 
 | `E_PROFILE_IDENTIFIER_COLLISION` | A program identifier equals a target profile's keyword word |
 | `E_IMPORT_STALE_BASE` | Canonical source changed after export; re-export or rebase manually |
 | `E_IMPORT_PROFILE_CHANGED` | Profile file changed after export |
-| Target blocked | Toolchain missing or too old; run `uni doctor` |
+| Target blocked | Toolchain missing or too old; run `hs doctor` |
 | Java unreachable-code error | Should not occur; report as a compiler defect (dead code is omitted) |

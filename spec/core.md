@@ -1,4 +1,4 @@
-# Uni Core Semantics (0.1)
+# h# Core Semantics (0.1)
 
 This document is normative for the POC. If an implementation and this document disagree, the implementation is defective (or this document is explicitly amended first).
 

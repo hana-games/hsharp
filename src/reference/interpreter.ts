@@ -1,5 +1,5 @@
 import type { Block, Expr, FunctionDecl, Stmt, UnaryOp } from "../contracts/ast";
-import type { FunctionSignature, Outcome, RuntimeArguments, TypedProgram, UniValue } from "../contracts/outcome";
+import type { FunctionSignature, Outcome, RuntimeArguments, TypedProgram, HsValue } from "../contracts/outcome";
 import { OVERFLOW_CODE } from "../contracts/outcome";
 import type { TypeName } from "../contracts/tokens";
 
@@ -7,7 +7,7 @@ const I32_MIN = -2147483648n;
 const I32_MAX = 2147483647n;
 
 class ReturnSignal {
-  constructor(readonly value: UniValue) {}
+  constructor(readonly value: HsValue) {}
 }
 
 class RuntimeFailure {
@@ -79,8 +79,8 @@ export function evaluate(program: TypedProgram, entry: string, args: RuntimeArgu
 class Interpreter {
   constructor(private readonly functions: Map<string, RuntimeFunction>) {}
 
-  call(fn: RuntimeFunction, args: (number | boolean)[]): UniValue {
-    const env = new Map<string, UniValue>();
+  call(fn: RuntimeFunction, args: (number | boolean)[]): HsValue {
+    const env = new Map<string, HsValue>();
     fn.signature.params.forEach((param, index) => {
       const value = args[index];
       env.set(fn.decl.params[index].symbolId!, {
@@ -97,13 +97,13 @@ class Interpreter {
     throw new EvaluationError(`function "${fn.signature.name}" reached the end without returning`);
   }
 
-  private executeBlock(block: Block, env: Map<string, UniValue>): void {
+  private executeBlock(block: Block, env: Map<string, HsValue>): void {
     for (const stmt of block.statements) {
       this.executeStatement(stmt, env);
     }
   }
 
-  private executeStatement(stmt: Stmt, env: Map<string, UniValue>): void {
+  private executeStatement(stmt: Stmt, env: Map<string, HsValue>): void {
     switch (stmt.kind) {
       case "LetStmt": {
         const value = this.evalExpr(stmt.value, env);
@@ -126,7 +126,7 @@ class Interpreter {
     }
   }
 
-  private evalExpr(expr: Expr, env: Map<string, UniValue>): UniValue {
+  private evalExpr(expr: Expr, env: Map<string, HsValue>): HsValue {
     switch (expr.kind) {
       case "IntLiteral":
         return { type: "i32", value: expr.value };
@@ -171,7 +171,7 @@ class Interpreter {
     }
   }
 
-  private evalUnary(op: UnaryOp, operand: UniValue, node: number): UniValue {
+  private evalUnary(op: UnaryOp, operand: HsValue, node: number): HsValue {
     if (op === "!") return { type: "bool", value: operand.value !== true };
     const value = toBigInt(operand);
     const result = -value;
@@ -179,7 +179,7 @@ class Interpreter {
     return { type: "i32", value: Number(result) };
   }
 
-  private evalBinary(op: string, left: UniValue, right: UniValue, node: number): UniValue {
+  private evalBinary(op: string, left: HsValue, right: HsValue, node: number): HsValue {
     switch (op) {
       case "+":
       case "-":
@@ -214,7 +214,7 @@ class Interpreter {
   }
 }
 
-function toBigInt(value: UniValue): bigint {
+function toBigInt(value: HsValue): bigint {
   if (typeof value.value !== "number") {
     throw new EvaluationError("internal: arithmetic on a Boolean value");
   }

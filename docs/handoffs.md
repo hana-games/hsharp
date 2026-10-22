@@ -19,7 +19,7 @@ The execution plan asks every handoff to state what works, what verification ran
 - 19/19 unit tests.
 - 29 positive conformance cases × 4 profiles × 4 targets = 464 target executions, all passed with 0 blocked.
 - 27 negative cases, all produced the expected diagnostic.
-- `uni demo` produced `33` through the reference interpreter and all four compiled targets.
+- `hs demo` produced `33` through the reference interpreter and all four compiled targets.
 - Two independent code reviews with differential fuzzing; 16 confirmed defects were fixed and the suite re-run.
 
 **Limitations remaining**
@@ -77,7 +77,7 @@ None for the documented POC. Cross-platform execution and a repeatable fuzz gene
 - overflow node equality between reference and targets;
 - generated target names avoid host reserved words;
 - build/run commands and paths for all four targets;
-- blocked-toolchain handling and `uni doctor` exit status;
+- blocked-toolchain handling and `hs doctor` exit status;
 - corpus expectations match the specification.
 
 ## Suggested next assignment

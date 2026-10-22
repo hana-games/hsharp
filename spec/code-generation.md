@@ -24,7 +24,7 @@ Every function and local receives a compiler-assigned ID in source order:
 | Parameter or local | `local:N` | `vN` |
 | Temporary in generated code | — | `tN` or `rN` |
 
-Target identifiers never come from source spelling. A Uni function named `int` or a local named `class` therefore produces `f1`/`v1` and cannot collide with a host-language reserved word.
+Target identifiers never come from source spelling. An h# function named `int` or a local named `class` therefore produces `f1`/`v1` and cannot collide with a host-language reserved word.
 
 Locals in sibling scopes get distinct IDs, so reuse of a source name in a separate block cannot collide after generation.
 
@@ -65,10 +65,10 @@ This applies separately to addition, subtraction, multiplication, and negation. 
 
 | Target | Files | Build | Run |
 |---|---|---|---|
-| C# | `UniProgram.csproj`, `Program.cs` | `dotnet build -c Release -nologo -o bin` | `dotnet bin/UniProgram.dll` |
-| Rust | `Cargo.toml`, `src/main.rs` | `cargo build --release --offline` | `target/release/uni_program(.exe)` |
-| Go | `go.mod`, `main.go` | `go build -o bin/uni_program(.exe) .` | the built binary |
-| Java | `UniProgram.java` | `javac -encoding UTF-8 -d bin UniProgram.java` | `java -cp bin UniProgram` |
+| C# | `HsProgram.csproj`, `Program.cs` | `dotnet build -c Release -nologo -o bin` | `dotnet bin/HsProgram.dll` |
+| Rust | `Cargo.toml`, `src/main.rs` | `cargo build --release --offline` | `target/release/hs_program(.exe)` |
+| Go | `go.mod`, `main.go` | `go build -o bin/hs_program(.exe) .` | the built binary |
+| Java | `HsProgram.java` | `javac -encoding UTF-8 -d bin HsProgram.java` | `java -cp bin HsProgram` |
 
 C# targets `net10.0`. Go declares `go 1.22`. Rust uses edition 2021 and no external crates. Java uses no external libraries.
 

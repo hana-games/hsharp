@@ -64,6 +64,10 @@ Generated code depends on the typed AST, not on source spelling. The conformance
 
 The plan requires export, edit, and reimport, and requires conflict detection. The CLI prints a line diff. `--dry-run` shows the diff without writing. There is no interactive prompt; scripting and CI need deterministic behavior.
 
-## D14. UTF-8 BOM handling
+## D14. Name and command aliases
+
+The language is **h#**. Because `#` begins a comment in many shells and is awkward in package and URL contexts, the CLI is installed as `hs` with equivalent aliases `hsharp` and `hcharp`. Source files use `.hs`. The repository and npm package are named `hsharp`. No user-facing command or generated artifact uses the old provisional name.
+
+## D15. UTF-8 BOM handling
 
 A leading BOM is ignored when reading source and profile files. It is an editor artifact on Windows and must not turn into a syntax error or a different fingerprint.

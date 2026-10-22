@@ -16,7 +16,7 @@ export interface TypedProgram {
   entryCandidates: FunctionSignature[];
 }
 
-export interface UniValue {
+export interface HsValue {
   type: TypeName;
   value: number | boolean;
 }
