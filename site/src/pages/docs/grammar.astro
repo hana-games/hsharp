@@ -1,0 +1,120 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import StaticCode from "../../components/StaticCode.astro";
+
+const toc = [
+  { id: "lexical", label: "Lexical elements" },
+  { id: "grammar", label: "Grammar" },
+  { id: "notes", label: "Parsing notes" },
+  { id: "examples", label: "Valid and invalid" },
+];
+
+const grammar = `program      = { function } EOF ;
+function     = "fn" identifier "(" [ parameters ] ")" "->" type block ;
+parameters   = parameter { "," parameter } ;
+parameter    = identifier ":" type ;
+type         = "i32" | "bool" ;
+
+block        = "{" { statement } "}" ;
+statement    = let-statement | if-statement | return-statement ;
+
+let-statement = "let" identifier ":" type "=" expression ";" ;
+
+if-statement  = "if" expression block [ "else" ( block | if-statement ) ] ;
+
+return-statement = "return" expression ";" ;
+
+expression   = or-expression ;
+or-expression = and-expression { "||" and-expression } ;
+and-expression = equality-expression { "&&" equality-expression } ;
+equality-expression = ordering-expression { ( "==" | "!=" ) ordering-expression } ;
+ordering-expression = additive-expression { ( "<" | "<=" | ">" | ">=" ) additive-expression } ;
+additive-expression = multiplicative-expression { ( "+" | "-" ) multiplicative-expression } ;
+multiplicative-expression = unary-expression { "*" unary-expression } ;
+unary-expression = ( "-" | "!" ) unary-expression | primary-expression ;
+primary-expression =
+      integer
+    | "true"
+    | "false"
+    | identifier [ "(" [ arguments ] ")" ]
+    | "(" expression ")" ;
+arguments    = expression { "," expression } ;`;
+
+const valid = `fn main(x: i32) -> i32 {
+    let doubled: i32 = x * 2;
+    if doubled > 10 {
+        return doubled - 1;
+    }
+    return doubled;
+}`;
+
+const invalid = `fn main() -> bool {
+    return 1 < 2 < 3;
+}`;
+---
+
+<DocsLayout
+  title="Grammar"
+  description="The complete h# 0.1 grammar, lexical rules, precedence, and the restrictions that keep the core unambiguous."
+  active="/docs/grammar"
+  toc={toc}
+  prev={{ href: "/docs/language", label: "Language core" }}
+  next={{ href: "/docs/profiles", label: "Profiles" }}
+>
+  <h2 id="lexical">Lexical elements</h2>
+  <StaticCode code={`identifier   = (letter | "_") , { letter | digit | "_" } ;
+integer      = digit , { digit } ;
+line-comment = "//" , { any character except newline } ;
+whitespace   = spaces | tabs | CR | LF ;
+
+letter       = "A" .. "Z" | "a" .. "z" ;
+digit        = "0" .. "9" ;`} language="text" title="lexical grammar" />
+  <p>
+    Identifiers are ASCII. <code>i32</code> and <code>bool</code> are reserved type tokens. All
+    canonical keyword words remain reserved under every profile, even when a role is remapped.
+  </p>
+  <p>
+    Punctuation and operators are fixed:
+  </p>
+  <StaticCode code={`( ) { } : ; , = + - * ! < > -> == != <= >= && ||`} language="text" title="fixed tokens" />
+  <p>
+    Division, modulo, strings, and block comments are not part of the core and are rejected with a
+    precise diagnostic.
+  </p>
+
+  <h2 id="grammar">Grammar</h2>
+  <p>
+    Keywords are written in canonical form. Under a profile, each keyword terminal stands for the
+    profile's word for that role.
+  </p>
+  <StaticCode code={grammar} language="text" title="h# 0.1 grammar" />
+  <p>
+    See <a href="/docs/language#expressions">precedence and associativity</a> for the normative
+    operator table.
+  </p>
+
+  <h2 id="notes">Parsing notes</h2>
+  <ul>
+    <li>Calls apply only to an identifier directly followed by <code>(</code>. There is no higher-order call syntax.</li>
+    <li>Trailing commas are not accepted.</li>
+    <li><code>else if</code> is parsed as an <code>else</code> block containing a nested if.</li>
+    <li>Chained comparisons are rejected by the parser, including mixed forms such as <code>1 &lt; 2 == 3</code>.</li>
+    <li>Explicit parentheses permit Boolean equality: <code>(1 &lt; 2) == (3 &lt; 4)</code>.</li>
+    <li>Whitespace and comments are retained in the token stream for conversion, then ignored by the parser.</li>
+    <li>The POC reports one syntax error at a time; semantic checks may report several.</li>
+  </ul>
+
+  <h2 id="examples">Valid and invalid</h2>
+  <div class="grid grid-2">
+    <div>
+      <StaticCode code={valid} language="hsharp" title="valid.hs" meta="accepted" />
+    </div>
+    <div>
+      <StaticCode code={invalid} language="hsharp" title="invalid.hs" meta="E_CHAINED_COMPARISON" />
+    </div>
+  </div>
+  <p>
+    The invalid program is rejected before generation. Its diagnostic points at the second
+    comparison, not at generated code.
+  </p>
+</DocsLayout>

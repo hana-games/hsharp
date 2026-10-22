@@ -1,0 +1,371 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { HeroLab } from "../components/HeroLab";
+import { ProfileComposer } from "../components/ProfileComposer";
+import { TargetPrism } from "../components/TargetPrism";
+import { BoundaryLab } from "../components/BoundaryLab";
+import { ExportStepper } from "../components/ExportStepper";
+import StaticCode from "../components/StaticCode.astro";
+import { siteData } from "../data/data";
+import { profiles, site, targets } from "../lib/site";
+
+const standard = siteData.demo.sources.standard;
+const personal = siteData.demo.sources["my-syntax"];
+const featured = ["demo-bonus-true", "function-call", "overflow-add-max"]
+  .map((id) => siteData.examples.find((example) => example.id === id))
+  .filter((example): example is NonNullable<typeof example> => Boolean(example));
+
+function prettyId(id: string) {
+  return id.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join(" ");
+}
+---
+
+<BaseLayout
+  title="h#"
+  description="One semantic core, personal syntax, and verified native output for C#, Rust, Go, and Java."
+  active="/"
+>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <div class="eyebrow">Portable language core · {site.version}</div>
+          <h1 class="display">
+            One core.<br />
+            <em>Your syntax.</em><br />
+            Four native outputs.
+          </h1>
+          <p class="lede">
+            h# separates meaning from notation. Write one checked program, choose the keywords you
+            want, and generate ordinary C#, Rust, Go, and Java projects that the real toolchains
+            compile.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-lime" href="/docs/getting-started">Get started</a>
+            <a class="btn btn-ghost" href="/playground">Open the playground</a>
+          </div>
+          <div class="hero-note">
+            <span>4 profiles</span>
+            <span>4 targets</span>
+            <span>checked arithmetic</span>
+            <span>no runtime dependency</span>
+          </div>
+        </div>
+
+        <HeroLab client:load demo={siteData.demo} />
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>{siteData.meta.stats.cases}</strong><span>conformance cases</span></div>
+        <div class="hero-stat"><strong>{siteData.meta.stats.profiles}</strong><span>syntax profiles</span></div>
+        <div class="hero-stat"><strong>{siteData.meta.stats.targets}</strong><span>native targets</span></div>
+        <div class="hero-stat"><strong>{siteData.meta.stats.executions}</strong><span>target executions</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">01 — The contract</div>
+          <h2 class="h2">A language is a semantic promise.</h2>
+        </div>
+        <p class="lede">
+          h# is not four translators pretending to agree. It is one specification, one typed AST, and
+          a conformance suite that runs every case through every profile and every target.
+        </p>
+      </div>
+
+      <div class="thesis">
+        <div class="thesis-sticky">
+          <div class="card card-lime">
+            <div class="eyebrow">The invariant</div>
+            <h3 class="h2" style="font-size:clamp(1.9rem,3.6vw,3rem); margin-top:0.8rem;">
+              Syntax may change.<br />Meaning does not.
+            </h3>
+            <p style="margin-top:1rem; font-size:0.88rem; line-height:1.6;">
+              A profile can rename seven keyword roles. It cannot change types, precedence,
+              evaluation order, failure behavior, or the normalized AST.
+            </p>
+          </div>
+        </div>
+
+        <div class="thesis-list">
+          <div class="thesis-item reveal">
+            <div class="num">01</div>
+            <div>
+              <h3 class="h3">Core semantics</h3>
+              <p>
+                i32 and bool, explicit types, immutable locals, acyclic calls, short-circuit
+                evaluation, and a range check after every arithmetic operation. Failures carry
+                E_OVERFLOW and the source node.
+              </p>
+            </div>
+          </div>
+          <div class="thesis-item reveal">
+            <div class="num">02</div>
+            <div>
+              <h3 class="h3">Profiles are data</h3>
+              <p>
+                Seven keyword roles, validated JSON, token-aware conversion. Comments, identifiers,
+                and operators survive. There is no implicit local preference and no executable
+                grammar.
+              </p>
+            </div>
+          </div>
+          <div class="thesis-item reveal">
+            <div class="num">03</div>
+            <div>
+              <h3 class="h3">Targets are real</h3>
+              <p>
+                Generated projects are compiled and executed by .NET, Cargo, Go, and javac. No
+                simulation, no hidden runtime, no manual corrections.
+              </p>
+            </div>
+          </div>
+          <div class="thesis-item reveal">
+            <div class="num">04</div>
+            <div>
+              <h3 class="h3">Names cannot collide</h3>
+              <p>
+                Target identifiers come from compiler-assigned IDs. An h# function named
+                <code class="code-inline">int</code> or a local named <code class="code-inline">class</code>
+                still becomes <code class="code-inline">f1</code> / <code class="code-inline">v1</code>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-4" style="margin-top:3rem;">
+        {
+          targets.map((target) => (
+            <div class="target-card reveal" style={`--target:${target.color}`}>
+              <div class="row"><span class="target-dot"></span><span class="mono" style="font-size:0.68rem;">{target.label}</span></div>
+              <h3>{target.label}</h3>
+              <p>{target.description}</p>
+              <code>{target.command}</code>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section band-dark">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">02 — Profiles</div>
+          <h2 class="h2">Rename the surface.<br /><em class="italic lime">Keep the program.</em></h2>
+        </div>
+        <p class="lede">
+          A profile is a small, validated JSON document. Start from the supplied standard notation or
+          build your own. The preview below is composed in the browser; no h# code is executed.
+        </p>
+      </div>
+
+      <ProfileComposer client:visible />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">03 — Equivalence</div>
+          <h2 class="h2">Different surface.<br />Same structure.</h2>
+        </div>
+        <p class="lede">
+          Conversion rewrites keyword tokens only. The normalized AST ignores locations, comments,
+          and profile words, so the structure is identical before and after export.
+        </p>
+      </div>
+
+      <div class="equivalence-grid">
+        <div class="reveal">
+          <StaticCode code={standard.code} language="hsharp" keywords={standard.keywords} title="calculate.hs" meta="standard" />
+        </div>
+        <div class="reveal">
+          <StaticCode code={personal.code} language="hsharp" keywords={personal.keywords} title="calculate.personal.hs" meta="my-syntax" />
+        </div>
+      </div>
+
+      <div class="equivalence-badge reveal" style="margin-top:1rem;">
+        <strong>Normalized AST equality</strong>
+        <span>profile-independent · comments preserved separately</span>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:1.4rem;">
+        <div class="card reveal">
+          <div class="eyebrow">What changes</div>
+          <div class="ast-list">
+            <div><span>fn</span><span>function</span></div>
+            <div><span>let</span><span>value</span></div>
+            <div><span>if</span><span>when</span></div>
+            <div><span>return</span><span>give</span></div>
+          </div>
+        </div>
+        <div class="card reveal">
+          <div class="eyebrow">What does not</div>
+          <div class="ast-list">
+            <div><span>typed AST</span><span>identical</span></div>
+            <div><span>evaluation order</span><span>identical</span></div>
+            <div><span>overflow behavior</span><span>identical</span></div>
+            <div><span>generated targets</span><span>identical</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band-paper-2">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">04 — Targets</div>
+          <h2 class="h2">One typed AST.<br />Four native dialects.</h2>
+        </div>
+        <p class="lede">
+          Each backend emits ordinary source for its ecosystem. The differences are explicit and
+          inspectable; the meaning is shared. Switch targets and open any generated file.
+        </p>
+      </div>
+      <TargetPrism client:visible demo={siteData.demo} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">05 — Boundaries</div>
+          <h2 class="h2">Boundaries are part<br />of the language.</h2>
+        </div>
+        <p class="lede">
+          Overflow is not undefined behavior. Every operation is checked independently, failures
+          carry the failing node, and short-circuit operators do not evaluate what they should skip.
+        </p>
+      </div>
+      <BoundaryLab client:visible />
+    </div>
+  </section>
+
+  <section class="section band-dark">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">06 — Collaboration</div>
+          <h2 class="h2">Personal notation.<br /><em class="italic lime">Shared source of truth.</em></h2>
+        </div>
+        <p class="lede">
+          Export a canonical program to a personal file, edit it, and reimport. Fingerprints protect
+          the base and the profile; the manifest is refreshed after a successful apply.
+        </p>
+      </div>
+      <ExportStepper client:visible demo={siteData.demo} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">07 — Evidence</div>
+          <h2 class="h2">Proof,<br />not promises.</h2>
+        </div>
+        <p class="lede">
+          The site is not the oracle. The repository is. These numbers come from actual compilations
+          and executions across every profile and target.
+        </p>
+      </div>
+
+      <div class="proof-strip reveal">
+        <div class="proof-item"><strong>{siteData.conformance.summary.cases}</strong><span>cases</span></div>
+        <div class="proof-item"><strong>{siteData.conformance.summary.targets}</strong><span>target executions</span></div>
+        <div class="proof-item"><strong>{siteData.conformance.summary.failed}</strong><span>failed</span></div>
+        <div class="proof-item"><strong>{siteData.conformance.summary.blocked}</strong><span>blocked</span></div>
+      </div>
+
+      <div class="grid grid-3" style="margin-top:2rem;">
+        <div class="card reveal">
+          <div class="eyebrow">Stable expectations</div>
+          <p class="small" style="margin-top:0.6rem;">
+            Values and error codes are specified independently of the compiler and pinned in the
+            corpus. Overflow failures also pin their source node.
+          </p>
+        </div>
+        <div class="card reveal">
+          <div class="eyebrow">Four profiles</div>
+          <p class="small" style="margin-top:0.6rem;">
+            Standard, my-syntax, terse, and casual are all parsed, checked, compared, and executed.
+            A cosmetic profile never buys a semantic shortcut.
+          </p>
+        </div>
+        <div class="card reveal">
+          <div class="eyebrow">Blocked is not pass</div>
+          <p class="small" style="margin-top:0.6rem;">
+            A missing or too-old toolchain marks the target blocked and makes the suite exit non-zero.
+            There is no optimistic green.
+          </p>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:1.5rem;">
+        <a class="btn btn-solid" href="/docs/verification">Read the verification evidence</a>
+        <a class="btn btn-ghost" href="/examples">Browse real examples</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band-paper-2">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">08 — Real programs</div>
+          <h2 class="h2">Small programs.<br />Real guarantees.</h2>
+        </div>
+        <p class="lede">
+          Every example is part of the conformance corpus: functions, calls, conditions, precedence,
+          overflow boundaries, short-circuit evaluation, and profile conversion.
+        </p>
+      </div>
+
+      <div class="grid grid-3">
+        {
+          featured.map((example) => (
+            <a class="example-card reveal" href={`/examples?example=${example.id}`}>
+              <div class="example-meta">
+                <span>{example.feature}</span>
+                <span class={example.expected.status === "error" ? "error-text" : "success-text"}>
+                  {example.expected.status === "ok"
+                    ? `ok · ${example.expected.type} ${String(example.expected.value)}`
+                    : `error · ${example.expected.code}`}
+                </span>
+              </div>
+              <h3>{prettyId(example.id)}</h3>
+              <p>{example.notes || `Entry: ${example.entry ?? "inferred"}`}</p>
+              <pre class="example-preview">{example.profiles.standard.code.split("\n").slice(0, 10).join("\n")}</pre>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="container cta-inner">
+      <div>
+        <div class="eyebrow">Start with the specification</div>
+        <h2 class="display" style="font-size:clamp(2.8rem,6vw,5.4rem); margin-top:0.8rem;">
+          Make the next<br /><em class="italic">translation</em> unnecessary.
+        </h2>
+      </div>
+      <div class="cta-actions">
+        <a class="btn btn-solid" href="/docs/getting-started">Read the docs</a>
+        <a class="btn btn-ghost" href="/playground">Try the playground</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

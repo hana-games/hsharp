@@ -1,0 +1,38 @@
+---
+import { nav } from "../lib/site";
+
+interface Props {
+  active?: string;
+}
+const { active = "" } = Astro.props;
+---
+
+<header class="site-header">
+  <div class="container site-header-inner">
+    <a class="brand" href="/" aria-label="h# home">h<span>#</span></a>
+
+    <nav class="nav-links" aria-label="Primary">
+      {
+        nav.map((item) => (
+          <a
+            class:list={["nav-link", { active: active === item.href }]}
+            href={item.href}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a class="btn btn-solid btn-sm nav-cta" href="/docs/getting-started">
+        Get started
+      </a>
+    </nav>
+
+    <details class="mobile-nav">
+      <summary aria-label="Open navigation">Menu</summary>
+      <div class="mobile-nav-panel">
+        {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+        <a href="/docs/getting-started"><strong>Get started</strong></a>
+      </div>
+    </details>
+  </div>
+</header>

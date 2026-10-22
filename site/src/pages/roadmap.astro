@@ -1,0 +1,203 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteData } from "../data/data";
+
+const phases = [
+  {
+    phase: "0.1",
+    title: "Executable POC",
+    status: "Complete",
+    done: true,
+    summary: "The verified core, four profiles, four targets, export/import, CLI, and editor preview.",
+    points: [
+      "i32/bool core with checked arithmetic",
+      "standard + three personal profiles",
+      "C#, Rust, Go, Java compiled and executed",
+      `${siteData.meta.stats.executions} target executions`,
+      "VS Code diagnostics and generated-code preview",
+    ],
+  },
+  {
+    phase: "0.2",
+    title: "Verification hardening",
+    status: "Next",
+    summary: "Make the correctness claim reproducible everywhere, not only on the current machine.",
+    points: [
+      "Seeded property-based program generator",
+      "Automatic failure reduction",
+      "Cross-platform CI with all four toolchains",
+      "Benchmark and report artifacts from a clean checkout",
+      "Golden diagnostic location tests",
+    ],
+  },
+  {
+    phase: "0.3",
+    title: "Data and memory semantics",
+    status: "Planned",
+    summary: "Add useful values without importing target-specific behavior.",
+    points: [
+      "Immutable records, strings, lists, variants",
+      "Option and Result as language values",
+      "Equality, copying, and aliasing rules",
+      "Unicode behavior specified before implementation",
+      "Rust ownership model tested first",
+    ],
+  },
+  {
+    phase: "0.4",
+    title: "Control flow and abstraction",
+    status: "Planned",
+    summary: "Loops, recursion, mutation, and generics with explicit termination and failure rules.",
+    points: [
+      "while / for and controlled local mutation",
+      "Recursion policy and stack behavior",
+      "Generics over the portable core",
+      "Updated call-graph and return analysis",
+    ],
+  },
+  {
+    phase: "0.5",
+    title: "Modules and host embedding",
+    status: "Planned",
+    summary: "Use h# where real software lives: multi-file programs and callable libraries.",
+    points: [
+      "Imports, modules, visibility, versions",
+      "Libraries/packages for .NET, Rust, Go, Java",
+      "Controlled exported signatures",
+      "Adapters with explicit capability declarations",
+    ],
+  },
+  {
+    phase: "0.6",
+    title: "Syntax families and editor",
+    status: "In progress",
+    summary: "Extend beyond keyword profiles into families, a CST/printer, and continuous personalized editing.",
+    points: [
+      "CST and comment-preserving printer",
+      "Explicit-block syntax family",
+      "Language Server Protocol support",
+      "Invalid drafts, cursor mapping, conflict handling",
+    ],
+  },
+  {
+    phase: "0.7",
+    title: "Async and concurrency",
+    status: "Research",
+    summary: "Only after data, lifetimes, and failure propagation are stable.",
+    points: [
+      "Task start and cancellation semantics",
+      "Error aggregation and ordering",
+      "Data sharing and mutation rules",
+      "Resource and task lifetimes",
+    ],
+  },
+  {
+    phase: "1.0",
+    title: "Stable core and performance",
+    status: "Long-term",
+    summary: "Versioned compatibility, extensions, and measured optimization at unchanged behavior.",
+    points: [
+      "Macros with inspectable expansion",
+      "Grammar versioning and ambiguity checks",
+      "Compile-time, output-size, and runtime benchmarks",
+      "Compatibility and migration policy",
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Roadmap"
+  description="The dependency-driven h# roadmap: from the verified POC to data semantics, control flow, modules, syntax families, concurrency, and a stable core."
+  active="/roadmap"
+>
+  <section class="band-dark" style="padding: clamp(3.8rem, 7vw, 6rem) 0 3rem;">
+    <div class="container">
+      <div class="eyebrow">Roadmap · dependency-driven</div>
+      <h1 class="h1" style="margin-top:0.8rem; max-width:15ch;">A small core,<br /><em class="italic lime">deliberately extended.</em></h1>
+      <p class="lede" style="margin-top:1.2rem;">
+        The roadmap is not a calendar. A phase starts when its prerequisites are stable and ends when
+        its exit evidence exists in the repository. Every advertised feature must pass on every
+        advertised target.
+      </p>
+      <div class="row" style="margin-top:1.4rem;">
+        <span class="chip chip-lime">0.1 complete</span>
+        <span class="chip chip-dark">0.2 next</span>
+        <span class="chip chip-dark">evidence over estimates</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Phases</div>
+          <h2 class="h2">What gets added,<br />and what it costs.</h2>
+        </div>
+        <p class="lede">
+          Each phase expands the portable boundary. The price is always the same: a precise
+          specification, expected examples, four translations, and real verification.
+        </p>
+      </div>
+
+      <div class="roadmap-list">
+        {
+          phases.map((item) => (
+            <div class="roadmap-item">
+              <div class="roadmap-phase">
+                {item.phase}
+                <div class:list={["roadmap-status", { done: item.done }]}>{item.status}</div>
+              </div>
+              <div>
+                <h3>{item.title}</h3>
+                <p style="margin-top:0.5rem;">{item.summary}</p>
+              </div>
+              <div>
+                <ul>
+                  {item.points.map((point) => <li>{point}</li>)}
+                </ul>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section band-paper-2">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Non-goals</div>
+          <h2 class="h2">What h# is not<br />trying to be.</h2>
+        </div>
+        <p class="lede">
+          A credible roadmap includes refusals. These are not scheduling gaps; they are scope
+          boundaries.
+        </p>
+      </div>
+      <div class="grid grid-2">
+        <div class="card"><h3 class="h3">Not a universal runtime</h3><p class="small" style="margin-top:0.5rem;">Generated programs are ordinary native projects. There is no h# VM to deploy.</p></div>
+        <div class="card"><h3 class="h3">Not every library</h3><p class="small" style="margin-top:0.5rem;">Portable core and ecosystem access are separate contracts. Target-specific extensions stay explicit.</p></div>
+        <div class="card"><h3 class="h3">Not four independent implementations</h3><p class="small" style="margin-top:0.5rem;">A feature is portable only when the same semantics and expected outcomes hold on all targets.</p></div>
+        <div class="card"><h3 class="h3">Not performance-first</h3><p class="small" style="margin-top:0.5rem;">Correctness and conformance come first. Optimization starts with measurement and must preserve behavior.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="container cta-inner">
+      <div>
+        <div class="eyebrow">Current invitation</div>
+        <h2 class="display" style="font-size:clamp(2.6rem,5.5vw,5rem); margin-top:0.8rem;">
+          Help harden<br /><em class="italic">the first boundary.</em>
+        </h2>
+      </div>
+      <div class="cta-actions">
+        <a class="btn btn-solid" href="/docs/verification">Verification evidence</a>
+        <a class="btn btn-ghost" href="/docs/getting-started">Build the POC</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

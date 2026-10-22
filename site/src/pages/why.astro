@@ -1,0 +1,208 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StaticCode from "../components/StaticCode.astro";
+import { siteData } from "../data/data";
+
+const source = `fn calculate(x: i32, bonus: bool) -> i32 {
+    let base: i32 = x * 3;
+
+    if bonus {
+        return base + 2;
+    }
+
+    return base;
+}`;
+const targets = `// C#      int + long checks + Res
+// Rust    i32 + i64 checks + Res
+// Go      int32 + int64 checks + Res
+// Java    int + long checks + nested Res`;
+---
+
+<BaseLayout
+  title="Why h#"
+  description="Universality as an engineering property: one semantic core, bounded portable features, personal notation, and four independently verified outputs."
+  active="/why"
+>
+  <section class="band-dark" style="padding: clamp(4rem, 8vw, 7rem) 0;">
+    <div class="container">
+      <div class="eyebrow">Why h#</div>
+      <h1 class="display" style="margin-top:1rem; max-width:16ch;">
+        Universality is an <em class="italic lime">engineering property.</em>
+      </h1>
+      <p class="lede" style="margin-top:1.4rem;">
+        Not a slogan, not a single universal runtime, and not a promise that every ecosystem behaves
+        the same. h# defines one contract precisely enough that four different compiler toolchains can
+        be checked against it.
+      </p>
+      <div class="hero-stats" style="margin-top:3rem;">
+        <div class="hero-stat"><strong>{siteData.meta.stats.targets}</strong><span>native outputs</span></div>
+        <div class="hero-stat"><strong>{siteData.meta.stats.profiles}</strong><span>syntax profiles</span></div>
+        <div class="hero-stat"><strong>{siteData.meta.stats.executions}</strong><span>verified executions</span></div>
+        <div class="hero-stat"><strong>{siteData.conformance.summary.failed}</strong><span>known divergences</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">01 — The problem</div>
+          <h2 class="h2">Portability is usually a promise.<br /><em class="italic">Drift is the reality.</em></h2>
+        </div>
+        <p class="lede">
+          Teams rewrite the same business rule for C#, Rust, Go, and Java. The syntax is different,
+          but so are overflow behavior, evaluation order, error propagation, naming rules, and edge
+          cases. The divergences appear later, in production.
+        </p>
+      </div>
+
+      <div class="thesis">
+        <div class="thesis-sticky">
+          <div class="card card-lime">
+            <div class="eyebrow">The h# answer</div>
+            <h3 class="h2" style="font-size:clamp(1.8rem,3.4vw,2.8rem); margin-top:0.8rem;">
+              Specify once.<br />Generate four times.<br />Verify every time.
+            </h3>
+          </div>
+        </div>
+        <div class="thesis-list">
+          <div class="thesis-item">
+            <div class="num">01</div>
+            <div>
+              <h3 class="h3">One semantic core</h3>
+              <p>
+                Types, precedence, evaluation order, checked arithmetic, and failure codes are
+                normative. They do not belong to a backend.
+              </p>
+            </div>
+          </div>
+          <div class="thesis-item">
+            <div class="num">02</div>
+            <div>
+              <h3 class="h3">A bounded portable feature set</h3>
+              <p>
+                The compatible subset is explicit. A feature is portable only when it passes on every
+                advertised target. Target-specific extensions remain separate.
+              </p>
+            </div>
+          </div>
+          <div class="thesis-item">
+            <div class="num">03</div>
+            <div>
+              <h3 class="h3">Notation is not semantics</h3>
+              <p>
+                A profile changes seven keyword roles. It cannot introduce hidden behavior. The
+                normalized AST is identical across profiles.
+              </p>
+            </div>
+          </div>
+          <div class="thesis-item">
+            <div class="num">04</div>
+            <div>
+              <h3 class="h3">Evidence is executable</h3>
+              <p>
+                Expected values are written independently, then every target is compiled and run.
+                A missing compiler is blocked, not green.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band-paper-2">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">02 — The boundary</div>
+          <h2 class="h2">Universality needs<br />a boundary.</h2>
+        </div>
+        <p class="lede">
+          A language that claims everything cannot verify anything. h# starts with a small core:
+          enough to express real functions and checked arithmetic, small enough to specify completely.
+        </p>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="eyebrow">In the portable core</div>
+          <ul style="margin-top:0.7rem; display:grid; gap:0.4rem; color:var(--muted); font-size:0.86rem;">
+            <li>i32 and bool</li>
+            <li>functions and checked calls</li>
+            <li>immutable typed locals</li>
+            <li>if / else and returns</li>
+            <li>checked +, −, *, unary −</li>
+            <li>comparisons and Boolean logic</li>
+            <li>short-circuit evaluation</li>
+            <li>acyclic call graphs</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Deliberately outside</div>
+          <ul style="margin-top:0.7rem; display:grid; gap:0.4rem; color:var(--muted); font-size:0.86rem;">
+            <li>strings, lists, records</li>
+            <li>loops and recursion</li>
+            <li>mutation and shared memory</li>
+            <li>modules and generics</li>
+            <li>I/O and async</li>
+            <li>target-specific libraries</li>
+            <li>macros and grammar modules</li>
+            <li>continuous personalized editing</li>
+          </ul>
+        </div>
+      </div>
+
+      <p style="margin-top:1.5rem; max-width:70ch; color:var(--muted);">
+        Each future feature must earn its place: a written semantics, expected examples, typed
+        representation, four translations, and acceptance on every target. The roadmap makes that
+        dependency explicit.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">03 — The same program</div>
+          <h2 class="h2">Meaning survives<br /><em class="italic">the translation.</em></h2>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <StaticCode code={source} language="hsharp" title="calculate.hs" meta="one typed AST" />
+        <StaticCode code={targets} language="csharp" title="four backends" meta="same outcome: 32" />
+      </div>
+
+      <div class="equivalence-badge" style="margin-top:1rem;">
+        <strong>calculate(10, true) → 32</strong>
+        <span>reference + C# + Rust + Go + Java</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band-lime">
+    <div class="container">
+      <div class="section-head" style="margin-bottom:0;">
+        <div>
+          <div class="eyebrow">04 — The claim</div>
+          <h2 class="display" style="font-size:clamp(2.6rem,5.5vw,5rem);">
+            A shared semantic core<br />is more useful than a<br /><em class="italic">shared syntax.</em>
+          </h2>
+        </div>
+        <div>
+          <p class="lede" style="color:var(--ink); max-width:42ch;">
+            Syntax is personal. Semantics must be shared. Targets are real. Those three statements
+            define the project.
+          </p>
+          <div class="cta-actions" style="margin-top:1.2rem;">
+            <a class="btn btn-solid" href="/docs/getting-started">Get started</a>
+            <a class="btn btn-ghost" href="/roadmap">Read the roadmap</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

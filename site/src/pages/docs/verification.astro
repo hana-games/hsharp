@@ -1,0 +1,138 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import StaticCode from "../../components/StaticCode.astro";
+import { siteData } from "../../data/data";
+
+const toc = [
+  { id: "what", label: "What is verified" },
+  { id: "results", label: "Results" },
+  { id: "matrix", label: "Profiles × targets" },
+  { id: "negative", label: "Negative cases" },
+  { id: "performance", label: "Performance" },
+  { id: "limits", label: "What did not run" },
+];
+
+const report = siteData.conformance;
+const passedCases = report.cases.filter((item) => item.reference.status === "passed").length;
+---
+
+<DocsLayout
+  title="Verification"
+  description="The exact evidence behind h#: positive cases, negative cases, profile equivalence, four real toolchains, and measured editor latency."
+  active="/docs/verification"
+  toc={toc}
+  prev={{ href: "/docs/targets", label: "Targets" }}
+  next={{ href: "/docs/language", label: "Back to language core" }}
+>
+  <h2 id="what">What is verified</h2>
+  <p>
+    Verification is not the reference interpreter agreeing with itself. Every positive case has an
+    expected value or error code written independently in the conformance manifest. Each case is
+    then checked through:
+  </p>
+  <ol>
+    <li>The reference interpreter.</li>
+    <li>Structural AST equivalence under every profile.</li>
+    <li>Exact keyword round-trip preservation.</li>
+    <li>Real compiled execution on C#, Rust, Go, and Java.</li>
+  </ol>
+  <p>
+    Overflow cases pin the failing source node, so a backend cannot emit a generic
+    <code>node: 0</code> and still pass. Generated programs must exit 0 for success and non-zero for
+    a program failure.
+  </p>
+
+  <h2 id="results">Results</h2>
+  <div class="proof-strip" style="margin:1.2rem 0;">
+    <div class="proof-item"><strong>{report.summary.cases}</strong><span>positive cases</span></div>
+    <div class="proof-item"><strong>{report.summary.targets}</strong><span>target executions</span></div>
+    <div class="proof-item"><strong>{report.summary.failed}</strong><span>failed</span></div>
+    <div class="proof-item"><strong>{report.summary.blocked}</strong><span>blocked</span></div>
+  </div>
+  <p>
+    Latest report: <code>{report.generatedAt}</code>. Mode: <code>{report.mode}</code>. The
+    reference outcome matched expectations in <strong>{passedCases}</strong> positive cases.
+  </p>
+  <StaticCode code={`npm test
+
+# or
+hs test --all-targets`} language="bash" title="reproduce" meta="one command" />
+  <p>
+    Reports are written to <code>reports/conformance.json</code> and
+    <code>reports/conformance.md</code>. The JSON includes every profile/target row and all negative
+    diagnostics.
+  </p>
+
+  <h2 id="matrix">Profiles × targets</h2>
+  <p>
+    Four profiles multiply the target checks: standard, my-syntax, terse, and casual. Structural
+    equivalence is verified separately, then each compiled artifact is executed once per profile.
+    The same artifact is used because generated code is profile-independent.
+  </p>
+  <table>
+    <thead><tr><th>Target</th><th>Toolchain</th><th>Status</th></tr></thead>
+    <tbody>
+      {
+        report.toolchains.map((tool) => (
+          <tr>
+            <td>{tool.name}</td>
+            <td><code>{tool.version}</code></td>
+            <td>{tool.available ? "available" : "blocked"}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <p>
+    Use the <a href="/playground">conformance explorer</a> to filter the real case list by target,
+    status, or name.
+  </p>
+
+  <h2 id="negative">Negative cases</h2>
+  <p>
+    The suite also rejects invalid programs and profiles. Negative cases assert the exact diagnostic
+    code, not merely that something failed:
+  </p>
+  <div class="row">
+    {
+      report.negative.map((item) => (
+        <span class:list={["chip", item.status === "passed" ? "chip-lime" : "chip-java"]}>{item.id}</span>
+      ))
+    }
+  </div>
+  <p style="margin-top:1rem;">
+    Covered diagnostics include wrong argument types and counts, unknown names, missing returns,
+    direct and indirect recursion, positive minimum-literal rejection, chained comparisons,
+    non-Boolean conditions, operator type errors, redeclarations, duplicate functions and
+    parameters, syntax errors, and seven profile-validation failures.
+  </p>
+
+  <h2 id="performance">Performance</h2>
+  <p>
+    The editor pipeline is measured separately from correctness. On the verification machine
+    (Node 24.21, Windows x64), the warm analyze + four-target generation path is sub-millisecond for
+    normal files, and the persistent bridge round-trip stays in the low milliseconds.
+  </p>
+  <table>
+    <thead><tr><th>Measurement</th><th>Observed</th><th>Budget</th></tr></thead>
+    <tbody>
+      <tr><td>Analyze 246-character document</td><td>0.03–0.09 ms</td><td>2 ms</td></tr>
+      <tr><td>Analyze 500 functions (57 KB)</td><td>15–35 ms</td><td>150 ms</td></tr>
+      <tr><td>Generate all four targets, small</td><td>0.04–0.27 ms</td><td>8 ms</td></tr>
+      <tr><td>Analyze + generate all four</td><td>0.05–0.27 ms</td><td>25 ms</td></tr>
+      <tr><td>Bridge round-trip incl. C#</td><td>0.4–3 ms</td><td>30 ms</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Reproduce with <code>npm run bench</code>; raw data is in <code>reports/benchmark.json</code>.
+  </p>
+
+  <h2 id="limits">What did not run</h2>
+  <ul>
+    <li>Interactive Visual Studio Code UI behavior was not driven by an automated UI test; the extension is typechecked, packaged, and installed.</li>
+    <li>Cross-platform execution was not verified; toolchains ran on Windows x64.</li>
+    <li>No broad performance claims, memory profiling, or target build-time benchmark.</li>
+    <li>No committed property-based fuzzing or incremental-parser campaign.</li>
+    <li>The POC does not establish correctness for concurrency, broad ecosystem interoperability, or application-level performance.</li>
+  </ul>
+</DocsLayout>

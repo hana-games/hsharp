@@ -1,0 +1,176 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import StaticCode from "../../components/StaticCode.astro";
+
+const toc = [
+  { id: "types", label: "Types" },
+  { id: "declarations", label: "Declarations" },
+  { id: "literals", label: "Integer literals" },
+  { id: "expressions", label: "Expressions and precedence" },
+  { id: "evaluation", label: "Evaluation order" },
+  { id: "arithmetic", label: "Checked arithmetic" },
+  { id: "control", label: "Conditions and returns" },
+  { id: "calls", label: "Calls and recursion" },
+  { id: "entry", label: "Entry function" },
+  { id: "errors", label: "Errors" },
+];
+
+const demo = `fn calculate(x: i32, bonus: bool) -> i32 {
+    let base: i32 = x * 3;
+
+    if bonus {
+        return base + 2;
+    }
+
+    return base;
+}`;
+const overflow = `fn main(x: i32) -> i32 {
+    return x + 1;       // E_OVERFLOW when x = 2147483647
+}`;
+const shortCircuit = `fn main(x: i32) -> bool {
+    return false && ((x + 1) > 0);   // right side is never evaluated
+}`;
+---
+
+<DocsLayout
+  title="Language core"
+  description="The normative semantics of h# 0.1: types, scope, precedence, checked arithmetic, control flow, calls, and errors."
+  active="/docs/language"
+  toc={toc}
+  prev={{ href: "/docs/getting-started", label: "Getting started" }}
+  next={{ href: "/docs/grammar", label: "Grammar" }}
+>
+  <h2 id="types">Types</h2>
+  <table>
+    <thead><tr><th>Type</th><th>Values</th></tr></thead>
+    <tbody>
+      <tr><td><code>i32</code></td><td>Signed integers from −2,147,483,648 through 2,147,483,647</td></tr>
+      <tr><td><code>bool</code></td><td><code>true</code> or <code>false</code></td></tr>
+    </tbody>
+  </table>
+  <p>
+    There is no implicit conversion between <code>i32</code> and <code>bool</code>. Types are
+    explicit in declarations, parameters, and function returns.
+  </p>
+
+  <h2 id="declarations">Declarations and scope</h2>
+  <ul>
+    <li>A program is a sequence of named function declarations.</li>
+    <li>Function names are unique. Parameters and locals use explicit type annotations.</li>
+    <li>Local bindings are immutable: <code>let name: i32 = expression;</code>.</li>
+    <li>Redeclaring any name visible in the current scope is rejected.</li>
+    <li>A local may not shadow a function name.</li>
+    <li>Names are case-sensitive: ASCII letters, digits, and underscore, with no leading digit.</li>
+    <li>Blocks introduce lexical scope; sibling blocks may reuse a name.</li>
+  </ul>
+  <StaticCode code={demo} language="hsharp" title="calculate.hs" meta="functions, local, condition" />
+
+  <h2 id="literals">Integer literals</h2>
+  <ul>
+    <li>Positive literals must fit in <code>0..2147483647</code>.</li>
+    <li>The special literal <code>-2147483648</code> is accepted directly.</li>
+    <li>Positive <code>2147483648</code> is rejected as an out-of-range literal.</li>
+    <li>Other negative values are formed with unary <code>-</code>, e.g. <code>-7</code>.</li>
+    <li>Leading zeros are accepted: <code>007</code> is <code>7</code>; <code>-02147483648</code> is the minimum.</li>
+    <li>Negating a variable whose value is the minimum produces <code>E_OVERFLOW</code> at runtime.</li>
+  </ul>
+
+  <h2 id="expressions">Expressions and precedence</h2>
+  <p>From highest to lowest:</p>
+  <table>
+    <thead><tr><th>Level</th><th>Operators</th><th>Rule</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>calls <code>f(...)</code></td><td>—</td></tr>
+      <tr><td>2</td><td>unary <code>-</code>, <code>!</code></td><td>right</td></tr>
+      <tr><td>3</td><td><code>*</code></td><td>left</td></tr>
+      <tr><td>4</td><td><code>+</code>, <code>-</code></td><td>left</td></tr>
+      <tr><td>5</td><td><code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code></td><td>chained rejected</td></tr>
+      <tr><td>6</td><td><code>==</code>, <code>!=</code></td><td>chained rejected</td></tr>
+      <tr><td>7</td><td><code>&amp;&amp;</code></td><td>left</td></tr>
+      <tr><td>8</td><td><code>||</code></td><td>left</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Parentheses change grouping. Chained comparisons such as <code>1 &lt; 2 &lt; 3</code> and
+    <code>1 &lt; 2 == 3</code> are rejected. A comparison result may be compared with a Boolean only
+    when each comparison is explicitly parenthesized:
+  </p>
+  <StaticCode code={`fn main() -> bool {
+    return (1 < 2) == (3 < 4);
+}`} language="hsharp" title="grouped-comparisons.hs" />
+
+  <h2 id="evaluation">Evaluation order</h2>
+  <ol>
+    <li>Function arguments are evaluated left to right.</li>
+    <li>Binary operands are evaluated left to right.</li>
+    <li><code>false &amp;&amp; right</code> does not evaluate <code>right</code>.</li>
+    <li><code>true || right</code> does not evaluate <code>right</code>.</li>
+    <li>Every arithmetic operation is checked independently; there is no constant folding.</li>
+  </ol>
+  <StaticCode code={shortCircuit} language="hsharp" title="short-circuit.hs" meta="right operand skipped" />
+
+  <h2 id="arithmetic">Checked arithmetic</h2>
+  <p>
+    <code>+</code>, <code>-</code>, <code>*</code>, and unary <code>-</code> compute the exact
+    integer result and then check the i32 range. If the result is outside the range, execution stops
+    with <code>E_OVERFLOW</code> at that operation. Values are never silently wrapped, clamped, or
+    skipped.
+  </p>
+  <StaticCode code={overflow} language="hsharp" title="overflow.hs" meta="checked after +" />
+  <p>
+    Each target implements the same rule by widening to signed 64-bit, checking, and narrowing.
+    Multiplication of two i32 values fits in i64. The reference interpreter uses BigInt and checks
+    after every operation, independently of the backends.
+  </p>
+
+  <h2 id="control">Conditions and returns</h2>
+  <ul>
+    <li>An <code>if</code> condition must have type <code>bool</code>.</li>
+    <li><code>else</code> is optional; <code>else if</code> is an else block containing a nested if.</li>
+    <li>Every reachable path must return a value of the declared return type.</li>
+    <li>All branches are checked statically, including branches that will not execute.</li>
+    <li>Statements after a definitely-returning statement are checked but omitted from generated code.</li>
+  </ul>
+
+  <h2 id="calls">Calls and recursion</h2>
+  <ul>
+    <li>A call names a function in the same program.</li>
+    <li>Argument count and types must match exactly.</li>
+    <li>The call graph must be acyclic; direct and indirect recursion are rejected before generation.</li>
+    <li>Functions are not first-class values in the POC.</li>
+  </ul>
+
+  <h2 id="entry">Entry function</h2>
+  <p>
+    The harness selects an entry function explicitly. If no entry is supplied, <code>main</code> is
+    used when present; otherwise a program with exactly one function uses that function. Ambiguity
+    is an error before generation. Entry arguments are integers in the i32 range or Booleans.
+  </p>
+
+  <h2 id="errors">Program outcomes and errors</h2>
+  <p>The shared internal protocol is:</p>
+  <StaticCode code={`Outcome =
+    Success(type, value)
+  | Failure(code, sourceNode)`} language="text" title="outcome" />
+  <p>
+    The only program failure in the POC is <code>E_OVERFLOW</code>. Syntax, profile, type, name,
+    missing-return, recursion, and entry errors stop compilation before generation. A missing
+    toolchain is a blocked verification, never a passing result.
+  </p>
+  <table>
+    <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>E_SYNTAX</code></td><td>Malformed syntax</td></tr>
+      <tr><td><code>E_RESERVED_WORD</code></td><td>Canonical keyword used as an identifier under a remapped profile</td></tr>
+      <tr><td><code>E_INT_RANGE</code></td><td>Integer literal outside the accepted range</td></tr>
+      <tr><td><code>E_CHAINED_COMPARISON</code></td><td>More than one comparison without grouping</td></tr>
+      <tr><td><code>E_UNKNOWN_NAME</code> / <code>E_UNKNOWN_FUNCTION</code></td><td>Unbound variable or call</td></tr>
+      <tr><td><code>E_ARITY</code> / <code>E_ARGUMENT_TYPE</code></td><td>Wrong call shape</td></tr>
+      <tr><td><code>E_TYPE_MISMATCH</code> / <code>E_RETURN_TYPE</code></td><td>Wrong value type</td></tr>
+      <tr><td><code>E_CONDITION_TYPE</code> / <code>E_OPERATOR_TYPE</code></td><td>Invalid operand type</td></tr>
+      <tr><td><code>E_MISSING_RETURN</code></td><td>A reachable path does not return</td></tr>
+      <tr><td><code>E_RECURSION</code></td><td>Cycle in the call graph</td></tr>
+      <tr><td><code>E_OVERFLOW</code></td><td>Runtime checked-arithmetic failure</td></tr>
+    </tbody>
+  </table>
+</DocsLayout>

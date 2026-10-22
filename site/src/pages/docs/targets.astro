@@ -1,0 +1,123 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import StaticCode from "../../components/StaticCode.astro";
+import { targets } from "../../lib/site";
+
+const toc = [
+  { id: "matrix", label: "Target matrix" },
+  { id: "arithmetic", label: "Checked arithmetic" },
+  { id: "projects", label: "Generated projects" },
+  { id: "names", label: "Portable names" },
+  { id: "outcomes", label: "Execution outcomes" },
+  { id: "toolchains", label: "Toolchain policy" },
+];
+---
+
+<DocsLayout
+  title="Targets"
+  description="How h# generates C#, Rust, Go, and Java projects, checks arithmetic, maps names, and reports outcomes."
+  active="/docs/targets"
+  toc={toc}
+  prev={{ href: "/docs/cli", label: "CLI" }}
+  next={{ href: "/docs/verification", label: "Verification" }}
+>
+  <h2 id="matrix">Target matrix</h2>
+  <table>
+    <thead><tr><th>Target</th><th>Value type</th><th>Generated project</th><th>Build</th></tr></thead>
+    <tbody>
+      {
+        targets.map((target) => (
+          <tr>
+            <td><strong>{target.label}</strong></td>
+            <td><code>{target.id === "go" ? "int32" : target.id === "rust" ? "i32" : "int"}</code></td>
+            <td>{target.id === "csharp" ? "HsProgram.csproj + Program.cs" : target.id === "rust" ? "Cargo.toml + src/main.rs" : target.id === "go" ? "go.mod + main.go" : "HsProgram.java"}</td>
+            <td><code>{target.command}</code></td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <p>
+    C# targets <code>net10.0</code>; Go declares <code>go 1.22</code>; Rust uses edition 2021 and no
+    external crates; Java uses no external libraries. Generated projects are standalone executables,
+    not libraries or packages.
+  </p>
+
+  <h2 id="arithmetic">Checked arithmetic</h2>
+  <p>
+    Every backend implements one rule: widen i32 operands to signed 64-bit, perform the operation,
+    check −2,147,483,648 through 2,147,483,647, then return a failure result or narrow the value.
+  </p>
+  <StaticCode code={`fn main(x: i32) -> i32 {
+    return x + 1;
+}`} language="hsharp" title="overflow.hs" meta="E_OVERFLOW at x = 2147483647" />
+  <p>
+    The failure is attached to the operation's source node and propagates through the internal
+    result record. It is never silently wrapped. The reference interpreter uses BigInt and checks
+    independently, so the backends are not validating themselves.
+  </p>
+
+  <h2 id="projects">Generated projects</h2>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="eyebrow">C#</div>
+      <p class="small" style="margin-top:0.5rem;">
+        A <code>Res</code> readonly struct, <code>long</code> intermediates, static functions, and a
+        <code>Main</code> that parses arguments and prints the outcome JSON.
+      </p>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Rust</div>
+      <p class="small" style="margin-top:0.5rem;">
+        A <code>Res</code> struct with <code>ok</code>/<code>fail</code> constructors, <code>i64</code>
+        intermediates, checked helpers, and no external crates.
+      </p>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Go</div>
+      <p class="small" style="margin-top:0.5rem;">
+        <code>int32</code> values with <code>int64</code> checks, a <code>Res</code> struct, and
+        explicit <code>ok</code>/<code>fail</code> functions.
+      </p>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Java</div>
+      <p class="small" style="margin-top:0.5rem;">
+        <code>int</code> values with <code>long</code> checks, a nested <code>Res</code> class, and
+        <code>System.exit</code> reflecting the outcome.
+      </p>
+    </div>
+  </div>
+
+  <h2 id="names">Portable names</h2>
+  <p>
+    Every function and local receives a compiler-assigned ID: <code>f1</code>, <code>f2</code>,
+    <code>v1</code>, <code>v2</code>. Source identifiers never reach generated code. An h# name
+    such as <code>int</code>, <code>class</code>, or <code>string</code> cannot collide with a host
+    keyword.
+  </p>
+  <StaticCode code={`fn int(class: i32) -> i32 {
+    let string: i32 = class + 1;
+    return string;
+}`} language="hsharp" title="target_names.hs" meta="generated as f1/v1" />
+
+  <h2 id="outcomes">Execution outcomes</h2>
+  <p>
+    Generated programs print exactly one machine-readable line on stdout. Build logs stay separate.
+  </p>
+  <StaticCode code={`{"status":"ok","type":"i32","value":32}
+{"status":"error","code":"E_OVERFLOW","node":17}`} language="json" title="outcomes" />
+  <p>
+    A success exits 0. A program failure exits non-zero. Invalid harness arguments produce
+    <code>&#123;"status":"badargs"&#125;</code>. The conformance runner checks the outcome, the failure node,
+    and the process status.
+  </p>
+
+  <h2 id="toolchains">Toolchain policy</h2>
+  <p>
+    Toolchain detection is separate from program verification. An older or missing .NET SDK, Go,
+    Rust, or Java marks the target <strong>blocked</strong> and makes the suite exit 2. It never
+    becomes a passing row. C# requires .NET 10 because generated projects target
+    <code>net10.0</code>; Go requires 1.22.
+  </p>
+</DocsLayout>

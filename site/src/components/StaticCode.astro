@@ -1,0 +1,45 @@
+---
+import { tokenize } from "../lib/highlight";
+
+interface Props {
+  code: string;
+  language?: string;
+  keywords?: string[] | Record<string, string>;
+  title?: string;
+  meta?: string;
+  class?: string;
+}
+
+const {
+  code,
+  language = "hsharp",
+  keywords = [],
+  title,
+  meta,
+  class: className = "",
+} = Astro.props;
+
+const tokens = tokenize(code, language, keywords);
+---
+
+<div class:list={["code-frame", className]}>
+  {
+    (title || meta) && (
+      <div class="code-frame-head">
+        <span class="code-frame-title">{title}</span>
+        <span class="code-frame-meta">{meta}</span>
+        <button type="button" class="copy-button" data-copy={code}>
+          Copy
+        </button>
+      </div>
+    )
+  }
+  {
+    !title && !meta && (
+      <button type="button" class="copy-button copy-button-float" data-copy={code}>
+        Copy
+      </button>
+    )
+  }
+  <pre class="code-pre"><code>{tokens.map((token) => token.type === "plain" ? token.text : <span class={`tok-${token.type}`}>{token.text}</span>)}</code></pre>
+</div>

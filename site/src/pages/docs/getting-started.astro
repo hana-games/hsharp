@@ -1,0 +1,129 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import StaticCode from "../../components/StaticCode.astro";
+import { site } from "../../lib/site";
+
+const toc = [
+  { id: "prerequisites", label: "Prerequisites" },
+  { id: "build", label: "Build" },
+  { id: "first", label: "First program" },
+  { id: "targets", label: "Generate a target" },
+  { id: "editor", label: "VS Code extension" },
+  { id: "verify", label: "Verify everything" },
+  { id: "exit-codes", label: "Exit codes" },
+];
+
+const install = `npm install
+npm run build
+npm link
+
+hs doctor`;
+const first = `// examples/calculate.hs
+fn calculate(x: i32, bonus: bool) -> i32 {
+    let base: i32 = x * 3;
+
+    if bonus {
+        return base + 2;
+    }
+
+    return base;
+}`;
+const commands = `hs check examples/calculate.hs
+
+hs build examples/calculate.hs --target rust --entry calculate
+
+hs build examples/calculate.hs --target csharp --entry calculate --run --args 10,true`;
+const editor = `npm run vscode:install`;
+const verify = `npm test
+
+# or the conformance suite alone
+hs test --all-targets`;
+---
+
+<DocsLayout
+  title="Getting started"
+  description="Install the compiler, run the specification example, generate native projects, and install the editor extension."
+  active="/docs/getting-started"
+  toc={toc}
+  prev={{ href: "/docs", label: "Introduction" }}
+  next={{ href: "/docs/language", label: "Language core" }}
+>
+  <h2 id="prerequisites">Prerequisites</h2>
+  <p>
+    h# {site.version} was verified with Node.js 24.21, TypeScript 7.0.2, .NET SDK 10.0.401, Rust
+    1.98, Go 1.27, and OpenJDK 21. The CLI and compiler run on Node 22 or later.
+  </p>
+  <table>
+    <thead><tr><th>Target</th><th>Required command</th><th>Generated project</th></tr></thead>
+    <tbody>
+      <tr><td>C#</td><td><code>dotnet</code> 10+</td><td><code>net10.0</code> console project</td></tr>
+      <tr><td>Rust</td><td><code>cargo</code>, <code>rustc</code></td><td>Cargo binary, edition 2021</td></tr>
+      <tr><td>Go</td><td><code>go</code> 1.22+</td><td><code>go.mod</code> + <code>main.go</code></td></tr>
+      <tr><td>Java</td><td><code>javac</code>, <code>java</code></td><td><code>HsProgram.java</code></td></tr>
+    </tbody>
+  </table>
+  <p>
+    Missing toolchains do not break compilation. They mark the corresponding verification target
+    <strong>blocked</strong>, never passing.
+  </p>
+
+  <h2 id="build">Build</h2>
+  <StaticCode code={install} language="bash" title="terminal" meta="setup" />
+  <p>
+    <code>npm link</code> installs the <code>hs</code>, <code>hsharp</code>, and <code>hcharp</code>
+    commands. <code>hs doctor</code> prints the detected toolchain versions and writes
+    <code>reports/environment.json</code>.
+  </p>
+
+  <h2 id="first">First program</h2>
+  <StaticCode code={first} language="hsharp" title="examples/calculate.hs" meta="standard profile" />
+  <p>
+    Run <code>hs check examples/calculate.hs</code>. The checker reports syntax, names, types,
+    missing returns, and call-graph cycles with <code>file:line:column</code> locations. A successful
+    check is not an execution; use <code>--run</code> or the conformance harness for outcomes.
+  </p>
+  <p>
+    <code>calculate(10, true)</code> returns <code>32</code>. The maximum i32 plus one returns
+    <code>E_OVERFLOW</code>; <code>false &amp;&amp; ((x + 1) &gt; 0)</code> returns <code>false</code>
+    without evaluating the right side.
+  </p>
+
+  <h2 id="targets">Generate a target</h2>
+  <StaticCode code={commands} language="bash" title="terminal" meta="check and build" />
+  <p>
+    Generated projects are written under <code>build/&lt;program&gt;/&lt;target&gt;/</code> by
+    default. They are ordinary projects; the target's own tools compile them. <code>--run</code>
+    compiles and executes the entry function, printing one JSON outcome line.
+  </p>
+  <p>
+    Use <code>--profile &lt;file.json&gt;</code> when the source is written in a personal notation.
+    Canonical source uses the standard profile and is never interpreted through an implicit local
+    preference.
+  </p>
+
+  <h2 id="editor">VS Code extension</h2>
+  <StaticCode code={editor} language="bash" title="terminal" meta="bundled compiler" />
+  <p>
+    The extension bundles the compiler into the extension host: no external <code>hs</code> process
+    is needed for diagnostics or preview. Open a <code>.hs</code> file and run
+    <strong>h#: Show Generated Code</strong> from the command palette.
+  </p>
+
+  <h2 id="verify">Verify everything</h2>
+  <StaticCode code={verify} language="bash" title="terminal" meta="full suite" />
+  <p>
+    <code>npm test</code> runs 19 unit tests, the VS Code typecheck, the bridge protocol test, and
+    the full conformance suite. <code>hs test --all-targets</code> writes
+    <code>reports/conformance.json</code> and <code>reports/conformance.md</code>.
+  </p>
+
+  <h2 id="exit-codes">Exit codes</h2>
+  <table>
+    <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>0</code></td><td>All executed checks passed, or the command succeeded</td></tr>
+      <tr><td><code>1</code></td><td>Program/check failure, build failure, or failed case</td></tr>
+      <tr><td><code>2</code></td><td>Usage error, or at least one target blocked</td></tr>
+    </tbody>
+  </table>
+</DocsLayout>

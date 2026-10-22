@@ -1,0 +1,100 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import { siteData } from "../../data/data";
+import { site, targets } from "../../lib/site";
+
+const toc = [
+  { id: "what", label: "What h# is" },
+  { id: "parts", label: "The four parts" },
+  { id: "status", label: "Status" },
+  { id: "next", label: "Where to go next" },
+];
+---
+
+<DocsLayout
+  title="Documentation"
+  description="The precise guide to the h# language, profiles, CLI, code generation, and verified behavior."
+  active="/docs"
+  toc={toc}
+  next={{ href: "/docs/getting-started", label: "Getting started" }}
+>
+  <h2 id="what">What h# is</h2>
+  <p>
+    h# is a small programming language built around a strict separation:
+    <strong>meaning belongs to one semantic core; notation belongs to each user; output belongs to
+    real target ecosystems.</strong>
+  </p>
+  <p>
+    A program is parsed and checked once. The compiler produces a typed AST, runs a reference
+    interpreter, and generates ordinary C#, Rust, Go, and Java projects. The target toolchains then
+    compile and execute those projects. Generated code does not call back into the h# compiler.
+  </p>
+
+  <blockquote>
+    Syntax may vary between users. Program meaning remains shared.
+  </blockquote>
+
+  <h2 id="parts">The four parts</h2>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="eyebrow">Semantic core</div>
+      <h3 class="h3" style="margin-top:0.5rem;">Types, order, failures</h3>
+      <p class="small" style="margin-top:0.4rem;">
+        i32 and bool, immutable locals, checked arithmetic, short-circuit evaluation, and acyclic
+        calls. The core is intentionally small enough to specify completely.
+      </p>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Profiles</div>
+      <h3 class="h3" style="margin-top:0.5rem;">Seven keyword roles</h3>
+      <p class="small" style="margin-top:0.4rem;">
+        A profile is validated JSON. It can rename seven roles, not change the grammar or the
+        semantics. Conversion is token-aware and preserves comments.
+      </p>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Code generators</div>
+      <h3 class="h3" style="margin-top:0.5rem;">Four native projects</h3>
+      <p class="small" style="margin-top:0.4rem;">
+        {targets.map((target) => target.label).join(", ")}. Each backend emits a project its own
+        toolchain can build without manual edits.
+      </p>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Verification</div>
+      <h3 class="h3" style="margin-top:0.5rem;">Evidence, not optimism</h3>
+      <p class="small" style="margin-top:0.4rem;">
+        Expectations are written independently. {siteData.conformance.summary.targets} target
+        executions currently pass with zero failed and zero blocked checks.
+      </p>
+    </div>
+  </div>
+
+  <h2 id="status">Status</h2>
+  <p>
+    h# is a proof of concept, not a production language. Version {site.version} implements the
+    documented core: functions, calls, immutable typed locals, conditions, returns, checked
+    arithmetic, and profile-based keyword customization.
+  </p>
+  <table>
+    <thead><tr><th>Area</th><th>Current state</th></tr></thead>
+    <tbody>
+      <tr><td>Core</td><td>i32, bool, functions, locals, if/else, returns</td></tr>
+      <tr><td>Checks</td><td>Types, arity, names, returns, call cycles, chained comparisons</td></tr>
+      <tr><td>Profiles</td><td>Validated keyword roles; export/import with fingerprints</td></tr>
+      <tr><td>Targets</td><td>C#, Rust, Go, Java generated, compiled, executed</td></tr>
+      <tr><td>Editor</td><td>Visual Studio Code extension with live diagnostics and preview</td></tr>
+      <tr><td>Not yet</td><td>Strings, lists, loops, recursion, modules, generics, async</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="next">Where to go next</h2>
+  <ul>
+    <li><a href="/docs/getting-started">Getting started</a> — build the compiler, run a program, install the editor extension.</li>
+    <li><a href="/docs/language">Language core</a> — the normative semantics.</li>
+    <li><a href="/docs/profiles">Profiles</a> — customize notation and understand the manifest workflow.</li>
+    <li><a href="/examples">Examples</a> — real programs from the conformance corpus.</li>
+    <li><a href="/playground">Playground</a> — interactive demonstrations without executing h#.</li>
+    <li><a href="/docs/verification">Verification</a> — exactly what was compiled, executed, and compared.</li>
+  </ul>
+</DocsLayout>

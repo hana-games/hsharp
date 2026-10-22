@@ -1,0 +1,44 @@
+---
+import { site, targets } from "../lib/site";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand-col">
+        <div class="footer-brand">h<span>#</span></div>
+        <p class="footer-tagline">
+          One semantic core. Personal syntax. Four verified native outputs.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Language</h4>
+        <a href="/why">Why h#</a>
+        <a href="/examples">Examples</a>
+        <a href="/playground">Playground</a>
+        <a href="/roadmap">Roadmap</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Documentation</h4>
+        <a href="/docs">Introduction</a>
+        <a href="/docs/language">Language core</a>
+        <a href="/docs/profiles">Profiles</a>
+        <a href="/docs/targets">Targets</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Targets</h4>
+        {targets.map((target) => <a href="/docs/targets">{target.label}</a>)}
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>h# {site.version} · core {site.coreVersion} · POC</span>
+      <span>Built from the specification, not from marketing.</span>
+      <span>© {year} h#</span>
+    </div>
+  </div>
+</footer>

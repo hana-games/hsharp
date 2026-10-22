@@ -21,6 +21,11 @@
     "vscode:typecheck": "tsc -p editors/vscode/tsconfig.json",
     "vscode:package": "npm run vscode:build && node editors/vscode/package-vsix.mjs",
     "vscode:install": "npm run vscode:package && node editors/vscode/install.mjs",
+    "site:data": "npm run build && node site/scripts/generate-data.mjs",
+    "site:dev": "npm run site:data && npm --prefix site run dev",
+    "site:build": "npm run site:data && npm --prefix site run build",
+    "site:check": "npm run site:build && node site/scripts/check-links.mjs",
+    "site:preview": "npm --prefix site run preview",
     "doctor": "npm run build && node dist/cli/index.js doctor",
     "demo": "npm run build && node dist/cli/index.js demo"
   },

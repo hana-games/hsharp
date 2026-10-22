@@ -1,0 +1,80 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { docsNav } from "../lib/site";
+
+interface Props {
+  title: string;
+  description: string;
+  active: string;
+  toc?: { id: string; label: string }[];
+  prev?: { href: string; label: string };
+  next?: { href: string; label: string };
+}
+
+const { title, description, active, toc = [], prev, next } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} active="/docs">
+  <section class="band-paper-2">
+    <div class="container docs-shell">
+      <aside class="docs-sidebar">
+        <div class="docs-sidebar-title">Documentation</div>
+        <nav class="docs-nav" aria-label="Documentation">
+          {
+            docsNav.map((item) => (
+              <a class:list={[{ active: active === item.href }]} href={item.href}>
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+        <div class="docs-sidebar-title" style="margin-top:1.6rem;">Project</div>
+        <nav class="docs-nav" aria-label="Project">
+          <a href="/why">Why h#</a>
+          <a href="/examples">Examples</a>
+          <a href="/playground">Playground</a>
+          <a href="/roadmap">Roadmap</a>
+        </nav>
+      </aside>
+
+      <article class="prose">
+        <div class="docs-meta">
+          <span class="chip chip-lime">h# 0.1</span>
+          <span class="chip">POC</span>
+          <span class="chip">core 0.1</span>
+        </div>
+        <h1>{title}</h1>
+        <p class="lede" style="margin-bottom:1.5rem;">{description}</p>
+        <slot />
+
+        {
+          (prev || next) && (
+            <div class="docs-pager">
+              {prev ? (
+                <a href={prev.href}>
+                  <span>Previous</span>
+                  <strong>← {prev.label}</strong>
+                </a>
+              ) : <span />}
+              {next ? (
+                <a href={next.href}>
+                  <span>Next</span>
+                  <strong>{next.label} →</strong>
+                </a>
+              ) : <span />}
+            </div>
+          )
+        }
+      </article>
+
+      {
+        toc.length > 0 && (
+          <aside class="docs-toc">
+            <div class="docs-sidebar-title">On this page</div>
+            {toc.map((item) => <a href={`#${item.id}`}>{item.label}</a>)}
+          </aside>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

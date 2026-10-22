@@ -4,4 +4,7 @@ build/
 local/
 editors/*/dist/
 editors/*/node_modules/
+site/dist/
+site/node_modules/
+site/.astro/
 *.log

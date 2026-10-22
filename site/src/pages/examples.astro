@@ -1,0 +1,49 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { ExampleGallery } from "../components/ExampleGallery";
+import { siteData } from "../data/data";
+---
+
+<BaseLayout
+  title="Examples"
+  description="Real h# programs from the conformance corpus, with standard and personal notation, expected outcomes, and four verified targets."
+  active="/examples"
+>
+  <section class="band-paper-2" style="padding: clamp(3.5rem, 7vw, 6rem) 0 2rem;">
+    <div class="container">
+      <div class="eyebrow">Examples · from the test corpus</div>
+      <h1 class="h1" style="margin-top:0.8rem;">Real programs.<br /><span class="italic">Real expectations.</span></h1>
+      <p class="lede" style="margin-top:1.2rem;">
+        Nothing here is a mock-up. Each example is a program used by the conformance suite, with its
+        expected value or error code. Switch between standard notation and a personal profile; open
+        the detail to inspect the source and outcome.
+      </p>
+      <div class="row" style="margin-top:1.2rem;">
+        <span class="chip chip-lime">{siteData.meta.stats.cases} positive cases</span>
+        <span class="chip">{siteData.meta.stats.targets} targets</span>
+        <span class="chip">{siteData.meta.stats.executions} executions</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <ExampleGallery client:load examples={siteData.examples} />
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="container cta-inner">
+      <div>
+        <div class="eyebrow">More than a gallery</div>
+        <h2 class="display" style="font-size:clamp(2.4rem,5vw,4.6rem); margin-top:0.7rem;">
+          Compose syntax.<br /><em class="italic">Inspect the boundaries.</em>
+        </h2>
+      </div>
+      <div class="cta-actions">
+        <a class="btn btn-solid" href="/playground">Open the playground</a>
+        <a class="btn btn-ghost" href="/docs/language">Read the semantics</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

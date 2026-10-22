@@ -1,0 +1,94 @@
+---
+import "@fontsource/instrument-serif/latin-400.css";
+import "@fontsource/instrument-serif/latin-400-italic.css";
+import "@fontsource/inter/latin-400.css";
+import "@fontsource/inter/latin-500.css";
+import "@fontsource/inter/latin-600.css";
+import "@fontsource/jetbrains-mono/latin-400.css";
+import "@fontsource/jetbrains-mono/latin-500.css";
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  active?: string;
+  canonical?: string;
+}
+
+const { title, description, active = "", canonical } = Astro.props;
+const fullTitle = title === "h#" ? "h# — One core. Your syntax. Four native outputs." : `${title} — h#`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0a0c10" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary" />
+    {canonical && <link rel="canonical" href={canonical} />}
+  </head>
+  <body>
+    <a class="sr-only" href="#main">Skip to content</a>
+    <Header active={active} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // Copy buttons for static code blocks.
+      document.addEventListener("click", async (event) => {
+        const target = event.target as HTMLElement | null;
+        const button = target?.closest("[data-copy]") as HTMLButtonElement | null;
+        if (!button) return;
+        const text = button.dataset.copy ?? "";
+        try {
+          await navigator.clipboard.writeText(text);
+          const previous = button.textContent;
+          button.textContent = "Copied";
+          window.setTimeout(() => {
+            if (button.textContent === "Copied") button.textContent = previous ?? "Copy";
+          }, 1400);
+        } catch {
+          // Clipboard can be denied; leave the label unchanged.
+        }
+      });
+
+      // Close the mobile navigation after a link is chosen.
+      document.querySelectorAll(".mobile-nav-panel a").forEach((link) => {
+        link.addEventListener("click", () => {
+          const details = link.closest("details");
+          if (details) details.removeAttribute("open");
+        });
+      });
+
+      // Subtle reveal on scroll.
+      const items = document.querySelectorAll(".reveal");
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+        );
+        items.forEach((item) => observer.observe(item));
+      } else {
+        items.forEach((item) => item.classList.add("is-visible"));
+      }
+    </script>
+  </body>
+</html>

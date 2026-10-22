@@ -133,6 +133,26 @@ Open any `.hs` file, then run **h#: Show Generated Code** from the command palet
 
 The extension imports the same analyzer used by the CLI, so no external `hs` process is needed. Measured warm latency is **sub-millisecond** for analysis + four-target generation. See [`docs/performance.md`](docs/performance.md).
 
+## Website
+
+A static showcase and documentation site lives in [`site/`](site/README.md). It includes:
+
+- a live syntax-profile composer;
+- generated target inspection for C#, Rust, Go, and Java;
+- overflow and short-circuit boundary labs;
+- an export/reimport conflict walkthrough;
+- a filterable conformance explorer;
+- precise docs for semantics, grammar, profiles, CLI, targets, and verification.
+
+```powershell
+npm --prefix site install
+npm run site:dev
+npm run site:build
+# output: site/dist/
+```
+
+All interactive demos are client-side illustrations; no h# program is executed in the browser.
+
 ## How it works
 
 ```mermaid
@@ -223,6 +243,7 @@ On success the manifest is refreshed, so the edit/import cycle can continue. See
 | `src/cli/` | `hs` command line |
 | `src/service/` | Fast in-process analyzer and editor bridge |
 | `editors/vscode/` | Visual Studio Code extension |
+| `site/` | Static showcase site, docs, and interactive demos |
 | `profiles/` | Standard, supplied personal, and user-created profiles |
 | `examples/` | Demonstration programs |
 | `tests/conformance/` | Positive/negative programs and independent expectations |
@@ -257,6 +278,7 @@ See [`ROADMAP.md`](ROADMAP.md) for dependencies, acceptance evidence, risks, and
 - [Design decisions](docs/decisions.md)
 - [Performance and real-time analysis](docs/performance.md)
 - [Visual Studio Code extension](editors/vscode/README.md)
+- [Website](site/README.md)
 - [Verification evidence](docs/verification.md)
 - [POC acceptance](docs/acceptance.md)
 - [Limitations and next steps](docs/limitations.md)

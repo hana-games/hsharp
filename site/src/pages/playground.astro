@@ -1,0 +1,141 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { ProfileComposer } from "../components/ProfileComposer";
+import { TargetPrism } from "../components/TargetPrism";
+import { BoundaryLab } from "../components/BoundaryLab";
+import { ExportStepper } from "../components/ExportStepper";
+import { ConformanceExplorer } from "../components/ConformanceExplorer";
+import StaticCode from "../components/StaticCode.astro";
+import { siteData } from "../data/data";
+
+const standard = siteData.demo.sources.standard;
+const personal = siteData.demo.sources["my-syntax"];
+---
+
+<BaseLayout
+  title="Playground"
+  description="Interactive h# demos: compose a syntax profile, inspect generated targets, explore overflow and short-circuit behavior, simulate export/import, and filter conformance results."
+  active="/playground"
+>
+  <section class="band-dark" style="padding: clamp(3.5rem, 7vw, 6rem) 0 3rem;">
+    <div class="container">
+      <div class="eyebrow">Playground · no code execution</div>
+      <h1 class="h1" style="margin-top:0.8rem; max-width:14ch;">The language,<br /><em class="italic lime">made tangible.</em></h1>
+      <p class="lede" style="margin-top:1.2rem;">
+        These modules illustrate the specified behavior with precomputed data and client-side
+        transformations. They do not execute h# programs in your browser; the real verification runs
+        in the repository against four native toolchains.
+      </p>
+      <div class="row" style="margin-top:1.4rem;">
+        <a class="chip chip-dark" href="#profiles">Profiles</a>
+        <a class="chip chip-dark" href="#targets">Targets</a>
+        <a class="chip chip-dark" href="#boundaries">Boundaries</a>
+        <a class="chip chip-dark" href="#workflow">Workflow</a>
+        <a class="chip chip-dark" href="#conformance">Conformance</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="profiles">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">01 — Syntax</div>
+          <h2 class="h2">Compose a profile.</h2>
+        </div>
+        <p class="lede">
+          Change the seven keyword roles. The code preview is updated token by token, exactly like
+          export conversion. Reserved words, duplicates, and illegal forms are rejected.
+        </p>
+      </div>
+      <ProfileComposer client:visible />
+    </div>
+  </section>
+
+  <section class="section band-paper-2" id="targets">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">02 — Output</div>
+          <h2 class="h2">Inspect four targets.</h2>
+        </div>
+        <p class="lede">
+          The same typed AST, lowered into four ecosystems. Open the project files to see the
+          generated result records, checked helpers, and compiler-assigned names.
+        </p>
+      </div>
+      <TargetPrism client:visible demo={siteData.demo} />
+    </div>
+  </section>
+
+  <section class="section" id="boundaries">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">03 — Semantics</div>
+          <h2 class="h2">Push the boundaries.</h2>
+        </div>
+        <p class="lede">
+          Move values to the i32 edges. The lab shows the specified outcome and failing node, or the
+          short-circuit path that is never evaluated.
+        </p>
+      </div>
+      <BoundaryLab client:visible />
+    </div>
+  </section>
+
+  <section class="section band-dark" id="workflow">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">04 — Collaboration</div>
+          <h2 class="h2">Break the base.<br /><em class="italic lime">Watch it refuse.</em></h2>
+        </div>
+        <p class="lede">
+          Step through export, edit, and reimport. Simulate a concurrent canonical change or a
+          modified profile and see the explicit rejection.
+        </p>
+      </div>
+      <ExportStepper client:visible demo={siteData.demo} />
+    </div>
+  </section>
+
+  <section class="section" id="equivalence">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">05 — Equivalence</div>
+          <h2 class="h2">One structure, two surfaces.</h2>
+        </div>
+        <p class="lede">
+          The normalized AST ignores locations, comments, and profile words. These two files are the
+          same program.
+        </p>
+      </div>
+      <div class="equivalence-grid">
+        <StaticCode code={standard.code} language="hsharp" keywords={standard.keywords} title="standard.hs" meta="standard" />
+        <StaticCode code={personal.code} language="hsharp" keywords={personal.keywords} title="personal.hs" meta="my-syntax" />
+      </div>
+      <div class="equivalence-badge" style="margin-top:1rem;">
+        <strong>AST equality</strong>
+        <span>0 semantic differences</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band-paper-2" id="conformance">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">06 — Evidence</div>
+          <h2 class="h2">Filter the proof.</h2>
+        </div>
+        <p class="lede">
+          This explorer reads the generated conformance report. Filter by target, status, or case
+          name. Every row comes from an actual compilation and execution.
+        </p>
+      </div>
+      <ConformanceExplorer client:visible conformance={siteData.conformance} />
+    </div>
+  </section>
+</BaseLayout>

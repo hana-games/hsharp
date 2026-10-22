@@ -1,0 +1,176 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import StaticCode from "../../components/StaticCode.astro";
+
+const toc = [
+  { id: "format", label: "Profile format" },
+  { id: "validation", label: "Validation" },
+  { id: "conversion", label: "Token-aware conversion" },
+  { id: "export", label: "Export and manifest" },
+  { id: "import", label: "Reimport" },
+  { id: "custom", label: "Create your own" },
+];
+
+const profile = `{
+  "id": "my-syntax",
+  "version": "1",
+  "core": "0.1",
+  "family": "braces",
+  "keywords": {
+    "fn": "function",
+    "let": "value",
+    "if": "when",
+    "else": "otherwise",
+    "return": "give",
+    "true": "yes",
+    "false": "no"
+  }
+}`;
+const manifest = `{
+  "schema": "hs-export/1",
+  "coreVersion": "0.1",
+  "compilerVersion": "0.1.0",
+  "canonical": {
+    "path": "../../examples/calculate.hs",
+    "fingerprint": "sha256:..."
+  },
+  "profile": {
+    "id": "my-syntax",
+    "version": "1",
+    "path": "../../profiles/my-syntax.json",
+    "fingerprint": "sha256:..."
+  },
+  "personal": {
+    "path": "calculate.hs",
+    "fingerprint": "sha256:..."
+  }
+}`;
+const commands = `hs syntax export examples/calculate.hs \\
+  --profile profiles/my-syntax.json \\
+  --out local/calculate.hs
+
+hs check local/calculate.hs --profile profiles/my-syntax.json
+
+hs syntax import local/calculate.hs`;
+
+const exported = `// Canonical demonstration program.
+// The word "return" inside this comment must survive syntax conversion.
+function calculate(x: i32, bonus: bool) -> i32 {
+    value base: i32 = x * 3;
+
+    when bonus {
+        give base + 2;
+    }
+
+    give base;
+}`;
+---
+
+<DocsLayout
+  title="Profiles"
+  description="Declarative keyword profiles, validation rules, lossless conversion, export manifests, and safe reimport."
+  active="/docs/profiles"
+  toc={toc}
+  prev={{ href: "/docs/grammar", label: "Grammar" }}
+  next={{ href: "/docs/cli", label: "CLI" }}
+>
+  <h2 id="format">Profile format</h2>
+  <p>
+    Profiles are JSON data. They contain no executable code and cannot introduce grammar or
+    semantic changes in the POC. Seven keyword roles are customizable:
+    <code>fn</code>, <code>let</code>, <code>if</code>, <code>else</code>, <code>return</code>,
+    <code>true</code>, <code>false</code>.
+  </p>
+  <StaticCode code={profile} language="json" title="profiles/my-syntax.json" meta="valid" />
+  <table>
+    <thead><tr><th>Field</th><th>Rule</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>Non-empty; letters, digits, dot, underscore, dash</td></tr>
+      <tr><td><code>version</code></td><td>Must be <code>"1"</code></td></tr>
+      <tr><td><code>core</code></td><td>Must be <code>"0.1"</code></td></tr>
+      <tr><td><code>family</code></td><td>Must be <code>"braces"</code></td></tr>
+      <tr><td><code>keywords</code></td><td>Exactly the seven roles; every word matches <code>[A-Za-z_][A-Za-z0-9_]*</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="validation">Validation</h2>
+  <p>A profile is accepted only when:</p>
+  <ol>
+    <li>Every keyword role is present.</li>
+    <li>Different roles use different words.</li>
+    <li>Every word has the allowed lexical form.</li>
+    <li><code>version</code>, <code>core</code>, and <code>family</code> are compatible.</li>
+    <li>A word does not collide with the reserved type names <code>i32</code> or <code>bool</code>.</li>
+    <li>A canonical keyword is used only for its own role. For example <code>"fn": "let"</code> is rejected, while <code>"fn": "fn"</code> is allowed.</li>
+    <li>No unknown configuration options or keyword roles are present.</li>
+  </ol>
+  <p>
+    Active aliases and <em>all canonical keywords</em> are reserved within a profile. A canonical
+    word that has been remapped cannot be reused as an identifier. This prevents the same text from
+    changing meaning based on the active profile.
+  </p>
+
+  <h2 id="conversion">Token-aware conversion</h2>
+  <p>
+    Conversion rewrites keyword tokens only. Whitespace, comments, identifiers, type names, numbers,
+    and punctuation are copied verbatim. It is not a global string replacement: changing
+    <code>return</code> to <code>give</code> does not alter <code>return_value</code> or a comment.
+  </p>
+  <StaticCode code={exported} language="hsharp" title="calculate.personal.hs" meta="comments preserved" />
+  <p>
+    If a program identifier equals a word used by the target profile, conversion is rejected with
+    <code>E_PROFILE_IDENTIFIER_COLLISION</code>; otherwise the exported file would not parse back
+    unambiguously.
+  </p>
+
+  <h2 id="export">Export and manifest</h2>
+  <StaticCode code={commands} language="bash" title="terminal" meta="export, check, reimport" />
+  <p>
+    Export writes the personal file and a sidecar manifest. Paths are relative to the manifest
+    directory. Fingerprints are SHA-256 over the exact UTF-8 text (a leading BOM is ignored).
+  </p>
+  <StaticCode code={manifest} language="json" title="calculate.hs.manifest.json" meta="export manifest" />
+  <p>
+    Export also re-parses the converted text, checks it under the target profile, and compares the
+    normalized AST. Metadata and formatting may change; structure may not.
+  </p>
+
+  <h2 id="import">Reimport</h2>
+  <p>Reimport performs these checks in order:</p>
+  <ol>
+    <li>The manifest belongs to the personal file being imported.</li>
+    <li>The profile still has the recorded fingerprint.</li>
+    <li>The canonical source still has the recorded fingerprint.</li>
+    <li>The personal source parses and checks under the recorded profile.</li>
+    <li>The converted canonical source parses and checks under the standard profile.</li>
+  </ol>
+  <p>
+    Success prints a line diff and applies the change. The manifest's canonical and personal
+    fingerprints are refreshed, so the next edit/import cycle can continue without re-exporting.
+  </p>
+  <table>
+    <thead><tr><th>Failure</th><th>Cause</th></tr></thead>
+    <tbody>
+      <tr><td><code>E_IMPORT_STALE_BASE</code></td><td>Canonical source changed after export</td></tr>
+      <tr><td><code>E_IMPORT_PROFILE_CHANGED</code></td><td>Profile file changed after export</td></tr>
+      <tr><td><code>E_IMPORT_MANIFEST</code></td><td>Missing, malformed, or mismatched manifest</td></tr>
+      <tr><td><code>E_PROFILE_IDENTIFIER_COLLISION</code></td><td>An identifier equals a profile word</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Automatic merging is out of scope. Concurrent edits are detected and rejected with an actionable
+    explanation.
+  </p>
+
+  <h2 id="custom">Create your own profile</h2>
+  <p>
+    Copy any file in <code>profiles/</code>, change <code>id</code> and the seven keyword values,
+    keep <code>version</code>, <code>core</code>, and <code>family</code> unchanged, then pass it
+    with <code>--profile</code>. No compiler code changes are required.
+  </p>
+  <p>
+    <code>profiles/casual.json</code> is the repository's user-created example:
+    <code>fun</code>, <code>bind</code>, <code>suppose</code>, <code>otherwise</code>,
+    <code>deliver</code>, <code>yep</code>, <code>nope</code>.
+  </p>
+</DocsLayout>

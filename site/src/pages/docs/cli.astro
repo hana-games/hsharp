@@ -1,0 +1,132 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import StaticCode from "../../components/StaticCode.astro";
+
+const toc = [
+  { id: "overview", label: "Overview" },
+  { id: "check", label: "check" },
+  { id: "build", label: "build" },
+  { id: "syntax", label: "syntax" },
+  { id: "test", label: "test" },
+  { id: "doctor", label: "doctor and demo" },
+  { id: "bridge", label: "bridge" },
+];
+
+const check = `hs check examples/calculate.hs
+hs check local/calculate.hs --profile profiles/my-syntax.json
+hs check examples/calculate.hs --json`;
+const build = `hs build examples/calculate.hs --target rust --entry calculate
+
+hs build examples/calculate.hs --target csharp --entry calculate \\
+  --run --args 10,true`;
+const syntax = `hs syntax export examples/calculate.hs \\
+  --profile profiles/my-syntax.json \\
+  --out local/calculate.hs
+
+hs syntax import local/calculate.hs
+hs syntax import local/calculate.hs --dry-run`;
+const test = `hs test --all-targets
+hs test --quick
+hs test --targets csharp,rust --report-dir reports/local --json`;
+---
+
+<DocsLayout
+  title="CLI reference"
+  description="Every h# command, flag, output, and exit code, including the editor bridge."
+  active="/docs/cli"
+  toc={toc}
+  prev={{ href: "/docs/profiles", label: "Profiles" }}
+  next={{ href: "/docs/targets", label: "Targets" }}
+>
+  <h2 id="overview">Overview</h2>
+  <p>
+    The command is <code>hs</code>; <code>hsharp</code> and <code>hcharp</code> are equivalent
+    aliases. Canonical source uses the standard profile. A personal profile is always selected
+    explicitly.
+  </p>
+  <StaticCode code={`hs check <file> [--profile <profile.json>] [--json]
+hs build <file> --target <csharp|rust|go|java> [--out <dir>]
+          [--entry <function>] [--profile <profile.json>] [--run] [--args a,b]
+hs syntax export <canonical.hs> --profile <profile.json> --out <personal.hs>
+            [--manifest <file>]
+hs syntax import <personal.hs> [--manifest <file>] [--dry-run]
+hs test [--all-targets] [--targets <list>] [--quick] [--report-dir <dir>] [--json]
+hs doctor [--json]
+hs demo
+hs bridge`} language="bash" title="command summary" />
+
+  <h2 id="check">check</h2>
+  <StaticCode code={check} language="bash" title="terminal" />
+  <p>
+    Parses and checks a file, printing located diagnostics. It does not execute the program and does
+    not generate targets. <code>--json</code> emits a machine-readable result with the profile id,
+    diagnostics, and function names.
+  </p>
+
+  <h2 id="build">build</h2>
+  <StaticCode code={build} language="bash" title="terminal" />
+  <table>
+    <thead><tr><th>Flag</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>--target</code></td><td>Required: <code>csharp</code>, <code>rust</code>, <code>go</code>, or <code>java</code></td></tr>
+      <tr><td><code>--out</code></td><td>Output directory; default <code>build/&lt;program&gt;/&lt;target&gt;</code></td></tr>
+      <tr><td><code>--entry</code></td><td>Entry function. Empty infers <code>main</code> or a single function</td></tr>
+      <tr><td><code>--profile</code></td><td>Interpret the source with this profile</td></tr>
+      <tr><td><code>--run</code></td><td>Compile and execute the generated project</td></tr>
+      <tr><td><code>--args</code></td><td>Comma-separated entry arguments, e.g. <code>10,true</code></td></tr>
+    </tbody>
+  </table>
+  <p>
+    Generated projects are ordinary: <code>HsProgram.csproj</code> + <code>Program.cs</code>,
+    <code>Cargo.toml</code> + <code>src/main.rs</code>, <code>go.mod</code> + <code>main.go</code>,
+    or <code>HsProgram.java</code>. No manual corrections are required.
+  </p>
+
+  <h2 id="syntax">syntax</h2>
+  <StaticCode code={syntax} language="bash" title="terminal" />
+  <p>
+    <code>export</code> writes the personal file and a manifest; <code>import</code> validates the
+    base and profile, prints a diff, and applies the change. <code>--dry-run</code> stops before
+    writing. See <a href="/docs/profiles">Profiles</a> for the manifest schema and conflict rules.
+  </p>
+
+  <h2 id="test">test</h2>
+  <StaticCode code={test} language="bash" title="terminal" />
+  <table>
+    <thead><tr><th>Flag</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>--all-targets</code></td><td>Run every target configured in the manifest</td></tr>
+      <tr><td><code>--targets</code></td><td>Comma-separated target filter</td></tr>
+      <tr><td><code>--quick</code></td><td>Interpreter and structure only; explicitly labelled interpreter-only</td></tr>
+      <tr><td><code>--report-dir</code></td><td>Output directory for <code>conformance.json</code> and <code>conformance.md</code></td></tr>
+      <tr><td><code>--json</code></td><td>Print the complete report JSON</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Exit 0 means every executed check passed. Exit 1 means a failure. Exit 2 means at least one target
+    was blocked. Blocked is never counted as a pass.
+  </p>
+
+  <h2 id="doctor">doctor and demo</h2>
+  <p>
+    <code>hs doctor</code> detects Node, .NET, Cargo, Go, and Java, checks project-version minimums,
+    prints the versions, and writes <code>reports/environment.json</code>.
+  </p>
+  <p>
+    <code>hs demo</code> runs the complete workflow in <code>local/demo/</code>: export to
+    <code>my-syntax</code>, edit <code>base + 2</code> to <code>base + 3</code>, reimport, then run
+    the reference interpreter and all four targets. It must print <code>33</code> everywhere.
+  </p>
+
+  <h2 id="bridge">bridge</h2>
+  <p>
+    <code>hs bridge</code> is a line-delimited JSON service over stdin/stdout. It keeps one process
+    alive and caches the profile, which is useful for editors that do not bundle the compiler.
+  </p>
+  <StaticCode code={`{"id":1,"command":"analyze","text":"fn main() -> i32 { return 1; }","file":"a.hs","targets":["csharp"]}`} language="json" title="request" />
+  <StaticCode code={`{"id":1,"ok":true,"command":"analyze","diagnostics":[],"functions":["main"],"entry":"main","timings":{"totalMs":0.4},"generated":[...]}`} language="json" title="response" />
+  <p>
+    The VS Code extension does not need the bridge: it imports <code>HSharpAnalyzer</code> directly
+    into the extension host.
+  </p>
+</DocsLayout>
