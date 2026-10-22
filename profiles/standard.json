@@ -1,0 +1,15 @@
+{
+  "id": "standard",
+  "version": "1",
+  "core": "0.1",
+  "family": "braces",
+  "keywords": {
+    "fn": "fn",
+    "let": "let",
+    "if": "if",
+    "else": "else",
+    "return": "return",
+    "true": "true",
+    "false": "false"
+  }
+}

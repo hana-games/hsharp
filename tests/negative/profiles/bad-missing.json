@@ -1,0 +1,14 @@
+{
+  "id": "bad-missing",
+  "version": "1",
+  "core": "0.1",
+  "family": "braces",
+  "keywords": {
+    "fn": "function",
+    "let": "value",
+    "if": "when",
+    "else": "otherwise",
+    "return": "give",
+    "true": "yes"
+  }
+}

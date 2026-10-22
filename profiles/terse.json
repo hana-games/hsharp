@@ -1,0 +1,15 @@
+{
+  "id": "terse",
+  "version": "1",
+  "core": "0.1",
+  "family": "braces",
+  "keywords": {
+    "fn": "def",
+    "let": "val",
+    "if": "when",
+    "else": "other",
+    "return": "yield",
+    "true": "yes",
+    "false": "no"
+  }
+}

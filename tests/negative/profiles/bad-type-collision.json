@@ -1,0 +1,15 @@
+{
+  "id": "bad-type-collision",
+  "version": "1",
+  "core": "0.1",
+  "family": "braces",
+  "keywords": {
+    "fn": "i32",
+    "let": "value",
+    "if": "when",
+    "else": "otherwise",
+    "return": "give",
+    "true": "yes",
+    "false": "no"
+  }
+}

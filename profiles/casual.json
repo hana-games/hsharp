@@ -1,0 +1,15 @@
+{
+  "id": "casual",
+  "version": "1",
+  "core": "0.1",
+  "family": "braces",
+  "keywords": {
+    "fn": "fun",
+    "let": "bind",
+    "if": "suppose",
+    "else": "otherwise",
+    "return": "deliver",
+    "true": "yep",
+    "false": "nope"
+  }
+}

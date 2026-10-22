@@ -1,0 +1,26 @@
+{
+  "name": "uni",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Uni: shared semantic core with customizable syntax and C#, Go, Rust, and Java code generation",
+  "bin": {
+    "uni": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check": "npm run build && node dist/cli/index.js check examples/calculate.uni",
+    "test:unit": "npm run build && node dist/testing/unit.js",
+    "test": "npm run test:unit && node dist/cli/index.js test --all-targets",
+    "doctor": "npm run build && node dist/cli/index.js doctor",
+    "demo": "npm run build && node dist/cli/index.js demo"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "@types/node": "24.10.1"
+  }
+}

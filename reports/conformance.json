@@ -1,0 +1,6219 @@
+{
+  "schema": "uni-conformance-report/1",
+  "mode": "full",
+  "generatedAt": "2026-10-22T02:24:29.569Z",
+  "compilerVersion": "0.1.0",
+  "coreVersion": "0.1",
+  "nodeVersion": "v24.21.0",
+  "profiles": [
+    {
+      "id": "standard",
+      "path": "D:\\Github\\hsharp\\profiles\\standard.json"
+    },
+    {
+      "id": "my-syntax",
+      "path": "D:\\Github\\hsharp\\profiles\\my-syntax.json"
+    },
+    {
+      "id": "terse",
+      "path": "D:\\Github\\hsharp\\profiles\\terse.json"
+    },
+    {
+      "id": "casual",
+      "path": "D:\\Github\\hsharp\\profiles\\casual.json"
+    }
+  ],
+  "toolchains": [
+    {
+      "target": "csharp",
+      "name": ".NET SDK",
+      "available": true,
+      "version": "10.0.401",
+      "detail": "",
+      "commands": [
+        "dotnet"
+      ]
+    },
+    {
+      "target": "rust",
+      "name": "Rust (cargo)",
+      "available": true,
+      "version": "cargo 1.98.1 (797e8a9bc 2026-08-05); rustc 1.98.1 (48a229cea 2026-09-01)",
+      "detail": "",
+      "commands": [
+        "cargo",
+        "rustc"
+      ]
+    },
+    {
+      "target": "go",
+      "name": "Go",
+      "available": true,
+      "version": "go version go1.27.0 windows/amd64",
+      "detail": "",
+      "commands": [
+        "go"
+      ]
+    },
+    {
+      "target": "java",
+      "name": "Java (javac)",
+      "available": true,
+      "version": "javac 21.0.12.1; openjdk version \"21.0.12.1\" 2026-08-18 LTS",
+      "detail": "",
+      "commands": [
+        "javac",
+        "java"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "demo-bonus-true",
+      "notes": "Specification example: x = 10, bonus = true.",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 32
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 32
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo-bonus-false",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 30
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 30
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        }
+      ]
+    },
+    {
+      "id": "function-call",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 22
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 22
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        }
+      ]
+    },
+    {
+      "id": "precedence",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 14
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 14
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        }
+      ]
+    },
+    {
+      "id": "parentheses",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 20
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 20
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "left-associativity",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 5
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 5
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "subtraction-grouping",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 7
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 7
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "i32-minimum",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": -2147483648
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": -2147483648
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        }
+      ]
+    },
+    {
+      "id": "i32-maximum",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 2147483647
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 2147483647
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        }
+      ]
+    },
+    {
+      "id": "overflow-add-max",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "error",
+          "code": "E_OVERFLOW",
+          "node": 5
+        },
+        "outcome": {
+          "status": "error",
+          "code": "E_OVERFLOW",
+          "node": 5
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "add-at-max-boundary",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 2147483647
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 2147483647
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        }
+      ]
+    },
+    {
+      "id": "overflow-subtract-min",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "error",
+          "code": "E_OVERFLOW",
+          "node": 5
+        },
+        "outcome": {
+          "status": "error",
+          "code": "E_OVERFLOW",
+          "node": 5
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "overflow-multiply-min",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "error",
+          "code": "E_OVERFLOW",
+          "node": 6
+        },
+        "outcome": {
+          "status": "error",
+          "code": "E_OVERFLOW",
+          "node": 6
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "multiply-negative-one",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": -5
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": -5
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        }
+      ]
+    },
+    {
+      "id": "overflow-negate-min",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "error",
+          "code": "E_OVERFLOW",
+          "node": 4
+        },
+        "outcome": {
+          "status": "error",
+          "code": "E_OVERFLOW",
+          "node": 4
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "negate-positive",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": -5
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": -5
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        }
+      ]
+    },
+    {
+      "id": "short-circuit-and",
+      "notes": "The right operand would overflow but must not be evaluated.",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "bool",
+          "value": false
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "bool",
+          "value": false
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "short-circuit-or",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "bool",
+          "value": true
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "bool",
+          "value": true
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "comparison-true",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "bool",
+          "value": true
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "bool",
+          "value": true
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "comparison-false",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "bool",
+          "value": false
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "bool",
+          "value": false
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "bool-logic",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "bool",
+          "value": true
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "bool",
+          "value": true
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "if-else-negative",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": -1
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": -1
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "if-else-zero",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 0
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 0
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "if-else-positive",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 1
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 1
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "target-reserved-names",
+      "notes": "Uni names int/class/string must not leak into target identifiers.",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 42
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 42
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        }
+      ]
+    },
+    {
+      "id": "comments-preserved",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 7
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 7
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "dead-code-after-return",
+      "notes": "Unreachable declarations are checked but omitted from generated code.",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 1
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 1
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "dead-code-after-if",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "i32",
+          "value": 1
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "i32",
+          "value": 1
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "grouped-comparison-equality",
+      "notes": "Explicit parentheses permit Boolean equality of comparison results.",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "bool",
+          "value": true
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "bool",
+          "value": true
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        }
+      ]
+    }
+  ],
+  "negative": [
+    {
+      "id": "argument-type",
+      "status": "passed",
+      "expectedDiagnostic": "E_ARGUMENT_TYPE",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_argument_type.uni:6:23: error E_ARGUMENT_TYPE: argument 1 of \"takes_bool\" has type i32, expected bool"
+      ]
+    },
+    {
+      "id": "argument-count",
+      "status": "passed",
+      "expectedDiagnostic": "E_ARITY",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_arity.uni:6:12: error E_ARITY: function \"add\" expects 2 argument(s), received 1"
+      ]
+    },
+    {
+      "id": "unknown-local-name",
+      "status": "passed",
+      "expectedDiagnostic": "E_UNKNOWN_NAME",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_unknown_name.uni:2:12: error E_UNKNOWN_NAME: unknown name \"missing\""
+      ]
+    },
+    {
+      "id": "unknown-function",
+      "status": "passed",
+      "expectedDiagnostic": "E_UNKNOWN_FUNCTION",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_unknown_function.uni:2:12: error E_UNKNOWN_FUNCTION: unknown function \"unknown_function\""
+      ]
+    },
+    {
+      "id": "missing-return",
+      "status": "passed",
+      "expectedDiagnostic": "E_MISSING_RETURN",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_missing_return.uni:1:4: error E_MISSING_RETURN: function \"main\" can reach the end without returning a value\n  hint: return a value of type i32 on every path"
+      ]
+    },
+    {
+      "id": "direct-recursion",
+      "status": "passed",
+      "expectedDiagnostic": "E_RECURSION",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_recursion.uni:1:4: error E_RECURSION: call graph contains a cycle: loop_forever -> loop_forever\n  hint: the POC core rejects direct and indirect recursion"
+      ]
+    },
+    {
+      "id": "indirect-recursion",
+      "status": "passed",
+      "expectedDiagnostic": "E_RECURSION",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_indirect_recursion.uni:1:4: error E_RECURSION: call graph contains a cycle: first -> second -> first\n  hint: the POC core rejects direct and indirect recursion"
+      ]
+    },
+    {
+      "id": "positive-min-literal",
+      "status": "passed",
+      "expectedDiagnostic": "E_INT_RANGE",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_positive_min.uni:2:12: error E_INT_RANGE: 2147483648 is out of range as a positive i32 literal\n  hint: write -2147483648 to represent the minimum value"
+      ]
+    },
+    {
+      "id": "chained-comparison",
+      "status": "passed",
+      "expectedDiagnostic": "E_CHAINED_COMPARISON",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_chained.uni:2:18: error E_CHAINED_COMPARISON: chained comparisons are rejected\n  hint: compare each pair separately and combine the Boolean results with && or ||"
+      ]
+    },
+    {
+      "id": "mixed-chained-comparison",
+      "status": "passed",
+      "expectedDiagnostic": "E_CHAINED_COMPARISON",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_chained_mixed.uni:2:18: error E_CHAINED_COMPARISON: chained comparisons are rejected\n  hint: compare each pair separately and combine the Boolean results with && or ||"
+      ]
+    },
+    {
+      "id": "non-boolean-condition",
+      "status": "passed",
+      "expectedDiagnostic": "E_CONDITION_TYPE",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_condition.uni:2:8: error E_CONDITION_TYPE: if condition must be bool, found i32"
+      ]
+    },
+    {
+      "id": "let-type-mismatch",
+      "status": "passed",
+      "expectedDiagnostic": "E_TYPE_MISMATCH",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_type_mismatch.uni:2:22: error E_TYPE_MISMATCH: cannot bind i32 to \"flag\" of type bool"
+      ]
+    },
+    {
+      "id": "operator-operand-type",
+      "status": "passed",
+      "expectedDiagnostic": "E_OPERATOR_TYPE",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_operator_type.uni:2:12: error E_OPERATOR_TYPE: operator \"+\" requires i32 operands, found bool and i32"
+      ]
+    },
+    {
+      "id": "redeclared-local",
+      "status": "passed",
+      "expectedDiagnostic": "E_REDECLARED_NAME",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_redeclare.uni:3:9: error E_REDECLARED_NAME: name \"x\" is already visible in this scope"
+      ]
+    },
+    {
+      "id": "duplicate-function",
+      "status": "passed",
+      "expectedDiagnostic": "E_DUPLICATE_FUNCTION",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_duplicate_function.uni:5:4: error E_DUPLICATE_FUNCTION: function \"main\" is declared more than once"
+      ]
+    },
+    {
+      "id": "return-type",
+      "status": "passed",
+      "expectedDiagnostic": "E_RETURN_TYPE",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_return_type.uni:2:12: error E_RETURN_TYPE: return value has type bool but the function returns i32"
+      ]
+    },
+    {
+      "id": "syntax-error",
+      "status": "passed",
+      "expectedDiagnostic": "E_SYNTAX",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_syntax.uni:3:1: error E_SYNTAX: expected \";\" but found \"}\""
+      ]
+    },
+    {
+      "id": "integer-range",
+      "status": "passed",
+      "expectedDiagnostic": "E_INT_RANGE",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_int_range.uni:2:13: error E_INT_RANGE: integer literal 2147483649 is outside the i32 range\n  hint: accepted range is -2147483648 through 2147483647"
+      ]
+    },
+    {
+      "id": "shadow-function",
+      "status": "passed",
+      "expectedDiagnostic": "E_NAME_SHADOWS_FUNCTION",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_shadow_function.uni:6:9: error E_NAME_SHADOWS_FUNCTION: local name \"helper\" shadows a function visible in this program\n  hint: choose a distinct name"
+      ]
+    },
+    {
+      "id": "duplicate-parameter",
+      "status": "passed",
+      "expectedDiagnostic": "E_DUPLICATE_PARAMETER",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_duplicate_param.uni:1:17: error E_DUPLICATE_PARAMETER: parameter \"x\" is declared more than once",
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_duplicate_param.uni:1:17: error E_REDECLARED_NAME: name \"x\" is already visible in this scope"
+      ]
+    },
+    {
+      "id": "profile-duplicate-keyword",
+      "status": "passed",
+      "expectedDiagnostic": "E_PROFILE_DUPLICATE_KEYWORD",
+      "diagnostics": [
+        "<config>: error E_PROFILE_DUPLICATE_KEYWORD: keyword \"function\" is used for both \"fn\" and \"let\""
+      ]
+    },
+    {
+      "id": "profile-unknown-option",
+      "status": "passed",
+      "expectedDiagnostic": "E_PROFILE_UNKNOWN_OPTION",
+      "diagnostics": [
+        "<config>: error E_PROFILE_UNKNOWN_OPTION: unknown profile option \"grammar\"\n  hint: the POC profile format has no executable or grammar extensions"
+      ]
+    },
+    {
+      "id": "profile-reassigned-canonical-word",
+      "status": "passed",
+      "expectedDiagnostic": "E_PROFILE_RESERVED_KEYWORD",
+      "diagnostics": [
+        "<config>: error E_PROFILE_RESERVED_KEYWORD: keyword \"let\" for \"fn\" is the canonical keyword for \"let\" and cannot be reassigned\n  hint: use \"let\" only for \"let\", or pick another word"
+      ]
+    },
+    {
+      "id": "profile-missing-role",
+      "status": "passed",
+      "expectedDiagnostic": "E_PROFILE_MISSING_ROLE",
+      "diagnostics": [
+        "<config>: error E_PROFILE_MISSING_ROLE: missing keyword role \"false\""
+      ]
+    },
+    {
+      "id": "profile-incompatible-core",
+      "status": "passed",
+      "expectedDiagnostic": "E_PROFILE_CORE_VERSION",
+      "diagnostics": [
+        "<config>: error E_PROFILE_CORE_VERSION: profile targets core \"9.9\" but this compiler implements core \"0.1\" only\n  hint: regenerate the profile from the documented core version"
+      ]
+    },
+    {
+      "id": "profile-keyword-form",
+      "status": "passed",
+      "expectedDiagnostic": "E_PROFILE_KEYWORD_FORM",
+      "diagnostics": [
+        "<config>: error E_PROFILE_KEYWORD_FORM: keyword for \"fn\" must match [A-Za-z_][A-Za-z0-9_]* (received \"9function\")"
+      ]
+    },
+    {
+      "id": "profile-type-name-collision",
+      "status": "passed",
+      "expectedDiagnostic": "E_PROFILE_RESERVED_KEYWORD",
+      "diagnostics": [
+        "<config>: error E_PROFILE_RESERVED_KEYWORD: keyword \"i32\" for \"fn\" collides with a reserved type name"
+      ]
+    }
+  ],
+  "summary": {
+    "cases": 29,
+    "targets": 464,
+    "passed": 520,
+    "failed": 0,
+    "blocked": 0
+  }
+}

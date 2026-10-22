@@ -1,0 +1,52 @@
+{
+  "schema": "uni-environment/1",
+  "generatedAt": "2026-10-22T02:24:31.931Z",
+  "compilerVersion": "0.1.0",
+  "coreVersion": "0.1",
+  "node": "v24.21.0",
+  "platform": "win32-x64",
+  "toolchains": [
+    {
+      "target": "csharp",
+      "name": ".NET SDK",
+      "available": true,
+      "version": "10.0.401",
+      "detail": "",
+      "commands": [
+        "dotnet"
+      ]
+    },
+    {
+      "target": "rust",
+      "name": "Rust (cargo)",
+      "available": true,
+      "version": "cargo 1.98.1 (797e8a9bc 2026-08-05); rustc 1.98.1 (48a229cea 2026-09-01)",
+      "detail": "",
+      "commands": [
+        "cargo",
+        "rustc"
+      ]
+    },
+    {
+      "target": "go",
+      "name": "Go",
+      "available": true,
+      "version": "go version go1.27.0 windows/amd64",
+      "detail": "",
+      "commands": [
+        "go"
+      ]
+    },
+    {
+      "target": "java",
+      "name": "Java (javac)",
+      "available": true,
+      "version": "javac 21.0.12.1; openjdk version \"21.0.12.1\" 2026-08-18 LTS",
+      "detail": "",
+      "commands": [
+        "javac",
+        "java"
+      ]
+    }
+  ]
+}

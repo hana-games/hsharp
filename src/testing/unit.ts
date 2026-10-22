@@ -1,0 +1,328 @@
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+import assert from "node:assert/strict";
+import { normalizeAst } from "../contracts/ast";
+import { evaluate } from "../reference/interpreter";
+import { analyze } from "../pipeline";
+import { loadProfileFile, STANDARD_PROFILE } from "../frontend/profile";
+import { exportSyntax, importSyntax } from "../syntax/transfer";
+
+let failures = 0;
+let count = 0;
+
+function test(name: string, body: () => void): void {
+  count++;
+  try {
+    body();
+    console.log(`ok   ${name}`);
+  } catch (cause) {
+    failures++;
+    console.error(`FAIL ${name}`);
+    console.error((cause as Error).stack ?? (cause as Error).message);
+  }
+}
+
+function tempDir(): string {
+  const root = resolve("local");
+  mkdirSync(root, { recursive: true });
+  return mkdtempSync(join(root, "unit-"));
+}
+
+function resultOf(source: string, entry = "main", args: (number | boolean)[] = []) {
+  const loaded = analyze(source, "<unit>", STANDARD_PROFILE);
+  assert.ok(loaded.typed, `expected a valid program: ${loaded.diagnostics.map((d) => d.message).join("; ")}`);
+  return evaluate(loaded.typed!, entry, { values: args });
+}
+
+const profiles = ["standard", "my-syntax", "terse", "casual"].map((id) => {
+  const loaded = loadProfileFile(resolve("profiles", `${id}.json`));
+  assert.ok(loaded.loaded, `profile ${id} should be valid`);
+  return loaded.loaded!.profile;
+});
+
+test("standard profile matches canonical keywords", () => {
+  assert.deepEqual(profiles[0].keywords, STANDARD_PROFILE.keywords);
+});
+
+test("profile conversion preserves normalized AST for every profile", () => {
+  const source = readFileSync(resolve("examples", "calculate.uni"), "utf8");
+  const canonical = analyze(source, "<canonical>", STANDARD_PROFILE);
+  assert.ok(canonical.program && canonical.tokens);
+  for (const profile of profiles) {
+    const { convert } = require("../frontend/convert") as typeof import("../frontend/convert");
+    const converted = convert(canonical.tokens!, STANDARD_PROFILE, profile);
+    assert.deepEqual(converted.diagnostics, [], `conversion to ${profile.id}`);
+    const parsed = analyze(converted.text, `<${profile.id}>`, profile);
+    assert.ok(parsed.program, `parse under ${profile.id}: ${parsed.diagnostics.map((d) => d.message).join("; ")}`);
+    assert.deepEqual(
+      normalizeAst(parsed.program!),
+      normalizeAst(canonical.program!),
+      `normalized AST under ${profile.id}`,
+    );
+  }
+});
+
+test("token conversion changes keywords only", () => {
+  const source = `// return let if else fn true false
+fn return_value(x: i32) -> i32 {
+    // returns and returning are identifiers, not keywords
+    let result: i32 = x + 1;
+    return result;
+}
+`;
+  const canonical = analyze(source, "<canonical>", STANDARD_PROFILE);
+  assert.ok(canonical.tokens);
+  const mySyntax = profiles.find((profile) => profile.id === "my-syntax")!;
+  const { convert } = require("../frontend/convert") as typeof import("../frontend/convert");
+  const converted = convert(canonical.tokens!, STANDARD_PROFILE, mySyntax);
+  assert.deepEqual(converted.diagnostics, []);
+  assert.match(converted.text, /^\/\/ return let if else fn true false/m);
+  assert.match(converted.text, /function return_value/);
+  assert.match(converted.text, /value result/);
+  assert.match(converted.text, /give result;/);
+  assert.match(converted.text, /\/\/ returns and returning are identifiers/);
+});
+
+test("profile validation rejects bad profiles with specific codes", () => {
+  const expectations: [string, string][] = [
+    ["bad-duplicate.json", "E_PROFILE_DUPLICATE_KEYWORD"],
+    ["bad-option.json", "E_PROFILE_UNKNOWN_OPTION"],
+    ["bad-reassigned.json", "E_PROFILE_RESERVED_KEYWORD"],
+    ["bad-missing.json", "E_PROFILE_MISSING_ROLE"],
+    ["bad-core.json", "E_PROFILE_CORE_VERSION"],
+    ["bad-form.json", "E_PROFILE_KEYWORD_FORM"],
+    ["bad-type-collision.json", "E_PROFILE_RESERVED_KEYWORD"],
+  ];
+  for (const [file, code] of expectations) {
+    const loaded = loadProfileFile(resolve("tests", "negative", "profiles", file));
+    assert.equal(loaded.loaded, undefined, `${file} must be rejected`);
+    assert.ok(
+      loaded.diagnostics.some((diagnostic) => diagnostic.code === code),
+      `${file} should report ${code}, got ${loaded.diagnostics.map((d) => d.code).join(", ")}`,
+    );
+  }
+});
+
+test("arithmetic precedence evaluates to 14", () => {
+  assert.deepEqual(resultOf("fn main() -> i32 {\n    return 2 + 3 * 4;\n}\n"), {
+    status: "ok",
+    type: "i32",
+    value: 14,
+  });
+});
+
+test("checked arithmetic and boundaries", () => {
+  assert.deepEqual(resultOf("fn main() -> i32 { return 2147483647; }"), {
+    status: "ok",
+    type: "i32",
+    value: 2147483647,
+  });
+  const addOverflow = resultOf("fn main(x: i32) -> i32 { return x + 1; }", "main", [2147483647]);
+  assert.equal(addOverflow.status, "error");
+  assert.equal(addOverflow.status === "error" ? addOverflow.code : "", "E_OVERFLOW");
+  const negOverflow = resultOf("fn main(x: i32) -> i32 { return -x; }", "main", [-2147483648]);
+  assert.equal(negOverflow.status, "error");
+  assert.equal(negOverflow.status === "error" ? negOverflow.code : "", "E_OVERFLOW");
+  assert.deepEqual(resultOf("fn main() -> i32 { return -2147483648; }"), {
+    status: "ok",
+    type: "i32",
+    value: -2147483648,
+  });
+});
+
+test("short-circuit avoids evaluating a failing right operand", () => {
+  assert.deepEqual(
+    resultOf("fn main(x: i32) -> bool { return false && ((x + 1) > 0); }", "main", [2147483647]),
+    { status: "ok", type: "bool", value: false },
+  );
+  assert.deepEqual(
+    resultOf("fn main(x: i32) -> bool { return true || ((x + 1) > 0); }", "main", [2147483647]),
+    { status: "ok", type: "bool", value: true },
+  );
+});
+
+test("export and reimport preserve comments and apply edits", () => {
+  const dir = tempDir();
+  const canonical = join(dir, "canonical.uni");
+  const personal = join(dir, "personal.uni");
+  copyFileSync(resolve("examples", "calculate.uni"), canonical);
+
+  const exported = exportSyntax({
+    sourceFile: canonical,
+    profileFile: resolve("profiles", "my-syntax.json"),
+    outputFile: personal,
+  });
+  assert.equal(exported.diagnostics.length, 0);
+  assert.ok(exported.manifest);
+  const personalText = readFileSync(personal, "utf8");
+  assert.match(personalText, /function calculate/);
+  assert.match(personalText, /value base: i32/);
+  assert.match(personalText, /when bonus/);
+  assert.match(personalText, /\/\/ The word "return" inside this comment/);
+
+  const untouched = importSyntax({ personalFile: personal, dryRun: true });
+  assert.equal(untouched.diagnostics.length, 0);
+  assert.equal(untouched.nextText, readFileSync(canonical, "utf8"));
+
+  writeFileSync(personal, personalText.replace("give base + 2;", "give base + 9;"), "utf8");
+  const imported = importSyntax({ personalFile: personal });
+  assert.equal(imported.diagnostics.length, 0);
+  assert.match(readFileSync(canonical, "utf8"), /return base \+ 9;/);
+  assert.match(readFileSync(canonical, "utf8"), /\/\/ The word "return" inside this comment/);
+});
+
+test("reimport rejects a stale canonical base", () => {
+  const dir = tempDir();
+  const canonical = join(dir, "canonical.uni");
+  const personal = join(dir, "personal.uni");
+  copyFileSync(resolve("examples", "calculate.uni"), canonical);
+  const exported = exportSyntax({
+    sourceFile: canonical,
+    profileFile: resolve("profiles", "my-syntax.json"),
+    outputFile: personal,
+  });
+  assert.equal(exported.diagnostics.length, 0);
+
+  writeFileSync(canonical, `${readFileSync(canonical, "utf8")}\n// concurrent edit\n`, "utf8");
+  const imported = importSyntax({ personalFile: personal });
+  assert.ok(imported.diagnostics.some((diagnostic) => diagnostic.code === "E_IMPORT_STALE_BASE"));
+});
+
+test("reimport rejects a changed profile", () => {
+  const dir = tempDir();
+  const canonical = join(dir, "canonical.uni");
+  const personal = join(dir, "personal.uni");
+  const profile = join(dir, "profile.json");
+  copyFileSync(resolve("examples", "calculate.uni"), canonical);
+  copyFileSync(resolve("profiles", "my-syntax.json"), profile);
+  const exported = exportSyntax({ sourceFile: canonical, profileFile: profile, outputFile: personal });
+  assert.equal(exported.diagnostics.length, 0);
+
+  writeFileSync(profile, `${readFileSync(profile, "utf8")}\n`, "utf8");
+  const imported = importSyntax({ personalFile: personal });
+  assert.ok(imported.diagnostics.some((diagnostic) => diagnostic.code === "E_IMPORT_PROFILE_CHANGED"));
+});
+
+test("a successful import refreshes the manifest for the next cycle", () => {
+  const dir = tempDir();
+  const canonical = join(dir, "canonical.uni");
+  const personal = join(dir, "personal.uni");
+  copyFileSync(resolve("examples", "calculate.uni"), canonical);
+  const exported = exportSyntax({
+    sourceFile: canonical,
+    profileFile: resolve("profiles", "my-syntax.json"),
+    outputFile: personal,
+  });
+  assert.equal(exported.diagnostics.length, 0);
+
+  writeFileSync(personal, readFileSync(personal, "utf8").replace("give base + 2;", "give base + 4;"), "utf8");
+  const first = importSyntax({ personalFile: personal });
+  assert.equal(first.diagnostics.length, 0);
+  assert.equal(first.applied, true);
+
+  const second = importSyntax({ personalFile: personal, dryRun: true });
+  assert.deepEqual(second.diagnostics, []);
+  assert.equal(second.nextText, readFileSync(canonical, "utf8"));
+
+  writeFileSync(personal, readFileSync(personal, "utf8").replace("give base + 4;", "give base + 5;"), "utf8");
+  const third = importSyntax({ personalFile: personal });
+  assert.deepEqual(third.diagnostics, []);
+  assert.match(readFileSync(canonical, "utf8"), /return base \+ 5;/);
+});
+
+test("a malformed manifest produces a diagnostic instead of throwing", () => {
+  const dir = tempDir();
+  const personal = join(dir, "personal.uni");
+  writeFileSync(personal, "fn main() -> i32 { return 1; }\n", "utf8");
+  writeFileSync(`${personal}.manifest.json`, JSON.stringify({ schema: "uni-export/1" }), "utf8");
+  const imported = importSyntax({ personalFile: personal });
+  assert.ok(imported.diagnostics.some((diagnostic) => diagnostic.code === "E_IMPORT_MANIFEST"));
+});
+
+test("export refuses to overwrite the canonical source", () => {
+  const dir = tempDir();
+  const canonical = join(dir, "canonical.uni");
+  copyFileSync(resolve("examples", "calculate.uni"), canonical);
+  const before = readFileSync(canonical, "utf8");
+  const exported = exportSyntax({
+    sourceFile: canonical,
+    profileFile: resolve("profiles", "my-syntax.json"),
+    outputFile: canonical,
+  });
+  assert.ok(exported.diagnostics.some((diagnostic) => diagnostic.code === "E_EXPORT_PATH"));
+  assert.equal(readFileSync(canonical, "utf8"), before);
+});
+
+test("interpreter rejects non-i32 harness arguments", () => {
+  const loaded = analyze("fn main(x: i32) -> i32 { return x; }", "<unit>", STANDARD_PROFILE);
+  assert.ok(loaded.typed);
+  for (const value of [2147483648, -2147483649, 1.5, Number.NaN]) {
+    assert.throws(
+      () => evaluate(loaded.typed!, "main", { values: [value] }),
+      /Boolean or an integer in the i32 range/,
+    );
+  }
+});
+
+test("BOM-prefixed source is accepted", () => {
+  const loaded = analyze("\uFEFFfn main() -> i32 { return 1; }\n", "<bom>", STANDARD_PROFILE);
+  assert.ok(loaded.typed, loaded.diagnostics.map((d) => d.message).join("; "));
+});
+
+test("leading zeros and grouped comparisons follow the core rules", () => {
+  assert.deepEqual(resultOf("fn main() -> i32 { return -02147483648; }"), {
+    status: "ok",
+    type: "i32",
+    value: -2147483648,
+  });
+  assert.deepEqual(resultOf("fn main() -> bool { return (1 < 2) == (3 < 4); }"), {
+    status: "ok",
+    type: "bool",
+    value: true,
+  });
+  const chained = analyze("fn main() -> bool { return 1 < 2 == 3; }", "<unit>", STANDARD_PROFILE);
+  assert.ok(chained.diagnostics.some((diagnostic) => diagnostic.code === "E_CHAINED_COMPARISON"));
+});
+
+test("export rejects an identifier that collides with a profile keyword", () => {
+  const dir = tempDir();
+  const canonical = join(dir, "collision.uni");
+  const personal = join(dir, "collision.personal.uni");
+  writeFileSync(canonical, "fn function(x: i32) -> i32 { return x; }\n", "utf8");
+  const exported = exportSyntax({
+    sourceFile: canonical,
+    profileFile: resolve("profiles", "my-syntax.json"),
+    outputFile: personal,
+  });
+  assert.ok(exported.diagnostics.some((diagnostic) => diagnostic.code === "E_PROFILE_IDENTIFIER_COLLISION"));
+});
+
+test("profile alias is reserved even when it is a canonical word", () => {
+  const mySyntax = profiles.find((profile) => profile.id === "my-syntax")!;
+  const loaded = analyze(
+    "function bad(x: i32) -> i32 { value y: i32 = x; give return; }\n",
+    "<personal>",
+    mySyntax,
+  );
+  assert.ok(!loaded.typed);
+  assert.ok(loaded.diagnostics.some((diagnostic) => diagnostic.code === "E_RESERVED_WORD"));
+});
+
+test("generated target names are deterministic and avoid source names", () => {
+  const { emit } = require("../backends") as typeof import("../backends");
+  const loaded = analyze(
+    "fn int(class: i32) -> i32 { let string: i32 = class + 1; return string; }\n",
+    "<unit>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(loaded.typed);
+  for (const target of ["csharp", "rust", "go", "java"] as const) {
+    const project = emit(loaded.typed!, target, "int");
+    const text = project.files.map((file) => file.content).join("\n");
+    assert.match(text, /f1/, `${target} should use a generated function name`);
+    assert.match(text, /v1/, `${target} should use a generated local name`);
+  }
+});
+
+console.log(`\n${count - failures}/${count} unit tests passed`);
+if (failures > 0) process.exitCode = 1;

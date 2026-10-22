@@ -1,0 +1,16 @@
+{
+  "id": "bad-option",
+  "version": "1",
+  "core": "0.1",
+  "family": "braces",
+  "grammar": "fn x => x",
+  "keywords": {
+    "fn": "function",
+    "let": "value",
+    "if": "when",
+    "else": "otherwise",
+    "return": "give",
+    "true": "yes",
+    "false": "no"
+  }
+}

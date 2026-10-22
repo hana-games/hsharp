@@ -1,0 +1,15 @@
+{
+  "id": "bad-core",
+  "version": "1",
+  "core": "9.9",
+  "family": "braces",
+  "keywords": {
+    "fn": "fn",
+    "let": "let",
+    "if": "if",
+    "else": "else",
+    "return": "return",
+    "true": "true",
+    "false": "false"
+  }
+}

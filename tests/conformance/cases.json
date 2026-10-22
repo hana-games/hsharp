@@ -1,0 +1,340 @@
+{
+  "schema": "uni-conformance/1",
+  "profiles": [
+    "../../profiles/standard.json",
+    "../../profiles/my-syntax.json",
+    "../../profiles/terse.json",
+    "../../profiles/casual.json"
+  ],
+  "cases": [
+    {
+      "id": "demo-bonus-true",
+      "program": "programs/demo.uni",
+      "entry": "calculate",
+      "args": [10, true],
+      "expected": { "status": "ok", "type": "i32", "value": 32 },
+      "notes": "Specification example: x = 10, bonus = true."
+    },
+    {
+      "id": "demo-bonus-false",
+      "program": "programs/demo.uni",
+      "entry": "calculate",
+      "args": [10, false],
+      "expected": { "status": "ok", "type": "i32", "value": 30 }
+    },
+    {
+      "id": "function-call",
+      "program": "programs/calls.uni",
+      "entry": "main",
+      "args": [20],
+      "expected": { "status": "ok", "type": "i32", "value": 22 }
+    },
+    {
+      "id": "precedence",
+      "program": "programs/precedence.uni",
+      "args": [],
+      "expected": { "status": "ok", "type": "i32", "value": 14 }
+    },
+    {
+      "id": "parentheses",
+      "program": "programs/parentheses.uni",
+      "args": [],
+      "expected": { "status": "ok", "type": "i32", "value": 20 }
+    },
+    {
+      "id": "left-associativity",
+      "program": "programs/associativity.uni",
+      "args": [],
+      "expected": { "status": "ok", "type": "i32", "value": 5 }
+    },
+    {
+      "id": "subtraction-grouping",
+      "program": "programs/subtraction_grouping.uni",
+      "args": [],
+      "expected": { "status": "ok", "type": "i32", "value": 7 }
+    },
+    {
+      "id": "i32-minimum",
+      "program": "programs/bounds.uni",
+      "entry": "min_value",
+      "args": [],
+      "expected": { "status": "ok", "type": "i32", "value": -2147483648 }
+    },
+    {
+      "id": "i32-maximum",
+      "program": "programs/bounds.uni",
+      "entry": "max_value",
+      "args": [],
+      "expected": { "status": "ok", "type": "i32", "value": 2147483647 }
+    },
+    {
+      "id": "overflow-add-max",
+      "program": "programs/overflow_add.uni",
+      "args": [2147483647],
+      "expected": { "status": "error", "code": "E_OVERFLOW", "node": 5 }
+    },
+    {
+      "id": "add-at-max-boundary",
+      "program": "programs/overflow_add.uni",
+      "args": [2147483646],
+      "expected": { "status": "ok", "type": "i32", "value": 2147483647 }
+    },
+    {
+      "id": "overflow-subtract-min",
+      "program": "programs/overflow_sub.uni",
+      "args": [-2147483648],
+      "expected": { "status": "error", "code": "E_OVERFLOW", "node": 5 }
+    },
+    {
+      "id": "overflow-multiply-min",
+      "program": "programs/overflow_mul.uni",
+      "args": [-2147483648],
+      "expected": { "status": "error", "code": "E_OVERFLOW", "node": 6 }
+    },
+    {
+      "id": "multiply-negative-one",
+      "program": "programs/overflow_mul.uni",
+      "args": [5],
+      "expected": { "status": "ok", "type": "i32", "value": -5 }
+    },
+    {
+      "id": "overflow-negate-min",
+      "program": "programs/overflow_neg.uni",
+      "args": [-2147483648],
+      "expected": { "status": "error", "code": "E_OVERFLOW", "node": 4 }
+    },
+    {
+      "id": "negate-positive",
+      "program": "programs/overflow_neg.uni",
+      "args": [5],
+      "expected": { "status": "ok", "type": "i32", "value": -5 }
+    },
+    {
+      "id": "short-circuit-and",
+      "program": "programs/short_circuit_and.uni",
+      "args": [2147483647],
+      "expected": { "status": "ok", "type": "bool", "value": false },
+      "notes": "The right operand would overflow but must not be evaluated."
+    },
+    {
+      "id": "short-circuit-or",
+      "program": "programs/short_circuit_or.uni",
+      "args": [2147483647],
+      "expected": { "status": "ok", "type": "bool", "value": true }
+    },
+    {
+      "id": "comparison-true",
+      "program": "programs/comparisons.uni",
+      "args": [1, 2],
+      "expected": { "status": "ok", "type": "bool", "value": true }
+    },
+    {
+      "id": "comparison-false",
+      "program": "programs/comparisons.uni",
+      "args": [2, 1],
+      "expected": { "status": "ok", "type": "bool", "value": false }
+    },
+    {
+      "id": "bool-logic",
+      "program": "programs/bool_logic.uni",
+      "args": [true, false],
+      "expected": { "status": "ok", "type": "bool", "value": true }
+    },
+    {
+      "id": "if-else-negative",
+      "program": "programs/if_else.uni",
+      "args": [-5],
+      "expected": { "status": "ok", "type": "i32", "value": -1 }
+    },
+    {
+      "id": "if-else-zero",
+      "program": "programs/if_else.uni",
+      "args": [0],
+      "expected": { "status": "ok", "type": "i32", "value": 0 }
+    },
+    {
+      "id": "if-else-positive",
+      "program": "programs/if_else.uni",
+      "args": [5],
+      "expected": { "status": "ok", "type": "i32", "value": 1 }
+    },
+    {
+      "id": "target-reserved-names",
+      "program": "programs/target_names.uni",
+      "entry": "int",
+      "args": [41],
+      "expected": { "status": "ok", "type": "i32", "value": 42 },
+      "notes": "Uni names int/class/string must not leak into target identifiers."
+    },
+    {
+      "id": "comments-preserved",
+      "program": "programs/comments.uni",
+      "args": [],
+      "expected": { "status": "ok", "type": "i32", "value": 7 }
+    },
+    {
+      "id": "dead-code-after-return",
+      "program": "programs/dead_code.uni",
+      "args": [],
+      "expected": { "status": "ok", "type": "i32", "value": 1 },
+      "notes": "Unreachable declarations are checked but omitted from generated code."
+    },
+    {
+      "id": "dead-code-after-if",
+      "program": "programs/dead_after_if.uni",
+      "args": [1],
+      "expected": { "status": "ok", "type": "i32", "value": 1 }
+    },
+    {
+      "id": "grouped-comparison-equality",
+      "program": "programs/grouped_comparisons.uni",
+      "args": [],
+      "expected": { "status": "ok", "type": "bool", "value": true },
+      "notes": "Explicit parentheses permit Boolean equality of comparison results."
+    }
+  ],
+  "negative": [
+    {
+      "id": "argument-type",
+      "program": "programs/neg_argument_type.uni",
+      "expectDiagnostic": "E_ARGUMENT_TYPE"
+    },
+    {
+      "id": "argument-count",
+      "program": "programs/neg_arity.uni",
+      "expectDiagnostic": "E_ARITY"
+    },
+    {
+      "id": "unknown-local-name",
+      "program": "programs/neg_unknown_name.uni",
+      "expectDiagnostic": "E_UNKNOWN_NAME"
+    },
+    {
+      "id": "unknown-function",
+      "program": "programs/neg_unknown_function.uni",
+      "expectDiagnostic": "E_UNKNOWN_FUNCTION"
+    },
+    {
+      "id": "missing-return",
+      "program": "programs/neg_missing_return.uni",
+      "expectDiagnostic": "E_MISSING_RETURN"
+    },
+    {
+      "id": "direct-recursion",
+      "program": "programs/neg_recursion.uni",
+      "expectDiagnostic": "E_RECURSION"
+    },
+    {
+      "id": "indirect-recursion",
+      "program": "programs/neg_indirect_recursion.uni",
+      "expectDiagnostic": "E_RECURSION"
+    },
+    {
+      "id": "positive-min-literal",
+      "program": "programs/neg_positive_min.uni",
+      "expectDiagnostic": "E_INT_RANGE"
+    },
+    {
+      "id": "chained-comparison",
+      "program": "programs/neg_chained.uni",
+      "expectDiagnostic": "E_CHAINED_COMPARISON"
+    },
+    {
+      "id": "mixed-chained-comparison",
+      "program": "programs/neg_chained_mixed.uni",
+      "expectDiagnostic": "E_CHAINED_COMPARISON"
+    },
+    {
+      "id": "non-boolean-condition",
+      "program": "programs/neg_condition.uni",
+      "expectDiagnostic": "E_CONDITION_TYPE"
+    },
+    {
+      "id": "let-type-mismatch",
+      "program": "programs/neg_type_mismatch.uni",
+      "expectDiagnostic": "E_TYPE_MISMATCH"
+    },
+    {
+      "id": "operator-operand-type",
+      "program": "programs/neg_operator_type.uni",
+      "expectDiagnostic": "E_OPERATOR_TYPE"
+    },
+    {
+      "id": "redeclared-local",
+      "program": "programs/neg_redeclare.uni",
+      "expectDiagnostic": "E_REDECLARED_NAME"
+    },
+    {
+      "id": "duplicate-function",
+      "program": "programs/neg_duplicate_function.uni",
+      "expectDiagnostic": "E_DUPLICATE_FUNCTION"
+    },
+    {
+      "id": "return-type",
+      "program": "programs/neg_return_type.uni",
+      "expectDiagnostic": "E_RETURN_TYPE"
+    },
+    {
+      "id": "syntax-error",
+      "program": "programs/neg_syntax.uni",
+      "expectDiagnostic": "E_SYNTAX"
+    },
+    {
+      "id": "integer-range",
+      "program": "programs/neg_int_range.uni",
+      "expectDiagnostic": "E_INT_RANGE"
+    },
+    {
+      "id": "shadow-function",
+      "program": "programs/neg_shadow_function.uni",
+      "expectDiagnostic": "E_NAME_SHADOWS_FUNCTION"
+    },
+    {
+      "id": "duplicate-parameter",
+      "program": "programs/neg_duplicate_param.uni",
+      "expectDiagnostic": "E_DUPLICATE_PARAMETER"
+    },
+    {
+      "id": "profile-duplicate-keyword",
+      "kind": "profile",
+      "profile": "../negative/profiles/bad-duplicate.json",
+      "expectDiagnostic": "E_PROFILE_DUPLICATE_KEYWORD"
+    },
+    {
+      "id": "profile-unknown-option",
+      "kind": "profile",
+      "profile": "../negative/profiles/bad-option.json",
+      "expectDiagnostic": "E_PROFILE_UNKNOWN_OPTION"
+    },
+    {
+      "id": "profile-reassigned-canonical-word",
+      "kind": "profile",
+      "profile": "../negative/profiles/bad-reassigned.json",
+      "expectDiagnostic": "E_PROFILE_RESERVED_KEYWORD"
+    },
+    {
+      "id": "profile-missing-role",
+      "kind": "profile",
+      "profile": "../negative/profiles/bad-missing.json",
+      "expectDiagnostic": "E_PROFILE_MISSING_ROLE"
+    },
+    {
+      "id": "profile-incompatible-core",
+      "kind": "profile",
+      "profile": "../negative/profiles/bad-core.json",
+      "expectDiagnostic": "E_PROFILE_CORE_VERSION"
+    },
+    {
+      "id": "profile-keyword-form",
+      "kind": "profile",
+      "profile": "../negative/profiles/bad-form.json",
+      "expectDiagnostic": "E_PROFILE_KEYWORD_FORM"
+    },
+    {
+      "id": "profile-type-name-collision",
+      "kind": "profile",
+      "profile": "../negative/profiles/bad-type-collision.json",
+      "expectDiagnostic": "E_PROFILE_RESERVED_KEYWORD"
+    }
+  ]
+}

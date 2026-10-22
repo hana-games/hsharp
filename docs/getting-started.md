@@ -1,0 +1,181 @@
+# Getting Started
+
+## 1. Pinned environment
+
+The POC was built and verified with these versions. Pin them for reproducible results.
+
+| Tool | Version used | Requirement |
+|---|---|---|
+| Node.js | 24.21.0 | 22 or later |
+| npm | 12.0.2 | ships with Node |
+| TypeScript | 7.0.2 | dev dependency, pinned in `package.json` |
+| @types/node | 24.10.1 | dev dependency, pinned |
+| .NET SDK | 10.0.401 | 10 or later (`net10.0`) |
+| Cargo / rustc | 1.98.1 / 1.98.1 | edition 2021 support |
+| Go | 1.27.0 | 1.22 or later |
+| Java | Microsoft OpenJDK 21.0.12.1 | `javac` and `java` on PATH |
+
+`npm install` uses the committed `package-lock.json`. Runtime dependencies: none.
+
+`uni doctor --json` writes `reports/environment.json` with the versions actually detected on the current machine.
+
+### Installing missing toolchains on Windows
+
+```powershell
+winget install --id GoLang.Go -e
+winget install --id Microsoft.OpenJDK.21 -e
+```
+
+.NET and Rust were already present in the verified environment. Restart the shell after installation if a command is not found.
+
+## 2. Build
+
+```powershell
+cd D:\Github\hsharp
+npm install
+npm run build
+```
+
+The compiled CLI is `dist/cli/index.js`. Run it with `node dist/cli/index.js ...`, or install the `uni` command once:
+
+```powershell
+npm link
+uni --help
+```
+
+## 3. Verify the environment
+
+```powershell
+uni doctor
+```
+
+Every required toolchain must show `available`. If one is missing, conformance marks that target **blocked** and exits 2; it never reports a pass.
+
+## 4. Check and run the demonstration
+
+```powershell
+uni check examples/calculate.uni
+uni demo
+```
+
+`uni demo` performs the complete workflow in `local/demo/`:
+
+1. copies the canonical example;
+2. exports it to the `my-syntax` profile;
+3. edits personal notation (`base + 2` → `base + 3`);
+4. reimports the edit;
+5. runs the reference interpreter and all four targets;
+6. expects `33` everywhere.
+
+## 5. Basic commands
+
+### Check
+
+```powershell
+uni check examples/calculate.uni
+uni check local/calculate.uni --profile profiles/my-syntax.json
+```
+
+### Build a target
+
+```powershell
+uni build examples/calculate.uni --target rust --entry calculate
+uni build examples/calculate.uni --target csharp --entry calculate --run --args 10,true
+```
+
+Generated projects are written under `build/<program>/<target>/` by default. They are ordinary projects; the target's own tools compile and run them.
+
+### Run the full conformance suite
+
+```powershell
+uni test --all-targets
+```
+
+Reports are written to `reports/conformance.json` and `reports/conformance.md`.
+
+- exit 0: all executed checks passed;
+- exit 1: a case, build, run, or negative check failed;
+- exit 2: at least one target was blocked.
+
+`uni test --quick` checks the reference interpreter and profile structure only. Its report is explicitly labelled **interpreter-only**.
+
+## 6. Personal syntax workflow
+
+### Export
+
+```powershell
+uni syntax export examples/calculate.uni `
+  --profile profiles/my-syntax.json `
+  --out local/calculate.uni
+```
+
+This writes `local/calculate.uni` plus `local/calculate.uni.manifest.json`. The manifest records the canonical and profile fingerprints.
+
+### Edit
+
+Edit `local/calculate.uni` in the personal notation, for example:
+
+```text
+function calculate(x: i32, bonus: bool) -> i32 {
+    value base: i32 = x * 3;
+
+    when bonus {
+        give base + 3;
+    }
+
+    give base;
+}
+```
+
+### Check the personal file
+
+```powershell
+uni check local/calculate.uni --profile profiles/my-syntax.json
+```
+
+Diagnostics point to the personal file's line and column.
+
+### Reimport
+
+```powershell
+uni syntax import local/calculate.uni
+```
+
+Preview first with `--dry-run`. Reimport rejects:
+
+- a canonical file that changed since export (`E_IMPORT_STALE_BASE`);
+- a profile whose contents changed since export (`E_IMPORT_PROFILE_CHANGED`);
+- a manifest belonging to another personal file;
+- a personal file that no longer parses or checks.
+
+After a successful import the manifest is refreshed, so the next edit/import cycle can proceed without re-exporting.
+
+## 7. Create your own profile without touching the compiler
+
+Copy a profile and change its `id` and seven `keywords` values:
+
+```powershell
+Copy-Item profiles/casual.json profiles/my-profile.json
+```
+
+Keep `"version": "1"`, `"core": "0.1"`, and `"family": "braces"`. Choose distinct words that do not collide with `i32` or `bool`, and do not reassign a canonical keyword to a different role. Then export canonical source into that notation before checking or editing it:
+
+```powershell
+uni syntax export examples/calculate.uni --profile profiles/my-profile.json --out local/my.uni
+uni check local/my.uni --profile profiles/my-profile.json
+uni build local/my.uni --profile profiles/my-profile.json --target rust --entry calculate
+```
+
+Profile validation errors identify the exact problem. Checking canonical source directly with a personal profile is rejected because canonical source uses the standard keyword spellings.
+
+## 8. Troubleshooting
+
+| Symptom | Cause |
+|---|---|
+| `E_RESERVED_WORD` | A canonical keyword such as `let` was used as an identifier under a remapped profile |
+| `E_PROFILE_RESERVED_KEYWORD` | A profile reassigns a canonical keyword or uses `i32`/`bool` |
+| `E_PROFILE_IDENTIFIER_COLLISION` | A program identifier equals a target profile's keyword word |
+| `E_IMPORT_STALE_BASE` | Canonical source changed after export; re-export or rebase manually |
+| `E_IMPORT_PROFILE_CHANGED` | Profile file changed after export |
+| Target blocked | Toolchain missing or too old; run `uni doctor` |
+| Java unreachable-code error | Should not occur; report as a compiler defect (dead code is omitted) |
