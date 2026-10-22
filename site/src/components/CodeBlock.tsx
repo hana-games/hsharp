@@ -10,6 +10,7 @@ interface CodeBlockProps {
   meta?: string;
   className?: string;
   maxHeight?: string;
+  showCopy?: boolean;
 }
 
 export function CodeBlock({
@@ -20,6 +21,7 @@ export function CodeBlock({
   meta,
   className = "",
   maxHeight,
+  showCopy = true,
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
   const t = useT();
@@ -41,12 +43,14 @@ export function CodeBlock({
         <div className="code-frame-head">
           <span className="code-frame-title">{title}</span>
           <span className="code-frame-meta">{meta}</span>
-          <button type="button" className="copy-button" onClick={copy}>
-            {copied ? t("Copied") : t("Copy")}
-          </button>
+          {showCopy && (
+            <button type="button" className="copy-button" onClick={copy}>
+              {copied ? t("Copied") : t("Copy")}
+            </button>
+          )}
         </div>
       )}
-      {!title && !meta && (
+      {!title && !meta && showCopy && (
         <button type="button" className="copy-button copy-button-float" onClick={copy}>
           {copied ? t("Copied") : t("Copy")}
         </button>
