@@ -7,6 +7,9 @@ export const site = {
   coreVersion: siteData.meta.coreVersion,
   description:
     "One semantic core. Personal syntax. Native C#, Rust, Go, and Java output.",
+  github: "https://github.com/hana-games/hsharp",
+  owner: "HANAGAMES.net",
+  ownerUrl: "https://hanagames.net",
 };
 
 export const targets: {

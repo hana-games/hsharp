@@ -4875,3 +4875,77 @@ ol {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── GitHub links / owner ───────────────────────────────────── */
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  text-decoration: none;
+}
+
+.github-link:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.github-icon {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.mobile-github {
+  display: flex !important;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.footer-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1.2rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--line-dark-2);
+  border-radius: 999px;
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  text-decoration: none;
+}
+
+.footer-github:hover {
+  border-color: var(--lime);
+  color: var(--lime);
+  text-decoration: none;
+}
+
+.footer-owner {
+  color: var(--muted-dark);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-decoration: none;
+}
+
+.footer-owner:hover {
+  color: var(--lime);
+  text-decoration: none;
+}
+
+@media (max-width: 1200px) {
+  .github-link span {
+    display: none;
+  }
+
+  .github-link {
+    padding: 0.35rem;
+  }
+}

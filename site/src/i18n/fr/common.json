@@ -191,5 +191,7 @@
   "The profile file no longer matches the manifest fingerprint. Re-export with the current profile.": "Le profil ne correspond plus à l’empreinte du manifeste. Réexportez avec le profil actuel.",
   "Clean reimport": "Réimport propre",
   "Simulate canonical edit": "Simuler une modification canonique",
-  "Simulate profile edit": "Simuler une modification de profil"
+  "Simulate profile edit": "Simuler une modification de profil",
+  "Source on GitHub": "Source sur GitHub",
+  "Clone the repository": "Cloner le dépôt"
 }

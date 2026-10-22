@@ -191,5 +191,7 @@
   "The profile file no longer matches the manifest fingerprint. Re-export with the current profile.": "プロファイルがマニフェストのフィンガープリントと一致しません。現在のプロファイルで再エクスポートしてください。",
   "Clean reimport": "正常な再インポート",
   "Simulate canonical edit": "正規ソース変更をシミュレート",
-  "Simulate profile edit": "プロファイル変更をシミュレート"
+  "Simulate profile edit": "プロファイル変更をシミュレート",
+  "Source on GitHub": "GitHub のソース",
+  "Clone the repository": "リポジトリをクローン"
 }

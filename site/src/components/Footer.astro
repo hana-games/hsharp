@@ -1,5 +1,6 @@
 ---
 import { site, targets } from "../lib/site";
+import GitHubIcon from "./GitHubIcon.astro";
 const year = new Date().getFullYear();
 ---
 
@@ -11,6 +12,10 @@ const year = new Date().getFullYear();
         <p class="footer-tagline">
           One semantic core. Personal syntax. Four verified native outputs.
         </p>
+        <a class="footer-github" href={site.github} target="_blank" rel="noreferrer">
+          <GitHubIcon size={16} />
+          <span>GitHub</span>
+        </a>
       </div>
 
       <div class="footer-col">
@@ -38,7 +43,9 @@ const year = new Date().getFullYear();
     <div class="footer-bottom">
       <span>h# {site.version} · core {site.coreVersion} · POC</span>
       <span>Built from the specification, not from marketing.</span>
-      <span>© {year} h#</span>
+      <a class="footer-owner" href={site.ownerUrl} target="_blank" rel="noreferrer">
+        © {year} {site.owner}
+      </a>
     </div>
   </div>
 </footer>

@@ -1,5 +1,6 @@
 ---
-import { nav } from "../lib/site";
+import { nav, site } from "../lib/site";
+import GitHubIcon from "./GitHubIcon.astro";
 
 interface Props {
   active?: string;
@@ -29,6 +30,10 @@ const current = pathname.startsWith("/fr") ? "fr" : pathname.startsWith("/ja") ?
         <a data-locale="fr" class:list={["lang-link", { active: current === "fr" }]} href="/fr/">FR</a>
         <a data-locale="ja" class:list={["lang-link", { active: current === "ja" }]} href="/ja/">日本語</a>
       </div>
+      <a class="github-link" href={site.github} target="_blank" rel="noreferrer" aria-label="Source on GitHub" title="Clone the repository">
+        <GitHubIcon size={16} />
+        <span>GitHub</span>
+      </a>
       <a class="btn btn-solid btn-sm nav-cta" href="/docs/getting-started">
         Get started
       </a>
@@ -43,6 +48,10 @@ const current = pathname.startsWith("/fr") ? "fr" : pathname.startsWith("/ja") ?
           <a data-locale="fr" href="/fr/">FR</a>
           <a data-locale="ja" href="/ja/">日本語</a>
         </div>
+        <a class="mobile-github" href={site.github} target="_blank" rel="noreferrer">
+          <GitHubIcon size={15} />
+          GitHub
+        </a>
         <a href="/docs/getting-started"><strong>Get started</strong></a>
       </div>
     </details>
