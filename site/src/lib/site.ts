@@ -14,6 +14,7 @@ export const targets: {
   label: string;
   color: string;
   soft: string;
+  logo: string;
   description: string;
   command: string;
 }[] = [
@@ -22,6 +23,7 @@ export const targets: {
     label: "C#",
     color: "var(--csharp)",
     soft: "var(--csharp-soft)",
+    logo: "/brands/csharp.svg",
     description: "int, long checks, internal result records.",
     command: "dotnet build",
   },
@@ -30,6 +32,7 @@ export const targets: {
     label: "Rust",
     color: "var(--rust)",
     soft: "var(--rust-soft)",
+    logo: "/brands/rust.svg",
     description: "i32, i64 checks, Result-style propagation.",
     command: "cargo build --release",
   },
@@ -38,6 +41,7 @@ export const targets: {
     label: "Go",
     color: "var(--go)",
     soft: "var(--go-soft)",
+    logo: "/brands/go.svg",
     description: "int32, int64 checks, explicit result structs.",
     command: "go build",
   },
@@ -46,6 +50,7 @@ export const targets: {
     label: "Java",
     color: "var(--java)",
     soft: "var(--java-soft)",
+    logo: "/brands/java.svg",
     description: "int, long checks, nested result class.",
     command: "javac + java",
   },

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { tokenize } from "../lib/highlight";
+import { useT } from "../i18n/runtime";
 
 interface CodeBlockProps {
   code: string;
@@ -21,6 +22,7 @@ export function CodeBlock({
   maxHeight,
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const t = useT();
   const tokens = useMemo(() => tokenize(code, language, keywords), [code, language, keywords]);
 
   async function copy() {
@@ -40,13 +42,13 @@ export function CodeBlock({
           <span className="code-frame-title">{title}</span>
           <span className="code-frame-meta">{meta}</span>
           <button type="button" className="copy-button" onClick={copy}>
-            {copied ? "Copied" : "Copy"}
+            {copied ? t("Copied") : t("Copy")}
           </button>
         </div>
       )}
       {!title && !meta && (
         <button type="button" className="copy-button copy-button-float" onClick={copy}>
-          {copied ? "Copied" : "Copy"}
+          {copied ? t("Copied") : t("Copy")}
         </button>
       )}
       <pre className="code-pre" style={maxHeight ? { maxHeight } : undefined}>

@@ -142,7 +142,8 @@ A static showcase and documentation site lives in [`site/`](site/README.md). It 
 - overflow and short-circuit boundary labs;
 - an export/reimport conflict walkthrough;
 - a filterable conformance explorer;
-- precise docs for semantics, grammar, profiles, CLI, targets, and verification.
+- precise docs for semantics, grammar, profiles, CLI, targets, and verification;
+- full English, French, and Japanese routes with a language switcher.
 
 ```powershell
 npm --prefix site install

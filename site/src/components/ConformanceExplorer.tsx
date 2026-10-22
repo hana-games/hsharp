@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { ConformanceData, TargetId } from "../data/types";
+import { useT } from "../i18n/runtime";
 
 interface Props {
   conformance: ConformanceData;
@@ -15,6 +16,7 @@ const targetShort: Record<TargetId, string> = {
 const targetIds: TargetId[] = ["csharp", "rust", "go", "java"];
 
 export function ConformanceExplorer({ conformance }: Props) {
+  const t = useT();
   const [target, setTarget] = useState<"all" | TargetId>("all");
   const [status, setStatus] = useState<"all" | "passed" | "failed">("all");
   const [query, setQuery] = useState("");
@@ -46,7 +48,7 @@ export function ConformanceExplorer({ conformance }: Props) {
   return (
     <div className="lab">
       <div className="lab-head">
-        <div className="lab-title">Conformance explorer</div>
+        <div className="lab-title">{t("Conformance explorer")}</div>
         <div className="row">
           <span className="chip chip-lime">{conformance.mode}</span>
           <span className="index">{conformance.generatedAt.slice(0, 10)}</span>
@@ -57,33 +59,33 @@ export function ConformanceExplorer({ conformance }: Props) {
         <div className="conformance-summary">
           <div className="conformance-stat">
             <strong>{conformance.summary.cases}</strong>
-            <span>positive cases</span>
+            <span>{t("positive cases")}</span>
           </div>
           <div className="conformance-stat">
             <strong>{conformance.summary.targets}</strong>
-            <span>target executions</span>
+            <span>{t("target executions")}</span>
           </div>
           <div className="conformance-stat">
             <strong>{conformance.summary.failed}</strong>
-            <span>failed</span>
+            <span>{t("failed")}</span>
           </div>
           <div className="conformance-stat">
             <strong>{conformance.summary.blocked}</strong>
-            <span>blocked</span>
+            <span>{t("blocked")}</span>
           </div>
         </div>
 
         <div className="conformance-filters">
           <input
             type="search"
-            placeholder="Filter cases…"
+            placeholder={t("Filter cases…")}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             aria-label="Filter conformance cases"
           />
           <div className="tabs">
             <button type="button" className={`tab ${target === "all" ? "active" : ""}`} onClick={() => setTarget("all")}>
-              All targets
+              {t("All targets")}
             </button>
             {targetIds.map((id) => (
               <button key={id} type="button" className={`tab ${target === id ? "active" : ""}`} onClick={() => setTarget(id)}>
@@ -94,7 +96,7 @@ export function ConformanceExplorer({ conformance }: Props) {
           <div className="tabs">
             {(["all", "passed", "failed"] as const).map((value) => (
               <button key={value} type="button" className={`tab ${status === value ? "active" : ""}`} onClick={() => setStatus(value)}>
-                {value === "all" ? "Any status" : value}
+                {value === "all" ? t("Any status") : t(value)}
               </button>
             ))}
           </div>

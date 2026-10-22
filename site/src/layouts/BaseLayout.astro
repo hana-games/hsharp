@@ -46,8 +46,7 @@ const fullTitle = title === "h#" ? "h# — One core. Your syntax. Four native ou
 
     <script>
       // Copy buttons for static code blocks.
-      document.addEventListener("click", async (event) => {
-        const target = event.target as HTMLElement | null;
+      document.addEventListener("click", async (event) => {        const target = event.target as HTMLElement | null;
         const button = target?.closest("[data-copy]") as HTMLButtonElement | null;
         if (!button) return;
         const text = button.dataset.copy ?? "";
@@ -90,5 +89,6 @@ const fullTitle = title === "h#" ? "h# — One core. Your syntax. Four native ou
         items.forEach((item) => item.classList.add("is-visible"));
       }
     </script>
+    <script is:inline src="/i18n/localize.js"></script>
   </body>
 </html>

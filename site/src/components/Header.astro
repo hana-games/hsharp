@@ -5,6 +5,8 @@ interface Props {
   active?: string;
 }
 const { active = "" } = Astro.props;
+const pathname = Astro.url.pathname;
+const current = pathname.startsWith("/fr") ? "fr" : pathname.startsWith("/ja") ? "ja" : "en";
 ---
 
 <header class="site-header">
@@ -22,6 +24,11 @@ const { active = "" } = Astro.props;
           </a>
         ))
       }
+      <div class="lang-switch" aria-label="Language">
+        <a data-locale="en" class:list={["lang-link", { active: current === "en" }]} href="/">EN</a>
+        <a data-locale="fr" class:list={["lang-link", { active: current === "fr" }]} href="/fr/">FR</a>
+        <a data-locale="ja" class:list={["lang-link", { active: current === "ja" }]} href="/ja/">日本語</a>
+      </div>
       <a class="btn btn-solid btn-sm nav-cta" href="/docs/getting-started">
         Get started
       </a>
@@ -31,6 +38,11 @@ const { active = "" } = Astro.props;
       <summary aria-label="Open navigation">Menu</summary>
       <div class="mobile-nav-panel">
         {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+        <div class="mobile-langs">
+          <a data-locale="en" href="/">EN</a>
+          <a data-locale="fr" href="/fr/">FR</a>
+          <a data-locale="ja" href="/ja/">日本語</a>
+        </div>
         <a href="/docs/getting-started"><strong>Get started</strong></a>
       </div>
     </details>

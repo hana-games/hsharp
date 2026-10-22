@@ -2,6 +2,7 @@ import { useState, type CSSProperties } from "react";
 import type { DemoData, TargetId } from "../data/types";
 import { targets as targetMeta } from "../lib/site";
 import { CodeBlock } from "./CodeBlock";
+import { useT } from "../i18n/runtime";
 
 interface Props {
   demo: DemoData;
@@ -31,6 +32,7 @@ const notes: Record<TargetId, { title: string; body: string; details: string[] }
 };
 
 export function TargetPrism({ demo }: Props) {
+  const t = useT();
   const [targetId, setTargetId] = useState<TargetId>("csharp");
   const [filePath, setFilePath] = useState("Program.cs");
 
@@ -65,6 +67,7 @@ export function TargetPrism({ demo }: Props) {
               style={{ "--target": target.color } as CSSProperties}
               onClick={() => selectTarget(target.id)}
             >
+              <img src={target.logo} alt="" width="14" height="14" />
               {target.label}
             </button>
           ))}
@@ -75,12 +78,15 @@ export function TargetPrism({ demo }: Props) {
         <div className="prism">
           <div className="prism-side">
             <div className="prism-note" style={{ "--target": meta.color } as CSSProperties}>
-              <h4>{note.title}</h4>
-              <p>{note.body}</p>
+              <div className="row" style={{ marginBottom: "0.5rem" }}>
+                <img className="target-logo" src={meta.logo} alt={`${meta.label} logo`} width="20" height="20" />
+              </div>
+              <h4>{t(note.title)}</h4>
+              <p>{t(note.body)}</p>
             </div>
 
             <div className="prism-note">
-              <h4>Generated names</h4>
+              <h4>{t("Generated names")}</h4>
               <p>
                 Source names never reach the target. Functions and locals become <code>f1</code>, <code>v2</code>,
                 so <code>int</code> or <code>class</code> in h# cannot collide with a host keyword.
@@ -88,7 +94,7 @@ export function TargetPrism({ demo }: Props) {
             </div>
 
             <div className="prism-note">
-              <h4>Checked arithmetic</h4>
+              <h4>{t("Checked arithmetic")}</h4>
               <p>
                 Every <code>+</code>, <code>-</code>, <code>*</code> and unary <code>-</code> widens to 64-bit,
                 checks the i32 range, and returns <code>E_OVERFLOW</code> with the failing node.
@@ -98,7 +104,7 @@ export function TargetPrism({ demo }: Props) {
             <div className="row">
               {note.details.map((detail) => (
                 <span className="chip chip-dark" key={detail}>
-                  {detail}
+                  {t(detail)}
                 </span>
               ))}
             </div>

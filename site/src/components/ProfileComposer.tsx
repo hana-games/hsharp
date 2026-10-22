@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import type { ProfileKeywords } from "../data/types";
 import { profiles, roleLabels } from "../lib/site";
 import { CodeBlock } from "./CodeBlock";
+import { useT } from "../i18n/runtime";
 
 const sample = `// One program, a different surface.
 fn calculate(x: i32, bonus: bool) -> i32 {
@@ -91,6 +92,7 @@ function applyKeywords(code: string, keywords: ProfileKeywords): string {
 }
 
 export function ProfileComposer() {
+  const t = useT();
   const [keywords, setKeywords] = useState<ProfileKeywords>({ ...profiles[1].keywords });
   const [copied, setCopied] = useState(false);
 
@@ -127,7 +129,7 @@ export function ProfileComposer() {
   return (
     <div className="lab">
       <div className="lab-head">
-        <div className="lab-title">Profile composer</div>
+        <div className="lab-title">{t("Profile composer")}</div>
         <div className="tabs">
           {profiles.map((profile) => {
             const active = roleLabels.every(({ role }) => keywords[role] === profile.keywords[role]);
@@ -164,29 +166,27 @@ export function ProfileComposer() {
                       setKeywords((current) => ({ ...current, [role]: event.target.value }))
                     }
                   />
-                  {errors[role] && <span className="error-text">{errors[role]}</span>}
+                  {errors[role] && <span className="error-text">{t(errors[role])}</span>}
                 </div>
               ))}
             </div>
 
             <div className="composer-actions">
               <button type="button" className="btn btn-sm btn-solid" onClick={copyProfile} disabled={!valid}>
-                {copied ? "Copied JSON" : "Copy profile JSON"}
+                {copied ? t("Copied JSON") : t("Copy profile JSON")}
               </button>
               <button
                 type="button"
                 className="btn btn-sm btn-ghost"
                 onClick={() => setKeywords({ ...profiles[0].keywords })}
-              >
-                Reset
-              </button>
+              >{t("Reset")}</button>
             </div>
 
             <p className="composer-note">
               <span className={`status-dot ${valid ? "success-text" : "error-text"}`} aria-hidden="true" />
               {valid
-                ? "Valid profile. Only keyword tokens change; the AST and generated targets do not."
-                : "Fix the profile errors to see the transformed source."}
+                ? t("Valid profile. Only keyword tokens change; the AST and generated targets do not.")
+                : t("Fix the profile errors to see the transformed source.")}
             </p>
           </div>
 
@@ -207,13 +207,13 @@ export function ProfileComposer() {
                   <span className="code-frame-meta">invalid profile</span>
                 </div>
                 <div className="code-pre" style={{ color: "var(--muted-dark)" }}>
-                  The source preview is paused until every role has a unique, legal word.
+                  {t("The source preview is paused until every role has a unique, legal word.")}
                 </div>
               </div>
             )}
 
             <details className="profile-json">
-              <summary>Profile JSON</summary>
+              <summary>{t("Profile JSON")}</summary>
               <CodeBlock code={profileJson} language="json" title="custom.json" />
             </details>
           </div>

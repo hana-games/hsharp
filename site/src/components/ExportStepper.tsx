@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { DemoData } from "../data/types";
 import { CodeBlock } from "./CodeBlock";
+import { useT } from "../i18n/runtime";
 
 type Scenario = "clean" | "stale" | "profile";
 
@@ -17,6 +18,7 @@ const steps = [
 ];
 
 export function ExportStepper({ demo }: Props) {
+  const t = useT();
   const [step, setStep] = useState(0);
   const [scenario, setScenario] = useState<Scenario>("clean");
 
@@ -57,10 +59,10 @@ export function ExportStepper({ demo }: Props) {
   return (
     <div className="lab">
       <div className="lab-head">
-        <div className="lab-title">Export · edit · reimport</div>
+        <div className="lab-title">{t("Export · edit · reimport")}</div>
         <div className="row">
-          <span className="chip chip-lime">manifest + fingerprints</span>
-          <span className="index">no code execution</span>
+          <span className="chip chip-lime">{t("manifest + fingerprints")}</span>
+          <span className="index">{t("no code execution")}</span>
         </div>
       </div>
 
@@ -76,8 +78,8 @@ export function ExportStepper({ demo }: Props) {
               >
                 <span className="step-index">{index + 1}</span>
                 <span>
-                  <strong>{item.label}</strong>
-                  <span>{item.note}</span>
+                  <strong>{t(item.label)}</strong>
+                  <span>{t(item.note)}</span>
                 </span>
               </button>
             ))}
@@ -87,7 +89,7 @@ export function ExportStepper({ demo }: Props) {
             <div className="step-panel-head">
               <div>
                 <div className="eyebrow">Step {step + 1} of 5</div>
-                <h3 className="h3">{steps[step].label}</h3>
+                <h3 className="h3">{t(steps[step].label)}</h3>
               </div>
               <div className="row">
                 <button
@@ -95,17 +97,13 @@ export function ExportStepper({ demo }: Props) {
                   className="btn btn-sm btn-ghost"
                   disabled={step === 0}
                   onClick={() => setStep((current) => Math.max(0, current - 1))}
-                >
-                  Back
-                </button>
+                >{t("Back")}</button>
                 <button
                   type="button"
                   className="btn btn-sm btn-solid"
                   disabled={step === steps.length - 1 || (step === 3 && !result.ok)}
                   onClick={() => setStep((current) => Math.min(steps.length - 1, current + 1))}
-                >
-                  Continue
-                </button>
+                >{t("Continue")}</button>
               </div>
             </div>
 
@@ -151,15 +149,9 @@ export function ExportStepper({ demo }: Props) {
             {step === 3 && (
               <>
                 <div className="row" style={{ marginBottom: "0.8rem" }}>
-                  <button type="button" className={`tab ${scenario === "clean" ? "active" : ""}`} onClick={() => setScenario("clean")}>
-                    Clean reimport
-                  </button>
-                  <button type="button" className={`tab ${scenario === "stale" ? "active" : ""}`} onClick={() => setScenario("stale")}>
-                    Simulate canonical edit
-                  </button>
-                  <button type="button" className={`tab ${scenario === "profile" ? "active" : ""}`} onClick={() => setScenario("profile")}>
-                    Simulate profile edit
-                  </button>
+                  <button type="button" className={`tab ${scenario === "clean" ? "active" : ""}`} onClick={() => setScenario("clean")}>{t("Clean reimport")}</button>
+                  <button type="button" className={`tab ${scenario === "stale" ? "active" : ""}`} onClick={() => setScenario("stale")}>{t("Simulate canonical edit")}</button>
+                  <button type="button" className={`tab ${scenario === "profile" ? "active" : ""}`} onClick={() => setScenario("profile")}>{t("Simulate profile edit")}</button>
                 </div>
                 <div className={`output-badge ${result.ok ? "ok" : "error"}`} style={{ padding: "0.9rem 1rem" }}>
                   <span className="status-dot" />

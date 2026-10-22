@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { HeroLab } from "../components/HeroLab";
+import { HeroEditor } from "../components/HeroEditor";
 import { ProfileComposer } from "../components/ProfileComposer";
 import { TargetPrism } from "../components/TargetPrism";
 import { BoundaryLab } from "../components/BoundaryLab";
@@ -22,44 +22,33 @@ function prettyId(id: string) {
 
 <BaseLayout
   title="h#"
-  description="One semantic core, personal syntax, and verified native output for C#, Rust, Go, and Java."
+  description="A universal semantic core, personal syntax, and verified native output for C#, Rust, Go, and Java."
   active="/"
 >
   <section class="hero">
     <div class="container">
       <div class="hero-inner">
         <div class="hero-copy">
-          <div class="eyebrow">Portable language core · {site.version}</div>
+          <div class="row" style="gap:0.55rem;">
+            <div class="eyebrow" data-i18n-skip style="text-transform:none;letter-spacing:0.06em;">Portable Language Core</div>
+            <span class="version-pill">v{site.version}</span>
+          </div>
           <h1 class="display">
-            One core.<br />
-            <em>Your syntax.</em><br />
+            A universal core.<br />
+            <em>Your own syntax.</em><br />
             Four native outputs.
           </h1>
           <p class="lede">
-            h# separates meaning from notation. Write one checked program, choose the keywords you
-            want, and generate ordinary C#, Rust, Go, and Java projects that the real toolchains
-            compile.
+            h# separates meaning from notation. Shape the language to your own vocabulary, keep one
+            checked semantic core, and generate real C#, Rust, Go, and Java projects.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-lime" href="/docs/getting-started">Get started</a>
+            <a class="btn btn-lime" href="/why">Explore the language</a>
             <a class="btn btn-ghost" href="/playground">Open the playground</a>
-          </div>
-          <div class="hero-note">
-            <span>4 profiles</span>
-            <span>4 targets</span>
-            <span>checked arithmetic</span>
-            <span>no runtime dependency</span>
           </div>
         </div>
 
-        <HeroLab client:load demo={siteData.demo} />
-      </div>
-
-      <div class="hero-stats">
-        <div class="hero-stat"><strong>{siteData.meta.stats.cases}</strong><span>conformance cases</span></div>
-        <div class="hero-stat"><strong>{siteData.meta.stats.profiles}</strong><span>syntax profiles</span></div>
-        <div class="hero-stat"><strong>{siteData.meta.stats.targets}</strong><span>native targets</span></div>
-        <div class="hero-stat"><strong>{siteData.meta.stats.executions}</strong><span>target executions</span></div>
+        <HeroEditor client:load demo={siteData.demo} />
       </div>
     </div>
   </section>
@@ -142,13 +131,22 @@ function prettyId(id: string) {
         {
           targets.map((target) => (
             <div class="target-card reveal" style={`--target:${target.color}`}>
-              <div class="row"><span class="target-dot"></span><span class="mono" style="font-size:0.68rem;">{target.label}</span></div>
+              <div class="row" style="justify-content:space-between;">
+                <img class="target-logo" src={target.logo} alt={`${target.label} logo`} width="20" height="20" />
+                <span class="mono" style="font-size:0.62rem;color:var(--muted);">{target.command}</span>
+              </div>
               <h3>{target.label}</h3>
               <p>{target.description}</p>
-              <code>{target.command}</code>
             </div>
           ))
         }
+      </div>
+
+      <div class="stat-band" style="margin-top:3rem;">
+        <div class="stat-band-item"><strong>{siteData.meta.stats.cases}</strong><span>conformance cases</span></div>
+        <div class="stat-band-item"><strong>{siteData.meta.stats.profiles}</strong><span>syntax profiles</span></div>
+        <div class="stat-band-item"><strong>{siteData.meta.stats.targets}</strong><span>native targets</span></div>
+        <div class="stat-band-item"><strong>{siteData.meta.stats.executions}</strong><span>target executions</span></div>
       </div>
     </div>
   </section>

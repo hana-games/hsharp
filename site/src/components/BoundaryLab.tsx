@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useT } from "../i18n/runtime";
 
 type Mode = "arithmetic" | "short-circuit";
 type Op = "+" | "-" | "*" | "neg";
@@ -16,6 +17,7 @@ function formatValue(value: bigint): string {
 }
 
 export function BoundaryLab() {
+  const t = useT();
   const [mode, setMode] = useState<Mode>("arithmetic");
   const [op, setOp] = useState<Op>("+");
   const [a, setA] = useState(2147483647);
@@ -47,21 +49,21 @@ export function BoundaryLab() {
   return (
     <div className="lab">
       <div className="lab-head">
-        <div className="lab-title">Boundary lab</div>
+        <div className="lab-title">{t("Boundary lab")}</div>
         <div className="tabs">
           <button
             type="button"
             className={`tab ${mode === "arithmetic" ? "active" : ""}`}
             onClick={() => setMode("arithmetic")}
           >
-            Checked arithmetic
+            {t("Checked arithmetic")}
           </button>
           <button
             type="button"
             className={`tab ${mode === "short-circuit" ? "active" : ""}`}
             onClick={() => setMode("short-circuit")}
           >
-            Short-circuit
+            {t("Short-circuit")}
           </button>
         </div>
       </div>
@@ -120,25 +122,25 @@ export function BoundaryLab() {
 
             <div className="boundary-readout">
               <div className="boundary-result">
-                <div className="label">Source operation</div>
+                <div className="label">{t("Source operation")}</div>
                 <div className="value" style={{ fontSize: "clamp(1.4rem, 3vw, 2rem)" }}>
                   {arithmetic.source}
                 </div>
               </div>
               <div className="boundary-result">
-                <div className="label">Outcome</div>
+                <div className="label">{t("Outcome")}</div>
                 <div className={`value ${arithmetic.overflow ? "error" : ""}`}>
                   {arithmetic.overflow ? "E_OVERFLOW" : formatValue(arithmetic.value)}
                 </div>
                 <p className="hint" style={{ marginTop: "0.5rem" }}>
                   {arithmetic.overflow
-                    ? "The operation exceeds i32 and stops at the execution boundary. Illustration uses node 5."
-                    : "The result fits in i32 and is narrowed to the declared type."}
+                    ? t("The operation exceeds i32 and stops at the execution boundary. Illustration uses node 5.")
+                    : t("The result fits in i32 and is narrowed to the declared type.")}
                 </p>
               </div>
               <div className={`output-badge ${arithmetic.overflow ? "error" : "ok"}`}>
                 <span className="status-dot" />
-                {arithmetic.overflow ? "Failure(code, sourceNode)" : "Success(i32, value)"}
+                {arithmetic.overflow ? t("Failure(code, sourceNode)") : t("Success(i32, value)")}
               </div>
             </div>
           </div>
@@ -162,8 +164,7 @@ export function BoundaryLab() {
                 <button type="button" onClick={() => setX(0)}>x = 0</button>
               </div>
               <p className="hint">
-                The right operand would overflow when x is the maximum value. Because the left side is
-                already false, it is never evaluated.
+                {t("The right operand would overflow when x is the maximum value. Because the left side is already false, it is never evaluated.")}
               </p>
             </div>
 
@@ -194,8 +195,7 @@ export function BoundaryLab() {
         )}
 
         <p className="hint" style={{ marginTop: "1rem" }}>
-          Visual simulation only. No h# program is executed in the browser; the values illustrate the
-          specified semantics.
+          {t("Visual simulation only. No h# program is executed in the browser; the values illustrate the specified semantics.")}
         </p>
       </div>
     </div>

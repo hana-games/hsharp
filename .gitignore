@@ -7,4 +7,5 @@ editors/*/node_modules/
 site/dist/
 site/node_modules/
 site/.astro/
+site/public/i18n/*.json
 *.log

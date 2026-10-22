@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Example, Outcome } from "../data/types";
+import { useT } from "../i18n/runtime";
 import { CodeBlock } from "./CodeBlock";
 
 interface Props {
@@ -21,6 +22,7 @@ function outcomeLabel(outcome: Outcome): string {
 }
 
 export function ExampleGallery({ examples }: Props) {
+  const t = useT();
   const [feature, setFeature] = useState("All");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Example | null>(null);
@@ -88,13 +90,13 @@ export function ExampleGallery({ examples }: Props) {
               className={`tab ${feature === item ? "active" : ""}`}
               onClick={() => setFeature(item)}
             >
-              {item}
+              {item === "All" ? t("All") : item}
             </button>
           ))}
         </div>
         <input
           type="search"
-          placeholder="Search examples…"
+          placeholder={t("Search examples…")}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           aria-label="Search examples"
@@ -112,8 +114,8 @@ export function ExampleGallery({ examples }: Props) {
       </div>
 
       <div className="row" style={{ marginBottom: "1rem" }}>
-        <span className="chip chip-lime">{filtered.length} examples</span>
-        <span className="small">Every case comes from the repository’s real conformance corpus.</span>
+        <span className="chip chip-lime">{filtered.length} {t("examples")}</span>
+        <span className="small">{t("Every case comes from the repository’s real conformance corpus.")}</span>
       </div>
 
       <div className="gallery-grid">
@@ -143,7 +145,7 @@ export function ExampleGallery({ examples }: Props) {
         })}
       </div>
 
-      {filtered.length === 0 && <p className="hint">No example matches this filter.</p>}
+      {filtered.length === 0 && <p className="hint">{t("No example matches this filter.")}</p>}
 
       {selected && (
         <div
@@ -198,7 +200,7 @@ export function ExampleGallery({ examples }: Props) {
                 </div>
                 <div className="stack">
                   <div className="card">
-                    <div className="eyebrow">Expected outcome</div>
+                    <div className="eyebrow">{t("Expected outcome")}</div>
                     <div className={`output-badge ${selected.expected.status === "ok" ? "ok" : "error"}`} style={{ marginTop: "0.6rem" }}>
                       <span className="status-dot" />
                       {outcomeLabel(selected.expected)}
@@ -210,7 +212,7 @@ export function ExampleGallery({ examples }: Props) {
                     </div>
                   </div>
                   <div className="card">
-                    <div className="eyebrow">Verified targets</div>
+                    <div className="eyebrow">{t("Verified targets")}</div>
                     <div className="row" style={{ marginTop: "0.6rem" }}>
                       <span className="chip chip-csharp">C#</span>
                       <span className="chip chip-rust">Rust</span>
@@ -218,8 +220,7 @@ export function ExampleGallery({ examples }: Props) {
                       <span className="chip chip-java">Java</span>
                     </div>
                     <p className="hint" style={{ marginTop: "0.8rem" }}>
-                      Same source, same expected outcome, four compilers. The full matrix is available in the
-                      conformance explorer.
+                      {t("Same source, same expected outcome, four compilers. The full matrix is available in the conformance explorer.")}
                     </p>
                   </div>
                 </div>
