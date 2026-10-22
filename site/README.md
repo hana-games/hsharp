@@ -21,6 +21,12 @@ Translations live in `site/src/i18n/strings.{en,fr,ja}.json`. The build:
 
 The language switcher in the header preserves the current page and opens the corresponding localized route.
 
+## Direction
+
+- **Canonical ↔ personal notation** is bidirectional: export and reimport share the normalized AST, with fingerprints protecting both ends.
+- **h# → C#, Rust, Go, Java** is one-way by design: generated target source is output, not a second source of truth.
+- **JavaScript** is a candidate fifth backend. Importing JavaScript back into h# is a separate, lossy frontend problem (parsing, type inference, library semantics), not a reverse code generator.
+
 ## Run
 
 From the repository root:

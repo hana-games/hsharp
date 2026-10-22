@@ -126,6 +126,8 @@ Scope:
 
 - Multi-file programs with explicit imports and a canonical module layout.
 - Visibility rules and versioned module interfaces.
+- A candidate fifth target: JavaScript/TypeScript, with a Node project and normalized outcomes.
+- Reverse import from target languages is **not** symmetric. A JavaScript-to-h# importer is a separate, lossy frontend problem requiring parsing, type inference, and library semantics.
 - Generated libraries/packages for .NET, Rust, Go, and Java.
 - A controlled exported signature set with normalized failures.
 - Selected adapters (serialization, dates, files, networking) only when driven by a concrete use case.

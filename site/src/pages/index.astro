@@ -66,6 +66,82 @@ function prettyId(id: string) {
         </p>
       </div>
 
+      <div class="universality-graph reveal">
+        <div class="graph-col">
+          <div class="graph-label">Notation</div>
+          <div class="graph-profile-stack">
+            {profiles.map((profile) => <span class="graph-pill">{profile.label}</span>)}
+            <span class="graph-pill dashed">your profile</span>
+          </div>
+          <p class="graph-note">7 keyword roles · validated data</p>
+        </div>
+
+        <div class="graph-flow" aria-hidden="true">
+          <span>↔</span>
+          <small>export / reimport</small>
+        </div>
+
+        <div class="graph-core">
+          <div class="graph-core-kicker">one contract</div>
+          <div class="graph-core-mark">h#</div>
+          <h3>Semantic core</h3>
+          <p>Typed AST · checker · checked i32 · failure nodes</p>
+        </div>
+
+        <div class="graph-flow" aria-hidden="true">
+          <span>→</span>
+          <small>emit</small>
+        </div>
+
+        <div class="graph-col">
+          <div class="graph-label">Targets</div>
+          <div class="graph-targets">
+            {
+              targets.map((target) => (
+                <div class="graph-target" style={`--target:${target.color}`}>
+                  <div class="graph-target-head">
+                    <img src={target.logo} alt={`${target.label} logo`} width="16" height="16" />
+                    {target.label}
+                  </div>
+                  <small>{target.command}</small>
+                </div>
+              ))
+            }
+            <div class="graph-target future">
+              <div class="graph-target-head">JavaScript <small>future</small></div>
+              <small>candidate backend</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="direction-grid reveal">
+        <div class="direction-card both">
+          <div class="eyebrow">Bidirectional</div>
+          <h3>Canonical source ↔ personal notation</h3>
+          <p>
+            Export and reimport share the same normalized AST. Fingerprints protect both ends; comments
+            and identifiers survive the round trip.
+          </p>
+        </div>
+        <div class="direction-card oneway">
+          <div class="eyebrow">One-way by design</div>
+          <h3>h# → generated targets</h3>
+          <p>
+            Target source is generated output, not a second source of truth. C#, Rust, Go, and Java are
+            compiled and executed, never parsed back as canonical source.
+          </p>
+        </div>
+        <div class="direction-card future">
+          <div class="eyebrow">Not in the POC</div>
+          <h3>JavaScript target · target → h# import</h3>
+          <p>
+            JavaScript is a candidate fifth backend. Importing JavaScript back into h# is a separate,
+            lossy problem: it needs a JavaScript frontend, type inference, and library semantics.
+          </p>
+        </div>
+      </div>
+
       <div class="thesis">
         <div class="thesis-sticky">
           <div class="card card-lime">
@@ -125,21 +201,6 @@ function prettyId(id: string) {
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="grid grid-4" style="margin-top:3rem;">
-        {
-          targets.map((target) => (
-            <div class="target-card reveal" style={`--target:${target.color}`}>
-              <div class="row" style="justify-content:space-between;">
-                <img class="target-logo" src={target.logo} alt={`${target.label} logo`} width="20" height="20" />
-                <span class="mono" style="font-size:0.62rem;color:var(--muted);">{target.command}</span>
-              </div>
-              <h3>{target.label}</h3>
-              <p>{target.description}</p>
-            </div>
-          ))
-        }
       </div>
 
       <div class="stat-band" style="margin-top:3rem;">
