@@ -179,5 +179,17 @@
   "Skipped": "スキップ",
   "Return": "返却",
   "Failure": "失敗",
-  "Success": "成功"
+  "Success": "成功",
+  "Workflow steps": "ワークフロー手順",
+  "Ready to apply": "適用可能",
+  "Expected rejection": "拒否を想定",
+  "The canonical source was not modified.": "正規ソースは変更されていません。",
+  "The developer edits only the personal file. Comments and identifiers survive; the canonical source is untouched.": "開発者は個人ファイルだけを編集します。コメントと識別子は保持され、正規ソースは変更されません。",
+  "Reimport accepted": "再インポート受理",
+  "The personal edit is converted back to standard notation and applied.": "個人の変更は標準記法に戻され、適用されます。",
+  "The canonical source changed after export. h# refuses to overwrite it; rebase or re-export.": "エクスポート後に正規ソースが変更されました。h# は上書きを拒否します。リベースするか再エクスポートしてください。",
+  "The profile file no longer matches the manifest fingerprint. Re-export with the current profile.": "プロファイルがマニフェストのフィンガープリントと一致しません。現在のプロファイルで再エクスポートしてください。",
+  "Clean reimport": "正常な再インポート",
+  "Simulate canonical edit": "正規ソース変更をシミュレート",
+  "Simulate profile edit": "プロファイル変更をシミュレート"
 }

@@ -179,5 +179,17 @@
   "Skipped": "Ignoré",
   "Return": "Retour",
   "Failure": "Échec",
-  "Success": "Succès"
+  "Success": "Succès",
+  "Workflow steps": "Étapes du workflow",
+  "Ready to apply": "Prêt à appliquer",
+  "Expected rejection": "Rejet attendu",
+  "The canonical source was not modified.": "La source canonique n’a pas été modifiée.",
+  "The developer edits only the personal file. Comments and identifiers survive; the canonical source is untouched.": "Le développeur modifie uniquement le fichier personnel. Les commentaires et identifiants survivent ; la source canonique reste intacte.",
+  "Reimport accepted": "Réimport accepté",
+  "The personal edit is converted back to standard notation and applied.": "La modification personnelle est reconvertie en notation standard et appliquée.",
+  "The canonical source changed after export. h# refuses to overwrite it; rebase or re-export.": "La source canonique a changé après l’export. h# refuse de l’écraser ; rebasez ou réexportez.",
+  "The profile file no longer matches the manifest fingerprint. Re-export with the current profile.": "Le profil ne correspond plus à l’empreinte du manifeste. Réexportez avec le profil actuel.",
+  "Clean reimport": "Réimport propre",
+  "Simulate canonical edit": "Simuler une modification canonique",
+  "Simulate profile edit": "Simuler une modification de profil"
 }
