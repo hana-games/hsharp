@@ -60,3 +60,5 @@ The POC intentionally covers a small language core. The following limits are kno
 8. **Concurrency/async.** Define start, cancellation, ordering, sharing, and lifetimes before generating any target code.
 9. **Performance measurement.** Measure compilation time, output size, allocations, and runtime on representative workloads before optimizing.
 10. **Checked-primitive optimization.** Replace widening helpers with platform checked operations where behavior can be proven identical.
+
+See [`ROADMAP.md`](../ROADMAP.md) for phase dependencies, exit evidence, and cross-cutting workstreams.

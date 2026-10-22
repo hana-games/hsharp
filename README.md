@@ -113,6 +113,7 @@ h# source is parsed with a profile-driven lexer into a located source AST, check
 
 ## Documentation
 
+- [Roadmap](ROADMAP.md)
 - [Getting started](docs/getting-started.md)
 - [Core semantics](spec/core.md)
 - [Grammar](spec/grammar.md)
