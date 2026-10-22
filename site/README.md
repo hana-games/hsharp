@@ -12,7 +12,26 @@ The site is fully rendered in three locales:
 | French | `/fr/`, `/fr/docs/...`, `/fr/examples`, ... |
 | Japanese | `/ja/`, `/ja/docs/...`, `/ja/examples`, ... |
 
-Translations live in `site/src/i18n/strings.{en,fr,ja}.json`. The build:
+Translations are split by page and concern:
+
+```text
+site/src/i18n/en/common.json
+site/src/i18n/en/home.json
+site/src/i18n/en/why.json
+site/src/i18n/en/examples.json
+site/src/i18n/en/playground.json
+site/src/i18n/en/roadmap.json
+site/src/i18n/en/docs-intro.json
+site/src/i18n/en/docs-language.json
+site/src/i18n/en/docs-profiles.json
+site/src/i18n/en/docs-cli.json
+site/src/i18n/en/docs-targets.json
+site/src/i18n/en/docs-verification.json
+site/src/i18n/en/not-found.json
+...
+```
+
+The same namespace set exists for `fr/` and `ja/`. `i18n-loader.mjs` merges them for the build; `prepare-i18n.mjs` emits the runtime dictionaries into `public/i18n/`. The build:
 
 1. renders the English static pages with Astro;
 2. copies the runtime dictionaries to `public/i18n/`;

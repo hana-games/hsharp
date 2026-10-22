@@ -1,6 +1,7 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as cheerio from "cheerio";
+import { loadLocale } from "./i18n-loader.mjs";
 
 const pages = [];
 function walk(dir) {
@@ -42,7 +43,7 @@ for (const page of pages) {
   }
 }
 const entries = [...strings].sort();
-const current = JSON.parse(readFileSync("site/src/i18n/strings.en.json", "utf8"));
+const current = loadLocale("en");
 const added = entries.filter((entry) => !(entry in current));
 console.log("leaf entries", entries.length, "chars", entries.reduce((a, b) => a + b.length, 0));
 console.log("new vs current", added.length, "chars", added.reduce((a, b) => a + b.length, 0));

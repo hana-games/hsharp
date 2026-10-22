@@ -1,14 +1,15 @@
-import { readdirSync, readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as cheerio from "cheerio";
+import { loadLocale } from "./i18n-loader.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const site = resolve(here, "..");
 const dist = join(site, "dist");
 const dictionaries = {
-  fr: JSON.parse(readFileSync(join(site, "src", "i18n", "strings.fr.json"), "utf8")),
-  ja: JSON.parse(readFileSync(join(site, "src", "i18n", "strings.ja.json"), "utf8")),
+  fr: loadLocale("fr"),
+  ja: loadLocale("ja"),
 };
 
 const skipTags = new Set(["script", "style", "pre", "code", "textarea", "astro-island"]);
