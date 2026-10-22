@@ -200,7 +200,8 @@ export function ProfileComposer() {
   }
 
   function setWord(role: keyof ProfileKeywords, value: string) {
-    setKeywords((current) => ({ ...current, [role]: value }));
+    const lettersOnly = value.replace(/[^A-Za-z]/g, "");
+    setKeywords((current) => ({ ...current, [role]: lettersOnly }));
     setPresetId("custom");
   }
 
