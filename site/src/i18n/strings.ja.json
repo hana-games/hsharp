@@ -1160,5 +1160,6 @@
   "export / reimport": "エクスポート / 再インポート",
   "emit": "出力",
   "JavaScript/TypeScript candidate fifth backend": "JavaScript/TypeScript 候補の第 5 バックエンド",
-  "Reverse import from JavaScript or other hosts is a separate, lossy importer": "JavaScript や他のホストからの逆インポートは、別個の損失を伴うインポーターです"
+  "Reverse import from JavaScript or other hosts is a separate, lossy importer": "JavaScript や他のホストからの逆インポートは、別個の損失を伴うインポーターです",
+  "verified": "検証済み"
 }

@@ -98,17 +98,24 @@ function prettyId(id: string) {
           <div class="graph-targets">
             {
               targets.map((target) => (
-                <div class="graph-target" style={`--target:${target.color}`}>
-                  <div class="graph-target-head">
-                    <img src={target.logo} alt={`${target.label} logo`} width="16" height="16" />
-                    {target.label}
+                <div class="graph-target" data-target={target.id}>
+                  <div class="graph-target-top">
+                    <span class="graph-target-logo">
+                      <img src={target.logo} alt={`${target.label} logo`} width="16" height="16" />
+                    </span>
+                    <span class="graph-target-name">{target.label}</span>
+                    <span class="graph-target-check">verified</span>
                   </div>
                   <small>{target.command}</small>
                 </div>
               ))
             }
-            <div class="graph-target future">
-              <div class="graph-target-head">JavaScript <small>future</small></div>
+            <div class="graph-target future" data-target="future">
+              <div class="graph-target-top">
+                <span class="graph-target-logo future-mark">JS</span>
+                <span class="graph-target-name">JavaScript</span>
+                <span class="graph-target-check">future</span>
+              </div>
               <small>candidate backend</small>
             </div>
           </div>

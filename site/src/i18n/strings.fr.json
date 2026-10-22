@@ -1160,5 +1160,6 @@
   "export / reimport": "export / réimport",
   "emit": "émettre",
   "JavaScript/TypeScript candidate fifth backend": "Backend candidat JavaScript/TypeScript",
-  "Reverse import from JavaScript or other hosts is a separate, lossy importer": "L’import inverse depuis JavaScript ou d’autres hôtes est un importeur distinct et avec perte"
+  "Reverse import from JavaScript or other hosts is a separate, lossy importer": "L’import inverse depuis JavaScript ou d’autres hôtes est un importeur distinct et avec perte",
+  "verified": "vérifié"
 }

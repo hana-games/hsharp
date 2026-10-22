@@ -2494,49 +2494,155 @@ ol {
 .graph-targets {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.45rem;
+  gap: 0.55rem;
   align-content: center;
 }
 
 .graph-target {
+  --target-accent: var(--muted);
+  --target-ink: var(--muted);
+  --target-soft: var(--paper);
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.6rem;
-  border: 1px solid var(--line);
-  border-top: 2px solid var(--target);
-  border-radius: 7px;
-  background: var(--paper-2);
+  gap: 0.45rem;
+  overflow: hidden;
+  padding: 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--target-accent) 24%, var(--line));
+  border-radius: 11px;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--target-accent) 10%, var(--white)), var(--white) 70%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), 0 2px 5px rgba(10, 12, 16, 0.035);
+  transition: transform 190ms var(--ease), border-color 190ms ease, box-shadow 190ms ease;
 }
 
-.graph-target-head {
+.graph-target::before {
+  content: "";
+  position: absolute;
+  right: -25px;
+  bottom: -36px;
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  background: var(--target-accent);
+  opacity: 0.08;
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+.graph-target:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--target-accent) 55%, var(--line));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 10px 24px rgba(10, 12, 16, 0.08);
+}
+
+.graph-target[data-target="csharp"] {
+  --target-accent: var(--csharp);
+  --target-ink: var(--csharp-ink);
+  --target-soft: var(--csharp-soft);
+}
+
+.graph-target[data-target="rust"] {
+  --target-accent: var(--rust);
+  --target-ink: var(--rust-ink);
+  --target-soft: var(--rust-soft);
+}
+
+.graph-target[data-target="go"] {
+  --target-accent: var(--go);
+  --target-ink: var(--go-ink);
+  --target-soft: var(--go-soft);
+}
+
+.graph-target[data-target="java"] {
+  --target-accent: var(--java);
+  --target-ink: var(--java-ink);
+  --target-soft: var(--java-soft);
+}
+
+.graph-target-top {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-family: var(--mono);
-  font-size: 0.62rem;
+  gap: 0.5rem;
 }
 
-.graph-target img {
-  width: 16px;
-  height: 16px;
+.graph-target-logo {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border: 1px solid color-mix(in srgb, var(--target-accent) 20%, var(--line));
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: 0 1px 2px rgba(10, 12, 16, 0.06);
+}
+
+.graph-target-logo img {
+  width: 17px;
+  height: 17px;
   object-fit: contain;
 }
 
+.graph-target-name {
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.graph-target-check {
+  margin-left: auto;
+  padding: 0.12rem 0.4rem;
+  border-radius: 999px;
+  background: var(--target-soft);
+  color: var(--target-ink);
+  font-family: var(--mono);
+  font-size: 0.46rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 .graph-target small {
+  position: relative;
+  z-index: 1;
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 0.5rem;
+  font-size: 0.49rem;
+  letter-spacing: 0.01em;
 }
 
 .graph-target.future {
-  border-top-style: dashed;
-  border-top-color: var(--muted);
-  opacity: 0.62;
+  --target-accent: var(--muted);
+  border-style: dashed;
+  background: var(--paper-2);
+  box-shadow: none;
+  opacity: 0.72;
 }
 
-.graph-target.future .graph-target-head {
+.graph-target.future:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.graph-target.future .graph-target-name {
   color: var(--muted);
+}
+
+.graph-target.future .graph-target-check {
+  background: rgba(10, 12, 16, 0.05);
+  color: var(--muted);
+}
+
+.future-mark {
+  border-style: dashed;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  font-weight: 500;
 }
 
 .direction-grid {
