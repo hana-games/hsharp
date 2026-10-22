@@ -193,5 +193,6 @@
   "Simulate canonical edit": "正規ソース変更をシミュレート",
   "Simulate profile edit": "プロファイル変更をシミュレート",
   "Source on GitHub": "GitHub のソース",
-  "Clone the repository": "リポジトリをクローン"
+  "Clone the repository": "リポジトリをクローン",
+  "Open example": "例を開く"
 }

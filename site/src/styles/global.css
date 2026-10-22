@@ -1868,6 +1868,93 @@ ol {
   white-space: pre;
 }
 
+.example-card {
+  height: 100%;
+}
+
+.example-card .example-meta .success-text,
+.example-card .example-meta .error-text {
+  flex: 0 0 auto;
+  padding: 0.16rem 0.42rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.54rem;
+  line-height: 1.2;
+}
+
+.example-code-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-top: auto;
+  overflow: hidden;
+  border: 1px solid var(--line-dark);
+  border-radius: 8px;
+  background: #0b0f15;
+}
+
+.example-code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.42rem 0.65rem;
+  border-bottom: 1px solid #232a34;
+  color: #7e8997;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+}
+
+.example-code-head span:last-child {
+  flex: 0 0 auto;
+  color: #9aa4b2;
+  text-transform: lowercase;
+}
+
+.example-code {
+  min-width: 0;
+  margin: 0;
+  padding: 0.7rem 0.75rem;
+  overflow-x: auto;
+  background: #0b0f15;
+  color: #d9d5ca;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  line-height: 1.65;
+  tab-size: 4;
+  white-space: pre;
+  overscroll-behavior-x: contain;
+  scrollbar-color: #343d49 transparent;
+  scrollbar-width: thin;
+}
+
+.example-code code {
+  font-family: inherit;
+}
+
+.example-open {
+  display: block;
+  padding: 0.38rem 0.65rem;
+  border-top: 1px solid #232a34;
+  color: #9aa4b2;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  text-align: right;
+}
+
+.example-open span {
+  display: inline-block;
+  transition: transform 160ms var(--ease);
+}
+
+.example-card:hover .example-open {
+  color: var(--lime);
+}
+
+.example-card:hover .example-open span {
+  transform: translateX(3px);
+}
+
 .example-drawer-backdrop {
   position: fixed;
   inset: 0;

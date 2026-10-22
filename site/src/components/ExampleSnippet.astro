@@ -1,0 +1,14 @@
+---
+import { tokenize } from "../lib/highlight";
+
+interface Props {
+  code: string;
+  language?: string;
+  keywords?: string[] | Record<string, string>;
+}
+
+const { code, language = "hsharp", keywords = [] } = Astro.props;
+const tokens = tokenize(code, language, keywords);
+---
+
+<pre class="example-code"><code>{tokens.map((token) => token.type === "plain" ? token.text : <span class={`tok-${token.type}`}>{token.text}</span>)}</code></pre>

@@ -6,6 +6,7 @@ import { TargetPrism } from "../components/TargetPrism";
 import { BoundaryLab } from "../components/BoundaryLab";
 import { ExportStepper } from "../components/ExportStepper";
 import StaticCode from "../components/StaticCode.astro";
+import ExampleSnippet from "../components/ExampleSnippet.astro";
 import { siteData } from "../data/data";
 import { profiles, site, targets } from "../lib/site";
 
@@ -472,7 +473,14 @@ function prettyId(id: string) {
               </div>
               <h3>{prettyId(example.id)}</h3>
               <p>{example.notes || `Entry: ${example.entry ?? "inferred"}`}</p>
-              <pre class="example-preview">{example.profiles.standard.code.split("\n").slice(0, 10).join("\n")}</pre>
+              <div class="example-code-wrap">
+                <div class="example-code-head">
+                  <span>{example.program.replace("programs/", "")}</span>
+                  <span>standard</span>
+                </div>
+                <ExampleSnippet code={example.profiles.standard.code} keywords={siteData.demo.sources.standard.keywords} />
+                <span class="example-open">Open example <span>→</span></span>
+              </div>
             </a>
           ))
         }
