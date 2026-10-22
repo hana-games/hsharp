@@ -4204,3 +4204,440 @@ ol {
     margin-left: 0;
   }
 }
+
+/* ── Boundary lab refinement ────────────────────────────────── */
+
+.boundary-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.boundary-controls-panel {
+  padding: clamp(0.9rem, 2vw, 1.2rem);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(216, 255, 62, 0.08), transparent 55%),
+    var(--paper-2);
+}
+
+.boundary-section-label {
+  margin-bottom: 0.55rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.op-selector {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.op-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--white);
+  color: var(--ink);
+  text-align: left;
+}
+
+.op-button strong {
+  font-family: var(--mono);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.op-button span {
+  color: var(--muted);
+  font-size: 0.58rem;
+}
+
+.op-button:hover {
+  border-color: var(--ink);
+}
+
+.op-button.active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--lime);
+}
+
+.op-button.active span {
+  color: #9aa4b2;
+}
+
+.operand-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+}
+
+.operand-grid.single {
+  grid-template-columns: 1fr;
+}
+
+.operand-card {
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+}
+
+.operand-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.operand-head code {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.operand-head span {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+}
+
+.operand-card input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  text-align: right;
+}
+
+.operand-card input:focus {
+  outline: 2px solid var(--lime);
+  outline-offset: 1px;
+}
+
+.operand-presets {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  margin-top: 0.35rem;
+}
+
+.operand-presets button {
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.55rem;
+}
+
+.operand-presets button:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.boundary-range-note {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.8rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.55rem;
+}
+
+.boundary-range-note .status-dot {
+  background: var(--success);
+}
+
+.boundary-result-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  overflow: hidden;
+  padding: clamp(1rem, 2.2vw, 1.3rem);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216, 255, 62, 0.09), transparent 42%),
+    var(--ink);
+  color: var(--paper);
+}
+
+.boundary-result-panel::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  bottom: -70px;
+  width: 180px;
+  height: 180px;
+  border: 1px solid rgba(216, 255, 62, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.boundary-result-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.result-symbol {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line-dark-2);
+  border-radius: 50%;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+.result-symbol.ok {
+  border-color: rgba(216, 255, 62, 0.55);
+  background: rgba(216, 255, 62, 0.08);
+  color: var(--lime);
+}
+
+.result-symbol.error {
+  border-color: rgba(229, 72, 77, 0.6);
+  background: rgba(229, 72, 77, 0.1);
+  color: #ff8c90;
+}
+
+.boundary-outcome {
+  margin-top: 0.08rem;
+  color: var(--paper);
+  font-family: var(--display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.boundary-outcome.error {
+  color: #ff8c90;
+  font-family: var(--mono);
+  font-size: clamp(1.3rem, 2.8vw, 2rem);
+  letter-spacing: -0.04em;
+}
+
+.result-code {
+  margin-left: auto;
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--line-dark-2);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  text-transform: uppercase;
+}
+
+.result-code.ok { color: var(--lime); border-color: rgba(216, 255, 62, 0.35); }
+.result-code.error { color: #ff8c90; border-color: rgba(229, 72, 77, 0.4); }
+
+.boundary-expression {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--line-dark);
+  border-radius: 6px;
+  background: #080b10;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+}
+
+.boundary-expression span {
+  color: #6f7a89;
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.boundary-expression code {
+  color: var(--paper);
+  overflow-wrap: anywhere;
+}
+
+.boundary-expression.accent code {
+  color: var(--lime);
+}
+
+.range-gauge {
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--line-dark);
+  border-radius: 6px;
+  background: #080b10;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  color: #6f7a89;
+  font-family: var(--mono);
+  font-size: 0.46rem;
+}
+
+.range-track {
+  position: relative;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #5d3434, #3d4149 50%, #2b4a3b);
+}
+
+.range-zero {
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  width: 1px;
+  height: 11px;
+  background: #6f7a89;
+}
+
+.range-marker {
+  position: absolute;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #080b10;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 0 2px rgba(216, 255, 62, 0.4);
+  transform: translate(-50%, -50%);
+}
+
+.range-gauge.is-overflow .range-marker {
+  background: #ff6b70;
+  box-shadow: 0 0 0 2px rgba(229, 72, 77, 0.4);
+}
+
+.range-caption {
+  margin-top: 0.4rem;
+  color: #7e8997;
+  font-family: var(--mono);
+  font-size: 0.48rem;
+}
+
+.range-gauge.is-overflow .range-caption {
+  color: #ff8c90;
+}
+
+.boundary-note {
+  color: #9aa4b2;
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.boundary-result-panel .output-badge {
+  align-self: flex-start;
+  border-color: var(--line-dark-2);
+  background: #080b10;
+  color: #a1abb8;
+}
+
+.boundary-result-panel .output-badge.ok {
+  border-color: rgba(216, 255, 62, 0.28);
+  color: var(--lime);
+}
+
+.boundary-result-panel .output-badge.error {
+  border-color: rgba(229, 72, 77, 0.4);
+  color: #ff8c90;
+}
+
+.short-circuit-flow {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.sc-step {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--line-dark-2);
+  border-radius: 7px;
+  background: #080b10;
+}
+
+.sc-step > span {
+  width: 20px;
+  color: #6f7a89;
+  font-family: var(--mono);
+  font-size: 0.5rem;
+}
+
+.sc-step strong {
+  display: block;
+  color: var(--paper);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.sc-step small {
+  display: block;
+  margin-top: 0.08rem;
+  color: #8b95a3;
+  font-size: 0.6rem;
+}
+
+.sc-step.skipped {
+  border-style: dashed;
+  opacity: 0.48;
+}
+
+.sc-step.skipped strong {
+  text-decoration: line-through;
+}
+
+.sc-connector {
+  color: #4f5a68;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-align: center;
+}
+
+.boundary-disclaimer {
+  margin-top: 0.9rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 900px) {
+  .boundary-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .op-selector {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .operand-grid {
+    grid-template-columns: 1fr;
+  }
+}

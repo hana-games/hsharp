@@ -12,8 +12,34 @@ function clampI32(value: number): number {
   return Math.max(-2147483648, Math.min(2147483647, Math.trunc(value)));
 }
 
-function formatValue(value: bigint): string {
-  return value.toString();
+function RangeGauge({
+  value,
+  overflow,
+  t,
+}: {
+  value: bigint;
+  overflow: boolean;
+  t: (text: string) => string;
+}) {
+  const clamped = value < I32_MIN ? I32_MIN : value > I32_MAX ? I32_MAX : value;
+  const percent = Number(((clamped - I32_MIN) * 10000n) / (I32_MAX - I32_MIN)) / 100;
+
+  return (
+    <div className={`range-gauge ${overflow ? "is-overflow" : ""}`}>
+      <div className="range-labels">
+        <span>−2,147,483,648</span>
+        <span>0</span>
+        <span>2,147,483,647</span>
+      </div>
+      <div className="range-track" aria-hidden="true">
+        <span className="range-zero" />
+        <span className="range-marker" style={{ left: `${percent}%` }} />
+      </div>
+      <div className="range-caption">
+        {overflow ? t("Outside the i32 range") : t("Inside the i32 range")}
+      </div>
+    </div>
+  );
 }
 
 export function BoundaryLab() {
@@ -43,11 +69,15 @@ export function BoundaryLab() {
         break;
     }
     const overflow = value < I32_MIN || value > I32_MAX;
-    return { value, overflow, source: op === "neg" ? `-${left}` : `${left} ${op} ${right}` };
+    return {
+      value,
+      overflow,
+      source: op === "neg" ? `-${left}` : `${left} ${op === "*" ? "×" : op} ${right}`,
+    };
   }, [a, b, op]);
 
   return (
-    <div className="lab">
+    <div className="lab boundary-lab">
       <div className="lab-head">
         <div className="lab-title">{t("Boundary lab")}</div>
         <div className="tabs">
@@ -70,74 +100,110 @@ export function BoundaryLab() {
 
       <div className="lab-body">
         {mode === "arithmetic" ? (
-          <div className="boundary-grid">
-            <div className="boundary-controls">
-              <div className="tabs">
-                {(["+", "-", "*", "neg"] as Op[]).map((item) => (
+          <div className="boundary-layout">
+            <div className="boundary-controls-panel">
+              <div className="boundary-section-label">{t("Operation")}</div>
+              <div className="op-selector">
+                {([
+                  ["+", "Add"],
+                  ["-", "Subtract"],
+                  ["*", "Multiply"],
+                  ["neg", "Negate"],
+                ] as const).map(([item, label]) => (
                   <button
                     key={item}
                     type="button"
-                    className={`tab ${op === item ? "active" : ""}`}
+                    className={`op-button ${op === item ? "active" : ""}`}
                     onClick={() => setOp(item)}
+                    aria-label={t(label)}
                   >
-                    {item === "neg" ? "unary -" : item}
+                    <strong>{item === "neg" ? "±" : item === "*" ? "×" : item === "-" ? "−" : "+"}</strong>
+                    <span>{t(label)}</span>
                   </button>
                 ))}
               </div>
 
-              <div className="field">
-                <label htmlFor="boundary-a">x (i32)</label>
-                <input
-                  id="boundary-a"
-                  type="number"
-                  min={-2147483648}
-                  max={2147483647}
-                  value={a}
-                  onChange={(event) => setA(clampI32(Number(event.target.value)))}
-                />
-              </div>
-
-              {op !== "neg" && (
-                <div className="field">
-                  <label htmlFor="boundary-b">y (i32)</label>
+              <div className={`operand-grid ${op === "neg" ? "single" : ""}`}>
+                <div className="operand-card">
+                  <div className="operand-head">
+                    <code>x</code>
+                    <span>i32</span>
+                  </div>
                   <input
-                    id="boundary-b"
+                    id="boundary-a"
+                    aria-label={t("Left operand")}
                     type="number"
                     min={-2147483648}
                     max={2147483647}
-                    value={b}
-                    onChange={(event) => setB(clampI32(Number(event.target.value)))}
+                    value={a}
+                    onChange={(event) => setA(clampI32(Number(event.target.value)))}
                   />
+                  <div className="operand-presets">
+                    <button type="button" onClick={() => setA(2147483647)}>max</button>
+                    <button type="button" onClick={() => setA(-2147483648)}>min</button>
+                    <button type="button" onClick={() => setA(0)}>0</button>
+                  </div>
                 </div>
-              )}
 
-              <div className="quick-values">
-                <button type="button" onClick={() => setA(2147483647)}>x = max</button>
-                <button type="button" onClick={() => setA(-2147483648)}>x = min</button>
-                <button type="button" onClick={() => setA(0)}>x = 0</button>
-                <button type="button" onClick={() => setB(1)}>y = 1</button>
-                <button type="button" onClick={() => setB(-1)}>y = -1</button>
+                {op !== "neg" && (
+                  <div className="operand-card">
+                    <div className="operand-head">
+                      <code>y</code>
+                      <span>i32</span>
+                    </div>
+                    <input
+                      id="boundary-b"
+                      aria-label={t("Right operand")}
+                      type="number"
+                      min={-2147483648}
+                      max={2147483647}
+                      value={b}
+                      onChange={(event) => setB(clampI32(Number(event.target.value)))}
+                    />
+                    <div className="operand-presets">
+                      <button type="button" onClick={() => setB(1)}>1</button>
+                      <button type="button" onClick={() => setB(-1)}>−1</button>
+                      <button type="button" onClick={() => setB(2147483647)}>max</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="boundary-range-note">
+                <span className="status-dot" />
+                {t("i32 range")} · −2,147,483,648 → 2,147,483,647
               </div>
             </div>
 
-            <div className="boundary-readout">
-              <div className="boundary-result">
-                <div className="label">{t("Source operation")}</div>
-                <div className="value" style={{ fontSize: "clamp(1.4rem, 3vw, 2rem)" }}>
-                  {arithmetic.source}
+            <div className="boundary-result-panel">
+              <div className="boundary-result-head">
+                <span className={`result-symbol ${arithmetic.overflow ? "error" : "ok"}`}>
+                  {arithmetic.overflow ? "!" : "✓"}
+                </span>
+                <div>
+                  <div className="boundary-section-label">{t("Outcome")}</div>
+                  <div className={`boundary-outcome ${arithmetic.overflow ? "error" : ""}`}>
+                    {arithmetic.overflow ? "E_OVERFLOW" : arithmetic.value.toLocaleString()}
+                  </div>
                 </div>
+                <span className={`result-code ${arithmetic.overflow ? "error" : "ok"}`}>
+                  {arithmetic.overflow ? t("Failure") : t("Success")}
+                </span>
               </div>
-              <div className="boundary-result">
-                <div className="label">{t("Outcome")}</div>
-                <div className={`value ${arithmetic.overflow ? "error" : ""}`}>
-                  {arithmetic.overflow ? "E_OVERFLOW" : formatValue(arithmetic.value)}
-                </div>
-                <p className="hint" style={{ marginTop: "0.5rem" }}>
-                  {arithmetic.overflow
-                    ? t("The operation exceeds i32 and stops at the execution boundary. Illustration uses node 5.")
-                    : t("The result fits in i32 and is narrowed to the declared type.")}
-                </p>
+
+              <div className="boundary-expression">
+                <span>{t("Expression")}</span>
+                <code>{arithmetic.source}</code>
               </div>
+
+              <RangeGauge value={arithmetic.value} overflow={arithmetic.overflow} t={t} />
+
+              <p className="boundary-note">
+                {arithmetic.overflow
+                  ? t("The operation exceeds i32 and stops at the execution boundary. Illustration uses node 5.")
+                  : t("The result fits in i32 and is narrowed to the declared type.")}
+              </p>
+
               <div className={`output-badge ${arithmetic.overflow ? "error" : "ok"}`}>
                 <span className="status-dot" />
                 {arithmetic.overflow ? t("Failure(code, sourceNode)") : t("Success(i32, value)")}
@@ -145,47 +211,59 @@ export function BoundaryLab() {
             </div>
           </div>
         ) : (
-          <div className="boundary-grid">
-            <div className="boundary-controls">
-              <div className="field">
-                <label htmlFor="boundary-x">x (i32)</label>
-                <input
-                  id="boundary-x"
-                  type="number"
-                  min={-2147483648}
-                  max={2147483647}
-                  value={x}
-                  onChange={(event) => setX(clampI32(Number(event.target.value)))}
-                />
+          <div className="boundary-layout">
+            <div className="boundary-controls-panel">
+              <div className="boundary-section-label">{t("Operand")}</div>
+              <div className="operand-grid single">
+                <div className="operand-card">
+                  <div className="operand-head">
+                    <code>x</code>
+                    <span>i32</span>
+                  </div>
+                  <input
+                    id="boundary-x"
+                    aria-label="x"
+                    type="number"
+                    min={-2147483648}
+                    max={2147483647}
+                    value={x}
+                    onChange={(event) => setX(clampI32(Number(event.target.value)))}
+                  />
+                  <div className="operand-presets">
+                    <button type="button" onClick={() => setX(2147483647)}>max</button>
+                    <button type="button" onClick={() => setX(-2147483648)}>min</button>
+                    <button type="button" onClick={() => setX(0)}>0</button>
+                  </div>
+                </div>
               </div>
-              <div className="quick-values">
-                <button type="button" onClick={() => setX(2147483647)}>x = max</button>
-                <button type="button" onClick={() => setX(-2147483648)}>x = min</button>
-                <button type="button" onClick={() => setX(0)}>x = 0</button>
-              </div>
-              <p className="hint">
+              <p className="boundary-note">
                 {t("The right operand would overflow when x is the maximum value. Because the left side is already false, it is never evaluated.")}
               </p>
             </div>
 
-            <div className="boundary-readout">
-              <div className="boundary-expr">
-                false &amp;&amp; ((x + 1) &gt; 0)
+            <div className="boundary-result-panel">
+              <div className="boundary-expression accent">
+                <span>{t("Expression")}</span>
+                <code>false &amp;&amp; ((x + 1) &gt; 0)</code>
               </div>
-              <div className="short-circuit">
-                <div className="path-step">
-                  <span className="step-dot" />
-                  evaluate left → false
+
+              <div className="short-circuit-flow">
+                <div className="sc-step done">
+                  <span>01</span>
+                  <div><strong>{t("Evaluate left")}</strong><small>{t("Result: false")}</small></div>
                 </div>
-                <div className="path-step skipped">
-                  <span className="step-dot" />
-                  evaluate (x + 1) &gt; 0
+                <div className="sc-connector" aria-hidden="true">↓</div>
+                <div className="sc-step skipped">
+                  <span>02</span>
+                  <div><strong>{t("Right operand")}</strong><small>{t("Skipped")}</small></div>
                 </div>
-                <div className="path-step">
-                  <span className="step-dot" />
-                  return false
+                <div className="sc-connector" aria-hidden="true">↓</div>
+                <div className="sc-step done">
+                  <span>03</span>
+                  <div><strong>{t("Return")}</strong><small>false</small></div>
                 </div>
               </div>
+
               <div className="output-badge ok">
                 <span className="status-dot" />
                 {"{ status: \"ok\", type: \"bool\", value: false }"}
@@ -194,7 +272,7 @@ export function BoundaryLab() {
           </div>
         )}
 
-        <p className="hint" style={{ marginTop: "1rem" }}>
+        <p className="hint boundary-disclaimer">
           {t("Visual simulation only. No h# program is executed in the browser; the values illustrate the specified semantics.")}
         </p>
       </div>
