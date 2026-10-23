@@ -7,6 +7,7 @@ const toc = [
   { id: "matrix", label: "Target matrix" },
   { id: "arithmetic", label: "Checked arithmetic" },
   { id: "projects", label: "Generated projects" },
+  { id: "invariants", label: "Generated-code invariants" },
   { id: "names", label: "Portable names" },
   { id: "outcomes", label: "Execution outcomes" },
   { id: "toolchains", label: "Toolchain policy" },
@@ -88,6 +89,16 @@ const toc = [
       </p>
     </div>
   </div>
+
+  <h2 id="invariants">Generated-code invariants</h2>
+  <ul>
+    <li>No source identifier reaches generated code. Functions and locals become compiler-assigned IDs.</li>
+    <li>Each target carries its own internal result type and checked arithmetic helpers.</li>
+    <li>Every arithmetic operation widens, checks the i32 range, then narrows or fails.</li>
+    <li>Generated programs print exactly one outcome line and no extra runtime logging.</li>
+    <li>No backend requires an external package, framework, or runtime beyond its standard toolchain.</li>
+    <li>Generated projects are standalone executables, not reusable libraries.</li>
+  </ul>
 
   <h2 id="names">Portable names</h2>
   <p>

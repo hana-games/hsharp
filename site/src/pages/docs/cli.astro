@@ -4,7 +4,9 @@ import StaticCode from "../../components/StaticCode.astro";
 
 const toc = [
   { id: "overview", label: "Overview" },
+  { id: "conventions", label: "Global conventions" },
   { id: "check", label: "check" },
+  { id: "diagnostics", label: "Diagnostics" },
   { id: "build", label: "build" },
   { id: "syntax", label: "syntax" },
   { id: "test", label: "test" },
@@ -55,12 +57,37 @@ hs doctor [--json]
 hs demo
 hs bridge`} language="bash" title="command summary" />
 
+  <h2 id="conventions">Global conventions</h2>
+  <table>
+    <thead><tr><th>Topic</th><th>Rule</th></tr></thead>
+    <tbody>
+      <tr><td>Aliases</td><td>hs, hsharp, and hcharp run the same CLI.</td></tr>
+      <tr><td>Help and version</td><td>Use help or --help for usage; use version or --version for the compiler and core versions.</td></tr>
+      <tr><td>Profiles</td><td>Canonical source uses the standard profile. Personal profiles are always selected explicitly.</td></tr>
+      <tr><td>Streams</td><td>Human diagnostics go to stderr; JSON output goes to stdout.</td></tr>
+      <tr><td>Output</td><td>Generated projects default to build/program/target.</td></tr>
+      <tr><td>Exit codes</td><td>0 success, 1 failure, 2 usage error or blocked target.</td></tr>
+    </tbody>
+  </table>
+
   <h2 id="check">check</h2>
   <StaticCode code={check} language="bash" title="terminal" />
   <p>
     Parses and checks a file, printing located diagnostics. It does not execute the program and does
     not generate targets. <code>--json</code> emits a machine-readable result with the profile id,
     diagnostics, and function names.
+  </p>
+
+  <h2 id="diagnostics">Diagnostics</h2>
+  <p>
+    Human diagnostics are stable enough to script against. The location comes first, followed by
+    severity, diagnostic code, message, and an optional hint on the next line.
+  </p>
+  <StaticCode code={`examples/calculate.hs:5:12: error E_TYPE_MISMATCH: expected bool, found i32
+  hint: use a comparison or an explicit bool expression`} language="text" title="diagnostic format" />
+  <p>
+    Syntax errors stop after the first parser error. Semantic checks may report several independent
+    errors in one pass. JSON output contains the same codes and spans for editor integrations.
   </p>
 
   <h2 id="build">build</h2>

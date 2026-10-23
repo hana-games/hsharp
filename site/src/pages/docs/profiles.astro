@@ -5,6 +5,7 @@ import StaticCode from "../../components/StaticCode.astro";
 const toc = [
   { id: "format", label: "Profile format" },
   { id: "validation", label: "Validation" },
+  { id: "limits", label: "What profiles cannot change" },
   { id: "conversion", label: "Token-aware conversion" },
   { id: "export", label: "Export and manifest" },
   { id: "import", label: "Reimport" },
@@ -109,6 +110,23 @@ function calculate(x: i32, bonus: bool) -> i32 {
     word that has been remapped cannot be reused as an identifier. This prevents the same text from
     changing meaning based on the active profile.
   </p>
+
+  <h2 id="limits">What profiles cannot change</h2>
+  <p>
+    A profile is a notation layer, not a language dialect. It can rename seven keyword roles and
+    nothing else.
+  </p>
+  <table>
+    <thead><tr><th>Surface</th><th>Rule</th></tr></thead>
+    <tbody>
+      <tr><td>Grammar and punctuation</td><td>Fixed: braces, commas, semicolons, arrows, and operators do not change.</td></tr>
+      <tr><td>Types and static checks</td><td>Fixed: i32, bool, arity, returns, and scopes are profile-independent.</td></tr>
+      <tr><td>Evaluation order</td><td>Fixed: arguments and operands evaluate left to right; short-circuit rules do not change.</td></tr>
+      <tr><td>Checked arithmetic</td><td>Fixed: every operation is range-checked and fails with E_OVERFLOW.</td></tr>
+      <tr><td>Generated targets</td><td>Fixed: the same typed AST produces the same four backend projects.</td></tr>
+      <tr><td>Comments and identifiers</td><td>Preserved verbatim; conversion rewrites keyword tokens only.</td></tr>
+    </tbody>
+  </table>
 
   <h2 id="conversion">Token-aware conversion</h2>
   <p>

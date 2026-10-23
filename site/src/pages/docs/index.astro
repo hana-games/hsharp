@@ -1,14 +1,28 @@
 ---
 import DocsLayout from "../../layouts/DocsLayout.astro";
+import StaticCode from "../../components/StaticCode.astro";
 import { siteData } from "../../data/data";
 import { site, targets } from "../../lib/site";
 
 const toc = [
   { id: "what", label: "What h# is" },
+  { id: "quickstart", label: "Quick start" },
   { id: "parts", label: "The four parts" },
+  { id: "concepts", label: "Core concepts" },
   { id: "status", label: "Status" },
-  { id: "next", label: "Where to go next" },
+  { id: "layout", label: "Repository map" },
+  { id: "next", label: "Documentation map" },
 ];
+
+const quickstart = `git clone https://github.com/hana-games/hsharp.git
+cd hsharp
+npm install
+npm run build
+npm link
+
+hs doctor
+hs check examples/calculate.hs
+hs build examples/calculate.hs --target rust --entry calculate --run --args 10,true`;
 ---
 
 <DocsLayout
@@ -33,6 +47,18 @@ const toc = [
   <blockquote>
     Syntax may vary between users. Program meaning remains shared.
   </blockquote>
+
+  <h2 id="quickstart">Quick start</h2>
+  <p>
+    From a clone to a checked and executed target. The command is called hs; hsharp and hcharp are
+    aliases.
+  </p>
+  <StaticCode code={quickstart} language="bash" title="terminal" meta="clone, build, check, run" />
+  <p>
+    The doctor command records the detected toolchains. The check command parses and checks without
+    generating output. The final command compiles the generated Rust project, runs the selected entry
+    function, and prints one JSON outcome.
+  </p>
 
   <h2 id="parts">The four parts</h2>
   <div class="grid grid-2">
@@ -70,6 +96,18 @@ const toc = [
     </div>
   </div>
 
+  <h2 id="concepts">Core concepts</h2>
+  <table>
+    <thead><tr><th>Concept</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td>Canonical source</td><td>The shared source program written in standard notation.</td></tr>
+      <tr><td>Profile</td><td>Validated JSON that renames seven keyword roles for one person.</td></tr>
+      <tr><td>Typed AST</td><td>The normalized, checked program structure used by every backend.</td></tr>
+      <tr><td>Target</td><td>An ordinary C#, Rust, Go, or Java project compiled by its own toolchain.</td></tr>
+      <tr><td>Manifest</td><td>Fingerprints that protect export and reimport from stale edits.</td></tr>
+    </tbody>
+  </table>
+
   <h2 id="status">Status</h2>
   <p>
     h# is a proof of concept, not a production language. Version {site.version} implements the
@@ -88,13 +126,38 @@ const toc = [
     </tbody>
   </table>
 
-  <h2 id="next">Where to go next</h2>
-  <ul>
-    <li><a href="/docs/getting-started">Getting started</a> — build the compiler, run a program, install the editor extension.</li>
-    <li><a href="/docs/language">Language core</a> — the normative semantics.</li>
-    <li><a href="/docs/profiles">Profiles</a> — customize notation and understand the manifest workflow.</li>
-    <li><a href="/examples">Examples</a> — real programs from the conformance corpus.</li>
-    <li><a href="/playground">Playground</a> — interactive demonstrations without executing h#.</li>
-    <li><a href="/docs/verification">Verification</a> — exactly what was compiled, executed, and compared.</li>
-  </ul>
+  <h2 id="layout">Repository map</h2>
+  <p>
+    The repository is deliberately small. Generated directories are disposable; profiles, examples,
+    and the specification are inputs.
+  </p>
+  <table>
+    <thead><tr><th>Path</th><th>Contents</th></tr></thead>
+    <tbody>
+      <tr><td><code>src/</code></td><td>Lexer, parser, checker, interpreter, generators, CLI, and bridge.</td></tr>
+      <tr><td><code>spec/</code></td><td>Normative specification and design decisions.</td></tr>
+      <tr><td><code>profiles/</code></td><td>Standard and personal profile JSON documents.</td></tr>
+      <tr><td><code>examples/</code></td><td>Programs used by the conformance corpus.</td></tr>
+      <tr><td><code>tests/</code></td><td>Unit, profile, bridge, and conformance tests.</td></tr>
+      <tr><td><code>reports/</code></td><td>Generated conformance, environment, and benchmark evidence.</td></tr>
+      <tr><td><code>editors/vscode/</code></td><td>Visual Studio Code extension and its protocol client.</td></tr>
+      <tr><td><code>site/</code></td><td>This documentation and showcase website.</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="next">Documentation map</h2>
+  <table>
+    <thead><tr><th>Page</th><th>Start here for</th></tr></thead>
+    <tbody>
+      <tr><td><a href="/docs/getting-started">Getting started</a></td><td>Install, first program, generated project, editor, and troubleshooting.</td></tr>
+      <tr><td><a href="/docs/language">Language core</a></td><td>The normative semantics, type rules, evaluation order, and error codes.</td></tr>
+      <tr><td><a href="/docs/grammar">Grammar</a></td><td>The accepted syntax, lexical rules, and parser restrictions.</td></tr>
+      <tr><td><a href="/docs/profiles">Profiles</a></td><td>Keyword customization, validation, manifests, and safe reimport.</td></tr>
+      <tr><td><a href="/docs/cli">CLI reference</a></td><td>Every command, flag, output convention, and exit code.</td></tr>
+      <tr><td><a href="/docs/targets">Targets</a></td><td>Generated projects, checked arithmetic, naming, and outcomes.</td></tr>
+      <tr><td><a href="/docs/verification">Verification</a></td><td>The evidence, reproduction commands, and explicit limits.</td></tr>
+      <tr><td><a href="/examples">Examples</a></td><td>Searchable programs from the real conformance corpus.</td></tr>
+      <tr><td><a href="/playground">Playground</a></td><td>Interactive demonstrations without executing h# in the browser.</td></tr>
+    </tbody>
+  </table>
 </DocsLayout>

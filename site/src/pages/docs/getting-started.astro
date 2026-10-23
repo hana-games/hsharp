@@ -6,10 +6,12 @@ import { site } from "../../lib/site";
 const toc = [
   { id: "prerequisites", label: "Prerequisites" },
   { id: "build", label: "Build" },
+  { id: "layout", label: "Project layout" },
   { id: "first", label: "First program" },
   { id: "targets", label: "Generate a target" },
   { id: "editor", label: "VS Code extension" },
   { id: "verify", label: "Verify everything" },
+  { id: "troubleshooting", label: "Troubleshooting" },
   { id: "exit-codes", label: "Exit codes" },
 ];
 
@@ -75,6 +77,25 @@ hs test --all-targets`;
     <code>reports/environment.json</code>.
   </p>
 
+  <h2 id="layout">Project layout</h2>
+  <p>The parts you will touch while following this guide:</p>
+  <table>
+    <thead><tr><th>Path</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>src/</code></td><td>Compiler, checker, interpreter, generators, CLI, and bridge.</td></tr>
+      <tr><td><code>examples/</code></td><td>Conformance programs, including the calculate example.</td></tr>
+      <tr><td><code>profiles/</code></td><td>Standard and personal profile JSON documents.</td></tr>
+      <tr><td><code>build/</code></td><td>Generated target projects, created by the build command.</td></tr>
+      <tr><td><code>local/</code></td><td>Export/import scratch files and the demo workspace.</td></tr>
+      <tr><td><code>reports/</code></td><td>Doctor and conformance evidence.</td></tr>
+      <tr><td><code>editors/vscode/</code></td><td>Bundled Visual Studio Code extension.</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Build, local, and reports are generated. Profiles, examples, and the specification are inputs;
+    generated output can be deleted and recreated.
+  </p>
+
   <h2 id="first">First program</h2>
   <StaticCode code={first} language="hsharp" title="examples/calculate.hs" meta="standard profile" />
   <p>
@@ -116,6 +137,18 @@ hs test --all-targets`;
     the full conformance suite. <code>hs test --all-targets</code> writes
     <code>reports/conformance.json</code> and <code>reports/conformance.md</code>.
   </p>
+
+  <h2 id="troubleshooting">Troubleshooting</h2>
+  <table>
+    <thead><tr><th>Symptom</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>The hs command is not recognized</td><td>Run npm link from the repository root, or invoke node dist/cli/index.js.</td></tr>
+      <tr><td>A target is marked blocked</td><td>Run hs doctor, install the missing toolchain, then rerun the command.</td></tr>
+      <tr><td>A profile cannot be found</td><td>Pass an explicit profile path; personal profiles are never selected implicitly.</td></tr>
+      <tr><td>Unexpected E_OVERFLOW</td><td>The operation left the i32 range. Checked arithmetic never wraps or clamps.</td></tr>
+      <tr><td>The wrong function runs</td><td>Pass an explicit entry function. Inference only accepts main or a single function.</td></tr>
+    </tbody>
+  </table>
 
   <h2 id="exit-codes">Exit codes</h2>
   <table>

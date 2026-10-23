@@ -5,6 +5,7 @@ import StaticCode from "../../components/StaticCode.astro";
 const toc = [
   { id: "types", label: "Types" },
   { id: "declarations", label: "Declarations" },
+  { id: "checks", label: "Static checks" },
   { id: "literals", label: "Integer literals" },
   { id: "expressions", label: "Expressions and precedence" },
   { id: "evaluation", label: "Evaluation order" },
@@ -64,6 +65,20 @@ const shortCircuit = `fn main(x: i32) -> bool {
     <li>Blocks introduce lexical scope; sibling blocks may reuse a name.</li>
   </ul>
   <StaticCode code={demo} language="hsharp" title="calculate.hs" meta="functions, local, condition" />
+
+  <h2 id="checks">Static checks</h2>
+  <p>Every program is fully checked before a target is generated:</p>
+  <table>
+    <thead><tr><th>Check</th><th>Examples of rejected input</th></tr></thead>
+    <tbody>
+      <tr><td>Names and scopes</td><td>Duplicate functions or parameters, shadowing, unknown names, duplicate locals</td></tr>
+      <tr><td>Types</td><td>Missing annotations, implicit i32/bool conversion, wrong operands</td></tr>
+      <tr><td>Returns</td><td>A reachable path without a value, or a value of the wrong type</td></tr>
+      <tr><td>Calls</td><td>Unknown functions, wrong arity, wrong argument types, direct or indirect recursion</td></tr>
+      <tr><td>Literals</td><td>Positive values above 2,147,483,647; only -2147483648 is a special negative literal</td></tr>
+      <tr><td>Profiles</td><td>Missing roles, duplicate words, invalid lexical forms, reserved-word collisions</td></tr>
+    </tbody>
+  </table>
 
   <h2 id="literals">Integer literals</h2>
   <ul>
