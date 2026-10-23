@@ -34,6 +34,8 @@ export function emitGo(
     resFailed: (expr) => `!${expr}.ok`,
     resValue: (expr) => `${expr}.value`,
     resOk: (expr) => `ok(${expr})`,
+    resOkRecord: (_record, expr) => `okRecord(${expr})`,
+    resRecordValue: (expr, record) => `${expr}.payload.(${record.targetName})`,
     resFail: (code, node) => `fail(${code}, ${node})`,
     checked: (op, args, node) => `${op}(${[...args, String(node)].join(", ")})`,
     call: (fn, args) => `${fn}(${args.join(", ")})`,
@@ -65,14 +67,19 @@ ${imports}
 )
 
 type Res struct {
-	ok    bool
-	value int32
-	code  int
-	node  int
+	ok      bool
+	value   int32
+	payload any
+	code    int
+	node    int
 }
 
 func ok(value int32) Res {
 	return Res{ok: true, value: value, code: 0, node: 0}
+}
+
+func okRecord(payload any) Res {
+	return Res{ok: true, value: 0, payload: payload, code: 0, node: 0}
 }
 
 func fail(code int, node int) Res {

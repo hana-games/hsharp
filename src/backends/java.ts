@@ -35,6 +35,8 @@ export function emitJava(
     resFailed: (expr) => `!${expr}.ok`,
     resValue: (expr) => `${expr}.value`,
     resOk: (expr) => `Res.ok(${expr})`,
+    resOkRecord: (_record, expr) => `Res.okRecord(${expr})`,
+    resRecordValue: (expr, record) => `((${record.targetName}) ${expr}.payload)`,
     resFail: (code, node) => `Res.fail(${code}, ${node})`,
     checked: (op, args, node) => `${op}(${[...args, String(node)].join(", ")})`,
     call: (fn, args) => `${fn}(${args.join(", ")})`,
@@ -61,22 +63,28 @@ public final class HsProgram {
     private static final class Res {
         final boolean ok;
         final int value;
+        final Object payload;
         final int code;
         final int node;
 
-        private Res(boolean ok, int value, int code, int node) {
+        private Res(boolean ok, int value, Object payload, int code, int node) {
             this.ok = ok;
             this.value = value;
+            this.payload = payload;
             this.code = code;
             this.node = node;
         }
 
         static Res ok(int value) {
-            return new Res(true, value, 0, 0);
+            return new Res(true, value, null, 0, 0);
+        }
+
+        static Res okRecord(Object payload) {
+            return new Res(true, 0, payload, 0, 0);
         }
 
         static Res fail(int code, int node) {
-            return new Res(false, 0, code, node);
+            return new Res(false, 0, null, code, node);
         }
     }
 

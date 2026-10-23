@@ -9,8 +9,9 @@ The POC intentionally covers a small language core. The following limits are kno
 - Records are top-level and nominal. They support literals, nested non-recursive fields, field
   access, locals, internal function parameters, structural equality, and update-as-new-value.
 - Recursive record types are rejected with `E_RECURSIVE_RECORD`.
-- Functions cannot return records (`E_RECORD_RETURN_UNSUPPORTED`), and entry functions cannot take
-  records because command-line arguments remain scalar (`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`).
+- Internal functions can return records. Entry functions cannot return records
+  (`E_RECORD_ENTRY_RETURN_UNSUPPORTED`) and cannot take record parameters because command-line
+  arguments remain scalar (`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`).
 - Generated record and field names are compiler-generated, so source names that collide with target
   keywords never appear in generated type declarations.
 - No loops, recursion, mutation, modules, generics, exceptions, I/O, or concurrency.

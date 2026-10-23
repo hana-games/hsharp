@@ -215,13 +215,13 @@ class Checker {
     }
 
     const returnType = this.resolveType(fn.returnType);
-    if (this.records.has(returnType)) {
+    if (autoEntry && this.records.has(returnType)) {
       this.diagnostics.push(
         error(
-          "E_RECORD_RETURN_UNSUPPORTED",
-          `function "${fn.name}" cannot return record "${returnType}" in this slice`,
+          "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
+          `entry function "${fn.name}" cannot return record "${returnType}"`,
           fn.returnType.span,
-          "return a scalar (i32 or bool) and keep record values inside the function body or pass them to internal calls",
+          "entry outcomes are scalar; return a scalar and use internal functions to build records",
         ),
       );
     }

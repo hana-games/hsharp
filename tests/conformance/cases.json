@@ -11,192 +11,357 @@
       "id": "demo-bonus-true",
       "program": "programs/demo.hs",
       "entry": "calculate",
-      "args": [10, true],
-      "expected": { "status": "ok", "type": "i32", "value": 32 },
+      "args": [
+        10,
+        true
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 32
+      },
       "notes": "Specification example: x = 10, bonus = true."
     },
     {
       "id": "demo-bonus-false",
       "program": "programs/demo.hs",
       "entry": "calculate",
-      "args": [10, false],
-      "expected": { "status": "ok", "type": "i32", "value": 30 }
+      "args": [
+        10,
+        false
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 30
+      }
     },
     {
       "id": "function-call",
       "program": "programs/calls.hs",
       "entry": "main",
-      "args": [20],
-      "expected": { "status": "ok", "type": "i32", "value": 22 }
+      "args": [
+        20
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 22
+      }
     },
     {
       "id": "precedence",
       "program": "programs/precedence.hs",
       "args": [],
-      "expected": { "status": "ok", "type": "i32", "value": 14 }
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 14
+      }
     },
     {
       "id": "parentheses",
       "program": "programs/parentheses.hs",
       "args": [],
-      "expected": { "status": "ok", "type": "i32", "value": 20 }
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 20
+      }
     },
     {
       "id": "left-associativity",
       "program": "programs/associativity.hs",
       "args": [],
-      "expected": { "status": "ok", "type": "i32", "value": 5 }
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 5
+      }
     },
     {
       "id": "subtraction-grouping",
       "program": "programs/subtraction_grouping.hs",
       "args": [],
-      "expected": { "status": "ok", "type": "i32", "value": 7 }
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 7
+      }
     },
     {
       "id": "i32-minimum",
       "program": "programs/bounds.hs",
       "entry": "min_value",
       "args": [],
-      "expected": { "status": "ok", "type": "i32", "value": -2147483648 }
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": -2147483648
+      }
     },
     {
       "id": "i32-maximum",
       "program": "programs/bounds.hs",
       "entry": "max_value",
       "args": [],
-      "expected": { "status": "ok", "type": "i32", "value": 2147483647 }
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 2147483647
+      }
     },
     {
       "id": "overflow-add-max",
       "program": "programs/overflow_add.hs",
-      "args": [2147483647],
-      "expected": { "status": "error", "code": "E_OVERFLOW", "node": 5 }
+      "args": [
+        2147483647
+      ],
+      "expected": {
+        "status": "error",
+        "code": "E_OVERFLOW",
+        "node": 5
+      }
     },
     {
       "id": "add-at-max-boundary",
       "program": "programs/overflow_add.hs",
-      "args": [2147483646],
-      "expected": { "status": "ok", "type": "i32", "value": 2147483647 }
+      "args": [
+        2147483646
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 2147483647
+      }
     },
     {
       "id": "overflow-subtract-min",
       "program": "programs/overflow_sub.hs",
-      "args": [-2147483648],
-      "expected": { "status": "error", "code": "E_OVERFLOW", "node": 5 }
+      "args": [
+        -2147483648
+      ],
+      "expected": {
+        "status": "error",
+        "code": "E_OVERFLOW",
+        "node": 5
+      }
     },
     {
       "id": "overflow-multiply-min",
       "program": "programs/overflow_mul.hs",
-      "args": [-2147483648],
-      "expected": { "status": "error", "code": "E_OVERFLOW", "node": 6 }
+      "args": [
+        -2147483648
+      ],
+      "expected": {
+        "status": "error",
+        "code": "E_OVERFLOW",
+        "node": 6
+      }
     },
     {
       "id": "multiply-negative-one",
       "program": "programs/overflow_mul.hs",
-      "args": [5],
-      "expected": { "status": "ok", "type": "i32", "value": -5 }
+      "args": [
+        5
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": -5
+      }
     },
     {
       "id": "overflow-negate-min",
       "program": "programs/overflow_neg.hs",
-      "args": [-2147483648],
-      "expected": { "status": "error", "code": "E_OVERFLOW", "node": 4 }
+      "args": [
+        -2147483648
+      ],
+      "expected": {
+        "status": "error",
+        "code": "E_OVERFLOW",
+        "node": 4
+      }
     },
     {
       "id": "negate-positive",
       "program": "programs/overflow_neg.hs",
-      "args": [5],
-      "expected": { "status": "ok", "type": "i32", "value": -5 }
+      "args": [
+        5
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": -5
+      }
     },
     {
       "id": "short-circuit-and",
       "program": "programs/short_circuit_and.hs",
-      "args": [2147483647],
-      "expected": { "status": "ok", "type": "bool", "value": false },
+      "args": [
+        2147483647
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "bool",
+        "value": false
+      },
       "notes": "The right operand would overflow but must not be evaluated."
     },
     {
       "id": "short-circuit-or",
       "program": "programs/short_circuit_or.hs",
-      "args": [2147483647],
-      "expected": { "status": "ok", "type": "bool", "value": true }
+      "args": [
+        2147483647
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "bool",
+        "value": true
+      }
     },
     {
       "id": "comparison-true",
       "program": "programs/comparisons.hs",
-      "args": [1, 2],
-      "expected": { "status": "ok", "type": "bool", "value": true }
+      "args": [
+        1,
+        2
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "bool",
+        "value": true
+      }
     },
     {
       "id": "comparison-false",
       "program": "programs/comparisons.hs",
-      "args": [2, 1],
-      "expected": { "status": "ok", "type": "bool", "value": false }
+      "args": [
+        2,
+        1
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "bool",
+        "value": false
+      }
     },
     {
       "id": "bool-logic",
       "program": "programs/bool_logic.hs",
-      "args": [true, false],
-      "expected": { "status": "ok", "type": "bool", "value": true }
+      "args": [
+        true,
+        false
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "bool",
+        "value": true
+      }
     },
     {
       "id": "if-else-negative",
       "program": "programs/if_else.hs",
-      "args": [-5],
-      "expected": { "status": "ok", "type": "i32", "value": -1 }
+      "args": [
+        -5
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": -1
+      }
     },
     {
       "id": "if-else-zero",
       "program": "programs/if_else.hs",
-      "args": [0],
-      "expected": { "status": "ok", "type": "i32", "value": 0 }
+      "args": [
+        0
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 0
+      }
     },
     {
       "id": "if-else-positive",
       "program": "programs/if_else.hs",
-      "args": [5],
-      "expected": { "status": "ok", "type": "i32", "value": 1 }
+      "args": [
+        5
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 1
+      }
     },
     {
       "id": "target-reserved-names",
       "program": "programs/target_names.hs",
       "entry": "int",
-      "args": [41],
-      "expected": { "status": "ok", "type": "i32", "value": 42 },
+      "args": [
+        41
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 42
+      },
       "notes": "h# names int/class/string must not leak into target identifiers."
     },
     {
       "id": "comments-preserved",
       "program": "programs/comments.hs",
       "args": [],
-      "expected": { "status": "ok", "type": "i32", "value": 7 }
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 7
+      }
     },
     {
       "id": "dead-code-after-return",
       "program": "programs/dead_code.hs",
       "args": [],
-      "expected": { "status": "ok", "type": "i32", "value": 1 },
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 1
+      },
       "notes": "Unreachable declarations are checked but omitted from generated code."
     },
     {
       "id": "dead-code-after-if",
       "program": "programs/dead_after_if.hs",
-      "args": [1],
-      "expected": { "status": "ok", "type": "i32", "value": 1 }
+      "args": [
+        1
+      ],
+      "expected": {
+        "status": "ok",
+        "type": "i32",
+        "value": 1
+      }
     },
     {
       "id": "grouped-comparison-equality",
       "program": "programs/grouped_comparisons.hs",
       "args": [],
-      "expected": { "status": "ok", "type": "bool", "value": true },
+      "expected": {
+        "status": "ok",
+        "type": "bool",
+        "value": true
+      },
       "notes": "Explicit parentheses permit Boolean equality of comparison results."
     },
     {
       "id": "records-structural",
       "program": "programs/records.hs",
       "args": [],
-      "expected": { "status": "ok", "type": "bool", "value": true },
+      "expected": {
+        "status": "ok",
+        "type": "bool",
+        "value": true
+      },
       "notes": "Records as locals and internal parameters, field access, field-order-independent structural equality."
     }
   ],
@@ -304,7 +469,7 @@
     {
       "id": "record-return-unsupported",
       "program": "programs/neg_record_return.hs",
-      "expectDiagnostic": "E_RECORD_RETURN_UNSUPPORTED"
+      "expectDiagnostic": "E_RECORD_ENTRY_RETURN_UNSUPPORTED"
     },
     {
       "id": "unknown-record-field",

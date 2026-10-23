@@ -425,20 +425,25 @@ fn main() -> i32 { return 1; }
   assert.ok(loaded.diagnostics.some((diagnostic) => diagnostic.code === "E_RECURSIVE_RECORD"));
 });
 
-test("record-returning functions and record entry parameters are rejected", () => {
-  const returned = analyze(
-    "record Point { x: i32 }\nfn make() -> Point { return Point { x: 1 }; }\nfn main() -> i32 { return 0; }\n",
+test("internal functions can return records while entry outcomes stay scalar", () => {
+  const returned = resultOf(
+    "record Point { x: i32 }\nfn make() -> Point { return Point { x: 1 }; }\nfn main() -> bool { let p: Point = make(); return p.x == 1; }\n",
+  );
+  assert.deepEqual(returned, { status: "ok", type: "bool", value: true });
+
+  const entryReturn = analyze(
+    "record Point { x: i32 }\nfn main() -> Point { return Point { x: 1 }; }\n",
     "<unit>",
     STANDARD_PROFILE,
   );
-  assert.ok(returned.diagnostics.some((d) => d.code === "E_RECORD_RETURN_UNSUPPORTED"));
+  assert.ok(entryReturn.diagnostics.some((d) => d.code === "E_RECORD_ENTRY_RETURN_UNSUPPORTED"));
 
-  const entry = analyze(
+  const entryParam = analyze(
     "record Point { x: i32 }\nfn main(p: Point) -> i32 { return p.x; }\n",
     "<unit>",
     STANDARD_PROFILE,
   );
-  assert.ok(entry.diagnostics.some((d) => d.code === "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED"));
+  assert.ok(entryParam.diagnostics.some((d) => d.code === "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED"));
 });
 
 test("record diagnostics cover unknown records, fields, and missing fields", () => {

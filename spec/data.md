@@ -3,8 +3,9 @@
 Status: **partially implemented (0.3 record slice)**. A data feature is advertised only after it has a
 conformance corpus entry and executes on every advertised target. The current slice covers immutable
 records with `i32`/`bool` fields, nested non-recursive records, record literals, field access, records
-as locals and internal parameters, structural equality, and update-as-new-value. Strings, lists,
-variants, `Option`, `Result`, record returns, and record entry parameters remain specification-only.
+as locals and internal parameters, record returns from internal functions, structural equality, and
+update-as-new-value. Strings, lists, variants, `Option`, `Result`, and record entry parameters remain
+specification-only.
 
 This document defines the portable data model for phase 0.3. It is normative for profiles,
 generated code, the reference interpreter, and the conformance suite.
@@ -92,12 +93,14 @@ record Point {
 
 **Implemented slice (0.3):** top-level record declarations with unique `i32`/`bool` fields, nested
 non-recursive record fields, record literals, field access, records as locals and internal
-parameters, structural `==`/`!=`, and `Point { ...p, x: 3 }` update-as-new-value. Record names and
-field names are nominal; field order is preserved in the AST but not observable in equality.
+parameters, record returns from internal functions, structural `==`/`!=`, and
+`Point { ...p, x: 3 }` update-as-new-value. Record names and field names are nominal; field order is
+preserved in the AST but not observable in equality. Internal record returns use the generated
+result payload.
 
-**Deliberately rejected in this slice:** recursive record types (`E_RECURSIVE_RECORD`),
-record-returning functions (`E_RECORD_RETURN_UNSUPPORTED`), and record parameters on entry functions
-(`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`). Unknown records, fields, and types have dedicated
+**Deliberately rejected in this slice:** recursive record types (`E_RECURSIVE_RECORD`), entry
+functions returning records (`E_RECORD_ENTRY_RETURN_UNSUPPORTED`), and record parameters on entry
+functions (`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`). Unknown records, fields, and types have dedicated
 diagnostics; duplicate record and field declarations are rejected.
 
 ## Variants, Option, and Result

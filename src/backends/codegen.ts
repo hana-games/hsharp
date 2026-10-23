@@ -58,6 +58,8 @@ export interface Dialect {
   resFailed(expr: string): string;
   resValue(expr: string): string;
   resOk(expr: string): string;
+  resOkRecord(record: RecordInfo, expr: string): string;
+  resRecordValue(expr: string, record: RecordInfo): string;
   resFail(code: number, node: number): string;
   checked(op: CheckedOp, args: string[], node: number): string;
   call(fn: string, args: string[]): string;
@@ -155,10 +157,13 @@ class Lowerer {
       }
       case "ReturnStmt": {
         const value = this.lowerExpr(stmt.value);
-        if (!isPrimitiveTypeName(value.type)) {
-          throw new Error(`internal: record return from "${value.type}" was not rejected by the checker`);
+        if (isPrimitiveTypeName(value.type)) {
+          this.builder.line(this.dialect.returnStmt(this.dialect.resOk(value.text)));
+        } else {
+          const record = this.records.get(value.type);
+          if (!record) throw new Error(`internal: unknown return record "${value.type}"`);
+          this.builder.line(this.dialect.returnStmt(this.dialect.resOkRecord(record, value.text)));
         }
-        this.builder.line(this.dialect.returnStmt(this.dialect.resOk(value.text)));
         return;
       }
     }
@@ -272,9 +277,6 @@ class Lowerer {
       }
       case "CallExpr": {
         const returnType = expr.calleeReturnType ?? "i32";
-        if (!isPrimitiveTypeName(returnType)) {
-          throw new Error(`internal: record-returning call to "${expr.callee}" was not rejected by the checker`);
-        }
         // Left-to-right evaluation is preserved by lowering arguments in order.
         const args = expr.args.map((arg) => this.lowerExpr(arg).text);
         const res = this.builder.temp("r");
@@ -283,7 +285,13 @@ class Lowerer {
         this.builder.line(this.dialect.returnStmt(res));
         this.builder.closeBlock();
         const temp = this.builder.temp("t");
-        this.builder.declare(temp, this.typeText(returnType), this.dialect.resValue(res));
+        if (isPrimitiveTypeName(returnType)) {
+          this.builder.declare(temp, this.typeText(returnType), this.dialect.resValue(res));
+        } else {
+          const record = this.records.get(returnType);
+          if (!record) throw new Error(`internal: unknown return record "${returnType}"`);
+          this.builder.declare(temp, this.typeText(returnType), this.dialect.resRecordValue(res, record));
+        }
         return { text: temp, type: returnType };
       }
     }

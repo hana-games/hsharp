@@ -98,13 +98,14 @@ Delivered slice:
 - nested non-recursive records;
 - record declarations, literals, field access, and structural equality;
 - records as locals and internal function parameters;
+- record returns from internal functions, using a generated result payload;
 - update-as-new-value (`Point { ...p, x: 3 }`);
 - collision-safe generated record/field names;
 - reference interpreter and all four backends;
 - positive record conformance case, unit coverage for nested/update, and negative record diagnostics;
 - recursive records, record returns, and record entry parameters are explicitly rejected.
 
-Not yet delivered: strings, lists, variants, `Option`, `Result`, and record-returning functions.
+Not yet delivered: strings, lists, variants, `Option`, and `Result`.
 
 Scope:
 
@@ -277,9 +278,9 @@ Dependencies: all prior phases for the features they extend.
 
 ## Immediate next actions
 
-1. Replace the scalar-only `Res` payload with a tag-capable value model so records can be returned and stored in other data types.
-2. Add record-returning functions and record entry parameters.
-3. Prototype Rust ownership for immutable records and lists.
+1. Extend the tagged payload beyond records so strings, lists, variants, `Option`, and `Result` can share the same result path.
+2. Prototype Rust ownership for immutable records and lists.
+3. Add strings, then lists, then variants and `Option`/`Result`.
 4. Draft the CST/printer design before adding syntax families.
 5. Re-enable automatic Ubuntu CI after the manual workflow is validated.
 6. Revisit Windows/macOS CI when the cross-platform hardening pass starts.

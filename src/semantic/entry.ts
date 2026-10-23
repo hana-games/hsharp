@@ -36,13 +36,25 @@ export function chooseEntry(typed: TypedProgram, requested?: string): { entry?: 
 
 function scalarEntry(signature: TypedProgram["functions"][number]): { diagnostic?: Diagnostic } | undefined {
   const recordParam = signature.params.find((param) => !isPrimitiveTypeName(param.type));
-  if (!recordParam) return undefined;
-  return {
-    diagnostic: error(
-      "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
-      `entry function "${signature.name}" cannot take record parameter "${recordParam.name}"`,
-      undefined,
-      "entry values come from scalar command-line arguments",
-    ),
-  };
+  if (recordParam) {
+    return {
+      diagnostic: error(
+        "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
+        `entry function "${signature.name}" cannot take record parameter "${recordParam.name}"`,
+        undefined,
+        "entry values come from scalar command-line arguments",
+      ),
+    };
+  }
+  if (!isPrimitiveTypeName(signature.returnType)) {
+    return {
+      diagnostic: error(
+        "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
+        `entry function "${signature.name}" cannot return record "${signature.returnType}"`,
+        undefined,
+        "entry outcomes are scalar",
+      ),
+    };
+  }
+  return undefined;
 }

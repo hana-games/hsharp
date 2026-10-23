@@ -34,6 +34,8 @@ export function emitCsharp(
     resFailed: (expr) => `!${expr}.ok`,
     resValue: (expr) => `${expr}.value`,
     resOk: (expr) => `Res.Ok(${expr})`,
+    resOkRecord: (_record, expr) => `Res.OkRecord(${expr})`,
+    resRecordValue: (expr, record) => `((${record.targetName})${expr}.payload)`,
     resFail: (code, node) => `Res.Fail(${code}, ${node})`,
     checked: (op, args, node) => `${capitalize(op)}(${[...args, String(node)].join(", ")})`,
     call: (fn, args) => `${fn}(${args.join(", ")})`,
@@ -58,20 +60,23 @@ internal static class HsProgram
     {
         public readonly bool ok;
         public readonly int value;
+        public readonly object payload;
         public readonly int code;
         public readonly int node;
 
-        public Res(bool ok, int value, int code, int node)
+        public Res(bool ok, int value, object payload, int code, int node)
         {
             this.ok = ok;
             this.value = value;
+            this.payload = payload;
             this.code = code;
             this.node = node;
         }
 
-        public static Res Ok(int value) => new Res(true, value, 0, 0);
+        public static Res Ok(int value) => new Res(true, value, null, 0, 0);
+        public static Res OkRecord(object payload) => new Res(true, 0, payload, 0, 0);
 
-        public static Res Fail(int code, int node) => new Res(false, 0, code, node);
+        public static Res Fail(int code, int node) => new Res(false, 0, null, code, node);
     }
 
     private static Res Add(int a, int b, int node)
