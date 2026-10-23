@@ -8,7 +8,9 @@ The POC intentionally covers a small language core. The following limits are kno
   `list<i32>`/`list<bool>`, and nominal variants with `i32`/`bool` payloads. There are no other
   collections, `Option`, or `Result`.
 - Records are top-level and nominal. They support literals, nested non-recursive fields, field
-  access, locals, internal function parameters, structural equality, and update-as-new-value.
+  access, locals, internal function parameters, entry function parameters with `i32`/`bool`
+  leaves, structural equality, and update-as-new-value. Entry record parameters are flattened
+  depth-first in declaration field order on the command line.
 - Recursive record types are rejected with `E_RECURSIVE_RECORD`.
 - Strings support literals, `\n`/`\r`/`\t`/`\\`/`\"`/`\u{...}` escapes, equality, locals, internal
   parameters, and internal returns. String length, indexing, concatenation, and string record fields
@@ -27,9 +29,15 @@ The POC intentionally covers a small language core. The following limits are kno
   (`E_VARIANT_PAYLOAD_UNSUPPORTED`), variant record fields (`E_VARIANT_FIELD_UNSUPPORTED`), and lists
   of variants (`E_VARIANT_IN_LIST`) are rejected.
 - Internal functions can return records and variants. Entry functions cannot return records or
-  variants (`E_RECORD_ENTRY_RETURN_UNSUPPORTED`, `E_VARIANT_ENTRY_RETURN_UNSUPPORTED`) and cannot take
-  record or variant parameters because command-line arguments remain scalar
-  (`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`, `E_VARIANT_ENTRY_PARAMETER_UNSUPPORTED`).
+  variants (`E_RECORD_ENTRY_RETURN_UNSUPPORTED`, `E_VARIANT_ENTRY_RETURN_UNSUPPORTED`). Entry
+  functions may take record parameters when every leaf is `i32`/`bool`; such parameters are
+  flattened depth-first in declaration field order and rebuilt from scalar command-line arguments.
+  Record leaves of string, list, variant, Option, Result, or unknown type are rejected
+  (`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`, alongside the field-level diagnostic). Variant, list,
+  string, Option, and Result entry parameters remain rejected
+  (`E_VARIANT_ENTRY_PARAMETER_UNSUPPORTED`, `E_LIST_ENTRY_PARAMETER_UNSUPPORTED`,
+  `E_STRING_ENTRY_PARAMETER_UNSUPPORTED`, `E_OPTION_ENTRY_PARAMETER_UNSUPPORTED`,
+  `E_RESULT_ENTRY_PARAMETER_UNSUPPORTED`).
 - Generated record, field, variant, and alternative names are compiler-generated, so source names
   that collide with target keywords never appear in generated type declarations.
 - No loops, recursion, mutation, modules, generics, exceptions, I/O, or concurrency.
@@ -80,7 +88,7 @@ The POC intentionally covers a small language core. The following limits are kno
 
 ## Verification
 
-- The committed corpus is small (30 positive cases, 29 negative program/profile cases, 54 unit tests, one bridge protocol test). It covers the specified rules and boundaries but is not a proof of correctness. The variant slice is covered by focused unit tests and `examples/variants.hs`, not by a new conformance-corpus entry. The focused Option/Result slice is covered by unit tests and `examples/option-result.hs` on all four targets, also without a conformance-corpus entry.
+- The committed corpus is small (30 positive cases, 29 negative program/profile cases, 57 unit tests, one bridge protocol test). It covers the specified rules and boundaries but is not a proof of correctness. The variant slice is covered by focused unit tests and `examples/variants.hs`, not by a new conformance-corpus entry. The focused Option/Result slice is covered by unit tests and `examples/option-result.hs` on all four targets, also without a conformance-corpus entry. Record entry parameters are covered by `examples/entry-records.hs` and unit tests.
 - Seeded property tests, automatic line reduction, a separate benchmark corpus, and manual Ubuntu CI are part of the 0.2 command. Windows/macOS CI is explicitly deferred.
 - Target artifacts are compiled once per program/entry and executed per profile; independent compilation per profile is unnecessary because generated code is profile-independent.
 - Semantics of concurrency, shared memory, ecosystem interoperability, and large applications are completely out of scope.

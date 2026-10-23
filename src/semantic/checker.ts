@@ -13,6 +13,7 @@ import type {
 } from "../contracts/ast";
 import type { Diagnostic } from "../contracts/diagnostics";
 import { error } from "../contracts/diagnostics";
+import { flattenEntryParams } from "../contracts/entry";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
 import {
   builtinTypeArgumentName,
@@ -424,16 +425,13 @@ class Checker {
       }
       seenParams.add(param.name);
       const paramType = this.resolveType(param.type);
-      const paramKind = this.entryBoundaryKind(paramType);
-      if (autoEntry && paramKind) {
-        this.diagnostics.push(
-          error(
-            entryBoundaryCode(paramKind, "PARAMETER"),
-            `entry function "${fn.name}" cannot take ${paramKind} parameter "${param.name}"`,
-            param.type.span,
-            "entry values come from scalar command-line arguments; pass scalar parameters and build the value inside the program",
-          ),
-        );
+      if (autoEntry) {
+        const unsupported = this.entryParamDiagnostic(fn.name, param.name, paramType);
+        if (unsupported) {
+          this.diagnostics.push(
+            error(unsupported.code, unsupported.message, param.type.span, unsupported.detail),
+          );
+        }
       }
       const symbol = this.declareLocal(scope, param.name, paramType, param.nameSpan, "param");
       if (symbol) {
@@ -477,6 +475,41 @@ class Checker {
     if (this.variants.has(type)) return "variant";
     if (this.records.has(type)) return "record";
     return undefined;
+  }
+
+  /**
+   * Entry scalars are i32 and bool. Record parameters are allowed when every
+   * leaf field is scalar; other types stay rejected at the boundary.
+   */
+  private entryParamDiagnostic(
+    fnName: string,
+    paramName: string,
+    paramType: TypeName,
+  ): { code: string; message: string; detail: string } | undefined {
+    if (paramType === "i32" || paramType === "bool") return undefined;
+    if (this.records.has(paramType)) {
+      const layout = flattenEntryParams(
+        [{ name: paramName, type: paramType }],
+        (type) =>
+          this.records
+            .get(type)
+            ?.decl.fields.map((field) => ({ name: field.name, type: field.type.name })),
+      )[0];
+      if (!layout.unsupportedLeaf) return undefined;
+      return {
+        code: "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
+        message: `entry function "${fnName}" cannot take record parameter "${paramName}" with non-scalar field "${layout.unsupportedLeaf.fieldPath}" of type ${layout.unsupportedLeaf.type}`,
+        detail:
+          "entry record parameters may contain only i32 and bool leaves; string, list, variant, Option, Result, and unknown leaf types are not allowed",
+      };
+    }
+    const kind = this.entryBoundaryKind(paramType)!;
+    return {
+      code: entryBoundaryCode(kind, "PARAMETER"),
+      message: `entry function "${fnName}" cannot take ${kind} parameter "${paramName}"`,
+      detail:
+        "entry values come from scalar command-line arguments; record parameters may contain only i32 and bool leaves",
+    };
   }
 
   private resolveType(type: import("../contracts/ast").TypeRef): TypeName {

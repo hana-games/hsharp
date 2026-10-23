@@ -1,4 +1,5 @@
 import type { Block, Expr, FunctionDecl, Stmt } from "../contracts/ast";
+import { flattenEntryParams, type EntryLeaf } from "../contracts/entry";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
 import type { TargetId } from "../contracts/interfaces";
 import {
@@ -124,6 +125,44 @@ export function quoteString(value: string): string {
     .replace(/\n/g, "\\n")
     .replace(/\r/g, "\\r")
     .replace(/\t/g, "\\t")}"`;
+}
+
+export interface EntryArgumentPlan {
+  /** Scalar leaves in depth-first declaration order across all parameters. */
+  leaves: EntryLeaf[];
+  /** One target expression per entry parameter, ready for the entry call. */
+  args: string[];
+}
+
+/**
+ * Flattens the entry signature and rebuilds each record parameter from the
+ * generated scalar leaf locals. Scalar parameters pass through unchanged.
+ */
+export function planEntryArguments(
+  entry: FunctionSignature,
+  records: RecordMap,
+  dialect: Dialect,
+  leafName: (index: number) => string,
+): EntryArgumentPlan {
+  const layout = flattenEntryParams(entry.params, (type) => records.get(type)?.fields);
+  const unsupported = layout.find((param) => param.unsupportedLeaf);
+  if (unsupported) {
+    throw new Error(
+      `internal: entry parameter "${unsupported.name}" has unsupported leaf type "${unsupported.unsupportedLeaf!.type}"`,
+    );
+  }
+  const leaves = layout.flatMap((param) => param.leaves);
+  let cursor = 0;
+  const build = (type: TypeName): string => {
+    const record = records.get(type);
+    if (!record) {
+      const name = leafName(cursor);
+      cursor += 1;
+      return name;
+    }
+    return dialect.recordLiteral(record, record.fields.map((field) => build(field.type)));
+  };
+  return { leaves, args: entry.params.map((param) => build(param.type)) };
 }
 
 export interface Dialect {

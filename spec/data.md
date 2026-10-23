@@ -3,9 +3,10 @@
 Status: **partially implemented (0.3 record, string, list, variant, and focused Option/Result slices)**. A data feature is advertised only after it has a
 conformance corpus entry and executes on every advertised target. The current slice covers immutable
 records with `i32`/`bool` fields, nested non-recursive records, record literals, field access, records
-as locals and internal parameters, record returns from internal functions, structural equality,
-update-as-new-value, strings with literals, escapes, equality, locals, internal parameters, and
-internal returns, `list<i32>`/`list<bool>` with non-empty literals, indexing, `length`, locals,
+as locals and internal parameters, record returns from internal functions, entry function parameters
+whose record leaves are `i32`/`bool` (flattened to scalar command-line arguments), structural
+equality, update-as-new-value, strings with literals, escapes, equality, locals, internal parameters,
+and internal returns, `list<i32>`/`list<bool>` with non-empty literals, indexing, `length`, locals,
 internal parameters, internal returns, and structural equality, and nominal variants with scalar
 payloads, constructors, exhaustive `match`, wildcard arms, locals, internal parameters, internal
 returns, and structural equality. A focused `Option<T>`/`Result<T>` slice (T is `i32` or `bool`)
@@ -120,15 +121,24 @@ record Point {
 
 **Implemented slice (0.3):** top-level record declarations with unique `i32`/`bool` fields, nested
 non-recursive record fields, record literals, field access, records as locals and internal
-parameters, record returns from internal functions, structural `==`/`!=`, and
-`Point { ...p, x: 3 }` update-as-new-value. Record names and field names are nominal; field order is
-preserved in the AST but not observable in equality. Internal record returns use the generated
-result payload.
+parameters, record returns from internal functions, entry function record parameters whose leaves
+are `i32`/`bool`, structural `==`/`!=`, and `Point { ...p, x: 3 }` update-as-new-value. Record names
+and field names are nominal; field order is preserved in the AST but not observable in equality.
+Internal record returns use the generated result payload.
+
+**Entry argument convention:** a record parameter contributes one command-line argument per leaf
+field, flattened depth-first in declaration field order. `Point { x: i32, y: i32 }` consumes `x`
+then `y`; `Line { a: Point, b: Point }` consumes `a.x`, `a.y`, `b.x`, `b.y`. Multiple parameters
+flatten left to right in function parameter order. Generated entry code parses those scalar
+arguments with the same `i32`/`bool` validation as before and reconstructs the records before the
+entry call.
 
 **Deliberately rejected in this slice:** recursive record types (`E_RECURSIVE_RECORD`), entry
-functions returning records (`E_RECORD_ENTRY_RETURN_UNSUPPORTED`), and record parameters on entry
-functions (`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`). Unknown records, fields, and types have dedicated
-diagnostics; duplicate record and field declarations are rejected.
+functions returning records (`E_RECORD_ENTRY_RETURN_UNSUPPORTED`), and entry record parameters with
+a string, list, variant, Option, Result, or unknown leaf
+(`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`, alongside the corresponding record-field diagnostic).
+Unknown records, fields, and types have dedicated diagnostics; duplicate record and field
+declarations are rejected.
 
 ## Variants, Option, and Result
 
@@ -165,8 +175,9 @@ internal parameters, and internal returns. The `Result` error payload preserves 
 The constructor names `some`, `none`, `ok`, and `err` are reserved for these built-ins in this slice.
 Missing or wrong expected types produce `E_MISSING_EXPECTED_TYPE` or `E_CONSTRUCTOR_EXPECTED_TYPE`;
 nested Option/Result values produce `E_NESTED_OPTION_RESULT`. Entry functions cannot take or return
-these types. A `none()` or `err()` used directly as a match scrutinee still needs an expected type
-from an enclosing context; pattern-only inference is not implemented.
+these types, including as leaves of entry record parameters. A `none()` or `err()` used directly as a
+match scrutinee still needs an expected type from an enclosing context; pattern-only inference is not
+implemented.
 
 **Deliberately rejected in this slice:** payload types other than `i32`/`bool`
 (`E_VARIANT_PAYLOAD_UNSUPPORTED`), variants in record fields (`E_VARIANT_FIELD_UNSUPPORTED`), lists
@@ -290,8 +301,9 @@ The committed 0.3 corpus currently covers the record slice, a focused list examp
 access, internal record parameters, structural equality, list literals/length/indexing/equality,
 variant constructors, internal variant parameters and returns, exhaustive matching, and structural
 variant equality. `examples/option-result.hs` and its unit tests cover the focused Option/Result
-slice on all four backends, but it is not yet a conformance corpus case. The other bullets remain
-acceptance work for future slices.
+slice on all four backends, but it is not yet a conformance corpus case. `examples/entry-records.hs`
+and unit tests cover flattened entry record parameters on all four backends, also without a corpus
+entry. The other bullets remain acceptance work for future slices.
 
 ## Migration
 

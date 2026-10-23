@@ -67,6 +67,7 @@
   "Modules and host embedding": "モジュールとホスト埋め込み",
   "native targets": "ネイティブターゲット",
   "Nested records, record returns, and update-as-new-value": "ネストしたレコード、レコードの戻り値、新しい値としての更新",
+  "Nested records, record returns, entry parameters, and update-as-new-value": "ネストしたレコード、戻り値、エントリ引数、新しい値としての更新",
   "No target-grammar model required": "ターゲット文法のモデルは不要",
   "Non-goals": "非目標",
   "Not a replacement for native ecosystems": "ネイティブエコシステムの置き換えではない",

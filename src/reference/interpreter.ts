@@ -1,4 +1,5 @@
 import type { Block, Expr, FunctionDecl, RecordDecl, Stmt, UnaryOp } from "../contracts/ast";
+import { flattenEntryParams } from "../contracts/entry";
 import type { FunctionSignature, Outcome, RuntimeArguments, TypedProgram, HsValue } from "../contracts/outcome";
 import {
   INDEX_CODE,
@@ -10,7 +11,7 @@ import {
   type RecordValue,
   type VariantValue,
 } from "../contracts/outcome";
-import { isPrimitiveTypeName, listTypeName, type TypeName } from "../contracts/tokens";
+import { listTypeName, type TypeName } from "../contracts/tokens";
 
 const I32_MIN = -2147483648n;
 const I32_MAX = 2147483647n;
@@ -53,41 +54,67 @@ export function evaluate(program: TypedProgram, entry: string, args: RuntimeArgu
   if (!entryFunction) {
     throw new EvaluationError(`entry function "${entry}" was not found`);
   }
-  if (entryFunction.signature.params.length !== args.values.length) {
-    throw new EvaluationError(
-      `entry function "${entry}" expects ${entryFunction.signature.params.length} argument(s), received ${args.values.length}`,
-    );
-  }
-  const nonScalarParam = entryFunction.signature.params.find((param) => !isPrimitiveTypeName(param.type));
-  if (nonScalarParam) {
-    throw new EvaluationError(
-      `entry function "${entry}" cannot take non-scalar parameter "${nonScalarParam.name}"`,
-    );
-  }
-  args.values.forEach((value, index) => {
-    const param = entryFunction.signature.params[index];
-    const actual = valueTypeOf(value);
-    if (!actual) {
-      throw new EvaluationError(
-        `argument ${index + 1} of "${entry}" must be a Boolean or an integer in the i32 range`,
-      );
-    }
-    if (param.type !== actual) {
-      throw new EvaluationError(
-        `argument ${index + 1} of "${entry}" has type ${actual}, expected ${param.type}`,
-      );
-    }
-  });
 
   const records = new Map<string, RecordDecl>();
   for (const record of program.ast.records) records.set(record.name, record);
 
+  const layout = flattenEntryParams(entryFunction.signature.params, (type) =>
+    records.get(type)?.fields.map((field) => ({ name: field.name, type: field.type.name })),
+  );
+  const unsupported = layout.find((param) => param.unsupportedLeaf);
+  if (unsupported) {
+    throw new EvaluationError(
+      `entry function "${entry}" cannot take parameter "${unsupported.name}" with unsupported leaf "${unsupported.unsupportedLeaf!.fieldPath}" of type ${unsupported.unsupportedLeaf!.type}`,
+    );
+  }
+  const arity = layout.reduce((total, param) => total + param.leaves.length, 0);
+  if (arity !== args.values.length) {
+    throw new EvaluationError(
+      `entry function "${entry}" expects ${arity} argument(s), received ${args.values.length}`,
+    );
+  }
+  let argumentIndex = 0;
+  for (const param of layout) {
+    for (const leaf of param.leaves) {
+      const value = args.values[argumentIndex];
+      const actual = valueTypeOf(value);
+      if (!actual) {
+        throw new EvaluationError(
+          `argument ${argumentIndex + 1} of "${entry}" must be a Boolean or an integer in the i32 range`,
+        );
+      }
+      if (leaf.type !== actual) {
+        throw new EvaluationError(
+          `argument ${argumentIndex + 1} of "${entry}" has type ${actual}, expected ${leaf.type}`,
+        );
+      }
+      argumentIndex += 1;
+    }
+  }
+
+  let argumentCursor = 0;
+  const buildArgument = (type: TypeName): HsValue => {
+    const record = records.get(type);
+    if (!record) {
+      const value = args.values[argumentCursor];
+      argumentCursor += 1;
+      return { type, value };
+    }
+    return {
+      type,
+      value: {
+        kind: "record",
+        recordName: type,
+        fields: record.fields.map((field) => buildArgument(field.type.name)),
+      },
+    };
+  };
+
   const interpreter = new Interpreter(functions, records);
   try {
-    const values: HsValue[] = args.values.map((value, index) => ({
-      type: entryFunction.signature.params[index].type,
-      value,
-    }));
+    // Record parameters are reconstructed from flat scalar arguments in
+    // depth-first declaration field order.
+    const values = entryFunction.signature.params.map((param) => buildArgument(param.type));
     const result = interpreter.call(entryFunction, values);
     if (isRecordValue(result.value)) {
       throw new EvaluationError(`entry function "${entry}" returned a record`);

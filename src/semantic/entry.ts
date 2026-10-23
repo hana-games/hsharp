@@ -1,10 +1,12 @@
 import type { Diagnostic } from "../contracts/diagnostics";
 import { error } from "../contracts/diagnostics";
+import { flattenEntryParams } from "../contracts/entry";
 import type { TypedProgram } from "../contracts/outcome";
 import { isBuiltinOptionResultTypeName, isListTypeName, isOptionTypeName } from "../contracts/tokens";
 
 export function chooseEntry(typed: TypedProgram, requested?: string): { entry?: string; diagnostic?: Diagnostic } {
   const variantNames = new Set(typed.ast.variants.map((variant) => variant.name));
+  const recordNames = new Set(typed.ast.records.map((record) => record.name));
   if (requested) {
     const found = typed.functions.find((fn) => fn.name === requested);
     if (!found) {
@@ -17,13 +19,13 @@ export function chooseEntry(typed: TypedProgram, requested?: string): { entry?: 
         ),
       };
     }
-    return scalarEntry(found, variantNames) ?? { entry: requested };
+    return checkedEntry(typed, found, variantNames, recordNames) ?? { entry: requested };
   }
   const main = typed.functions.find((fn) => fn.name === "main");
-  if (main) return scalarEntry(main, variantNames) ?? { entry: "main" };
+  if (main) return checkedEntry(typed, main, variantNames, recordNames) ?? { entry: "main" };
   if (typed.functions.length === 1) {
     const only = typed.functions[0];
-    return scalarEntry(only, variantNames) ?? { entry: only.name };
+    return checkedEntry(typed, only, variantNames, recordNames) ?? { entry: only.name };
   }
   return {
     diagnostic: error(
@@ -35,21 +37,38 @@ export function chooseEntry(typed: TypedProgram, requested?: string): { entry?: 
   };
 }
 
-function scalarEntry(
+function checkedEntry(
+  typed: TypedProgram,
   signature: TypedProgram["functions"][number],
   variants: Set<string>,
+  records: Set<string>,
 ): { diagnostic?: Diagnostic } | undefined {
-  const nonScalarParam = signature.params.find((param) => param.type !== "i32" && param.type !== "bool");
-  if (nonScalarParam) {
-    const kind = boundaryKind(nonScalarParam.type, variants);
-    return {
-      diagnostic: error(
-        entryBoundaryCode(kind, "PARAMETER"),
-        `entry function "${signature.name}" cannot take ${kind} parameter "${nonScalarParam.name}"`,
-        undefined,
-        "entry values come from scalar command-line arguments",
-      ),
-    };
+  const recordsByName = new Map(typed.ast.records.map((record) => [record.name, record]));
+  const layout = flattenEntryParams(signature.params, (type) =>
+    recordsByName.get(type)?.fields.map((field) => ({ name: field.name, type: field.type.name })),
+  );
+  for (const param of layout) {
+    if (param.unsupportedLeaf) {
+      if (records.has(param.type)) {
+        return {
+          diagnostic: error(
+            "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
+            `entry function "${signature.name}" cannot take record parameter "${param.name}" with non-scalar field "${param.unsupportedLeaf.fieldPath}" of type ${param.unsupportedLeaf.type}`,
+            undefined,
+            "entry record parameters may contain only i32 and bool leaves; string, list, variant, Option, Result, and unknown leaf types are not allowed",
+          ),
+        };
+      }
+      const kind = boundaryKind(param.type, variants);
+      return {
+        diagnostic: error(
+          entryBoundaryCode(kind, "PARAMETER"),
+          `entry function "${signature.name}" cannot take ${kind} parameter "${param.name}"`,
+          undefined,
+          "entry values come from scalar command-line arguments",
+        ),
+      };
+    }
   }
   if (signature.returnType !== "i32" && signature.returnType !== "bool") {
     const kind = boundaryKind(signature.returnType, variants);

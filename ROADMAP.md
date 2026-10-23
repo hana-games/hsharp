@@ -104,11 +104,12 @@ Delivered slice:
 - `E_INDEX` runtime failure;
 - nominal variants with scalar payloads, constructors, exhaustive `match`, wildcard arms, structural equality, locals, internal parameters, and internal returns;
 - built-in `Option<i32|bool>` and `Result<i32|bool>` with `some`/`none`/`ok`/`err`, exhaustive match, structural equality, and internal values;
+- record entry parameters with scalar/nested-record leaves, flattened depth-first on the command line;
 - update-as-new-value (`Point { ...p, x: 3 }`);
 - collision-safe generated record/field names;
 - reference interpreter and all four backends;
 - positive record conformance case, unit coverage for nested/update, and negative record diagnostics;
-- recursive records, record returns, and record entry parameters are explicitly rejected.
+- recursive records and record entry returns are explicitly rejected; record entry parameters are allowed with scalar/nested-record leaves.
 
 Not yet delivered: empty lists and string length/indexing. The remaining 0.3 scope is otherwise implemented but not yet promoted into the full conformance corpus.
 
@@ -284,7 +285,7 @@ Dependencies: all prior phases for the features they extend.
 ## Immediate next actions
 
 1. Add empty lists and string length/indexing, then freeze the 0.3 data surface.
-2. Add the new records/strings/lists/variants/Option/Result cases to the conformance corpus.
+2. Add the new records/strings/lists/variants/Option/Result cases, including record entry parameters, to the conformance corpus.
 3. Prototype Rust ownership measurements for immutable records and lists.
 4. Draft the CST/printer design before adding syntax families.
 5. Re-enable automatic Ubuntu CI after the manual workflow is validated.

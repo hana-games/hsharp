@@ -491,8 +491,99 @@ test("internal functions can return records while entry outcomes stay scalar", (
     "<unit>",
     STANDARD_PROFILE,
   );
-  assert.ok(entryParam.diagnostics.some((d) => d.code === "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED"));
+  assert.ok(entryParam.typed, entryParam.diagnostics.map((d) => d.message).join("; "));
+  assert.deepEqual(evaluate(entryParam.typed!, "main", { values: [4] }), {
+    status: "ok",
+    type: "i32",
+    value: 4,
+  });
 });
+
+test("entry record parameters flatten depth-first in declaration order", () => {
+  const source = `record Point {
+    x: i32,
+    y: i32,
+}
+record Line {
+    a: Point,
+    b: Point,
+}
+fn main(p: Point, line: Line, flag: bool) -> bool {
+    return p.x == 1 && p.y == 2
+        && line.a.x == 3 && line.a.y == 4
+        && line.b.x == 5 && line.b.y == 6
+        && flag;
+}
+`;
+  const loaded = analyze(source, "<entry-records>", STANDARD_PROFILE);
+  assert.ok(loaded.typed, loaded.diagnostics.map((d) => d.message).join("; "));
+  assert.deepEqual(evaluate(loaded.typed!, "main", { values: [1, 2, 3, 4, 5, 6, true] }), {
+    status: "ok",
+    type: "bool",
+    value: true,
+  });
+  assert.deepEqual(evaluate(loaded.typed!, "main", { values: [1, 2, 3, 4, 5, 6, false] }), {
+    status: "ok",
+    type: "bool",
+    value: false,
+  });
+  // A wrong flattened count is rejected before any record is built.
+  assert.throws(
+    () => evaluate(loaded.typed!, "main", { values: [1, 2, 3] }),
+    /expects 7 argument\(s\), received 3/,
+  );
+  // Leaf types are validated against the flattened signature.
+  assert.throws(
+    () => evaluate(loaded.typed!, "main", { values: [1, 2, 3, 4, 5, 6, 1] }),
+    /argument 7 of "main" has type i32, expected bool/,
+  );
+});
+
+test("entry record code generation parses flattened arguments and builds records", () => {
+  const source = readFileSync(resolve("examples", "entry-records.hs"), "utf8");
+  const loaded = analyze(source, "<entry-records>", STANDARD_PROFILE);
+  assert.ok(loaded.typed, loaded.diagnostics.map((d) => d.message).join("; "));
+  const { emit } = require("../backends") as typeof import("../backends");
+  for (const target of ["csharp", "rust", "go", "java"] as const) {
+    const project = emit(loaded.typed!, target, "main");
+    const text = project.files.map((file) => file.content).join("\n");
+    assert.match(text, /!=\s*7/, `${target} should check the flattened arity`);
+    assert.match(text, /R1/, `${target} should generate the Point record type`);
+    assert.match(text, /R2/, `${target} should generate the Line record type`);
+    assert.match(text, /f1\(/, `${target} should call the entry function`);
+    for (const sourceName of ["Point", "Line"]) {
+      assert.ok(
+        !new RegExp(`\\b${sourceName}\\b`).test(text),
+        `${target} must not emit source name ${sourceName}`,
+      );
+    }
+  }
+});
+
+test("unsupported leaf types in entry record parameters stay rejected", () => {
+  const stringLeaf = analyze(
+    "record Bad { name: string }\nfn main(bad: Bad) -> bool { return true; }\n",
+    "<entry-records>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(stringLeaf.diagnostics.some((d) => d.code === "E_STRING_FIELD_UNSUPPORTED"));
+  assert.ok(
+    stringLeaf.diagnostics.some((d) => d.code === "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED"),
+    stringLeaf.diagnostics.map((d) => d.code).join(", "),
+  );
+
+  const nestedLeaf = analyze(
+    "record Inner { xs: list<i32> }\nrecord Outer { inner: Inner }\nfn main(outer: Outer) -> bool { return true; }\n",
+    "<entry-records>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(nestedLeaf.diagnostics.some((d) => d.code === "E_LIST_FIELD_UNSUPPORTED"));
+  assert.ok(
+    nestedLeaf.diagnostics.some((d) => d.code === "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED"),
+    nestedLeaf.diagnostics.map((d) => d.code).join(", "),
+  );
+});
+
 
 test("record diagnostics cover unknown records, fields, and missing fields", () => {
   const unknownRecord = analyze(
