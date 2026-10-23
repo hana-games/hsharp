@@ -19,6 +19,74 @@ interface Props {
 
 const { title, description, active = "", canonical } = Astro.props;
 const fullTitle = title === "h#" ? "h# — One core. Your syntax. Four native outputs." : `${title} — h#`;
+
+const siteURL = Astro.site ?? new URL("https://hsharp.dev");
+const rawPath = Astro.url.pathname;
+const isNotFound = rawPath.includes("404");
+const pathname = isNotFound
+  ? "/404.html"
+  : rawPath === "/"
+    ? "/"
+    : `${rawPath.replace(/\/+$/, "")}/`;
+const canonicalUrl = canonical ?? new URL(pathname, siteURL).href;
+const localizedUrl = (locale: "en" | "fr" | "ja") =>
+  locale === "en"
+    ? canonicalUrl
+    : new URL(`/${locale}${pathname === "/" ? "/" : pathname}`, siteURL).href;
+const englishUrl = localizedUrl("en");
+const frenchUrl = localizedUrl("fr");
+const japaneseUrl = localizedUrl("ja");
+const ogLocale = "en_US";
+const robots = isNotFound ? "noindex, follow" : "index, follow, max-image-preview:large";
+
+const organizationId = `${siteURL.origin}/#organization`;
+const websiteId = `${siteURL.origin}/#website`;
+const softwareId = `${siteURL.origin}/#software`;
+const siteDescription = "One semantic core. Personal syntax. Four verified native outputs.";
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": organizationId,
+      name: "HANAGAMES.net",
+      url: "https://hanagames.net",
+      sameAs: ["https://github.com/hana-games/hsharp"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": websiteId,
+      url: `${siteURL.origin}/`,
+      name: "h#",
+      description: siteDescription,
+      inLanguage: "en",
+      publisher: { "@id": organizationId },
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${canonicalUrl}#webpage`,
+      url: canonicalUrl,
+      name: fullTitle,
+      description,
+      inLanguage: "en",
+      isPartOf: { "@id": websiteId },
+      about: { "@id": softwareId },
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": softwareId,
+      name: "h#",
+      description: siteDescription,
+      inLanguage: "en",
+      codeRepository: "https://github.com/hana-games/hsharp",
+      programmingLanguage: "h#",
+      version: "0.1.0",
+      url: `${siteURL.origin}/`,
+      author: { "@id": organizationId },
+      publisher: { "@id": organizationId },
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -28,13 +96,31 @@ const fullTitle = title === "h#" ? "h# — One core. Your syntax. Four native ou
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <meta name="author" content="HANAGAMES.net" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#0a0c10" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="h#" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} data-seo-url />
+    <meta property="og:locale" content={ogLocale} data-seo-og-locale />
+    <meta property="og:locale:alternate" content="fr_FR" />
+    <meta property="og:locale:alternate" content="ja_JP" />
     <meta name="twitter:card" content="summary" />
-    {canonical && <link rel="canonical" href={canonical} />}
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <link rel="canonical" href={canonicalUrl} data-seo-canonical />
+    <link rel="alternate" hreflang="en" href={englishUrl} />
+    <link rel="alternate" hreflang="fr" href={frenchUrl} />
+    <link rel="alternate" hreflang="ja" href={japaneseUrl} />
+    <link rel="alternate" hreflang="x-default" href={englishUrl} />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+    <link rel="alternate" type="text/plain" hreflang="en" href="/llms.txt" title="llms.txt" />
+    <link rel="alternate" type="text/plain" hreflang="fr" href="/fr/llms.txt" title="llms.txt" />
+    <link rel="alternate" type="text/plain" hreflang="ja" href="/ja/llms.txt" title="llms.txt" />
+    <script type="application/ld+json" data-seo-jsonld set:html={JSON.stringify(structuredData)}></script>
   </head>
   <body>
     <a class="sr-only" href="#main">Skip to content</a>

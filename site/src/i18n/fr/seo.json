@@ -1,0 +1,8 @@
+{
+  "A universal semantic core, personal syntax, and verified native output for C#, Rust, Go, and Java.": "Un cœur sémantique universel, une syntaxe personnelle et des sorties natives vérifiées pour C#, Rust, Go et Java.",
+  "Interactive h# demos: compose a syntax profile, inspect generated targets, explore overflow and short-circuit behavior, simulate export/import, and filter conformance results.": "Démos h# interactives : composez un profil de syntaxe, inspectez les cibles générées, explorez les débordements et le court-circuit, simulez export/import et filtrez les résultats de conformité.",
+  "Portability as a checked engineering property: one semantic core, a bounded portable feature set, personal notation, and four independently verified outputs.": "La portabilité comme propriété d’ingénierie vérifiée : un cœur sémantique, un ensemble portable borné, une notation personnelle et quatre sorties vérifiées indépendamment.",
+  "Real h# programs from the conformance corpus, with standard and personal notation, expected outcomes, and four verified targets.": "De vrais programmes h# issus du corpus de conformité, avec notation standard et personnelle, résultats attendus et quatre cibles vérifiées.",
+  "The dependency-driven h# roadmap: from the verified POC to data semantics, control flow, modules, syntax families, concurrency, and a stable core.": "La feuille de route h# guidée par les dépendances : du POC vérifié aux sémantiques de données, au contrôle de flux, aux modules, aux familles de syntaxe, à la concurrence et à un cœur stable.",
+  "This page does not exist in the h# site.": "Cette page n’existe pas sur le site h#."
+}

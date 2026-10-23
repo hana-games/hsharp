@@ -1,2 +1,22 @@
 User-agent: *
 Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Structured guidance for language models and answer engines:
+# https://hsharp.dev/llms.txt
+
+Sitemap: https://hsharp.dev/sitemap.xml

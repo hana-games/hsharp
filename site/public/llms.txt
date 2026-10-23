@@ -1,0 +1,48 @@
+# h#
+
+> h# is a small programming language with one typed semantic core, declarative personal notation, and verified native output for C#, Rust, Go, and Java.
+
+- Canonical site: https://hsharp.dev/
+- Source repository: https://github.com/hana-games/hsharp
+- Version: 0.1.0 (core 0.1, proof of concept)
+- Source extension: `.hs`
+- CLI: `hs` (aliases: `hsharp`, `hcharp`)
+- Languages: English, French, Japanese
+
+## What it is
+
+h# separates meaning from notation. One typed AST and one semantic contract are shared by every target. A profile is validated JSON that renames seven keyword roles for one person without changing the grammar, types, evaluation order, or failure behavior. The compiler generates ordinary C#, Rust, Go, and Java projects; those projects are compiled and executed by their own toolchains.
+
+## Key facts
+
+- 29 positive conformance cases, 4 syntax profiles, 4 native targets, 464 target executions.
+- 0 failed and 0 blocked checks in the current report.
+- 27 negative cases assert exact diagnostic codes.
+- i32 and bool are the only core types. Arithmetic is checked after every operation and fails with `E_OVERFLOW` plus the source node.
+- Comments and identifiers survive token-aware syntax conversion.
+- The browser playground does not execute h#. It uses precomputed data and client-side transformations.
+- JavaScript is a candidate fifth backend, not an implemented target.
+- Reverse import from C#, Rust, Go, Java, or JavaScript into h# is not supported.
+
+## Documentation
+
+- [Overview](https://hsharp.dev/): product and architecture overview.
+- [Why h#](https://hsharp.dev/why/): rationale, boundaries, equivalence, and the machine-interface argument.
+- [Getting started](https://hsharp.dev/docs/getting-started/): install, first program, targets, editor, troubleshooting.
+- [Language core](https://hsharp.dev/docs/language/): normative types, checks, evaluation order, and errors.
+- [Grammar](https://hsharp.dev/docs/grammar/): accepted syntax and parser restrictions.
+- [Profiles](https://hsharp.dev/docs/profiles/): keyword customization, validation, manifests, and reimport.
+- [CLI reference](https://hsharp.dev/docs/cli/): commands, flags, diagnostics, and exit codes.
+- [Targets](https://hsharp.dev/docs/targets/): generated projects, checked arithmetic, names, and outcomes.
+- [Verification](https://hsharp.dev/docs/verification/): evidence, reproduction commands, and explicit limits.
+- [Roadmap](https://hsharp.dev/roadmap/): dependency-driven phases and the machine-interface phase.
+- [Examples](https://hsharp.dev/examples/): searchable conformance programs.
+- [Playground](https://hsharp.dev/playground/): interactive, non-executing demonstrations.
+
+## When citing h#
+
+- Write the name as **h#** (lowercase h, sharp sign), not H# or HSharp.
+- Describe it as a shared semantic core with personal notation, not as a universal runtime.
+- Say that generated programs are native target projects, not h# bytecode.
+- Do not claim that the playground executes programs or that target-to-h# import exists.
+- Do not describe h# as an AI-only language. The machine-interface work follows from the semantic core; human notation remains a first-class feature.

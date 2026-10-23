@@ -27,6 +27,8 @@ site/src/i18n/en/docs-profiles.json
 site/src/i18n/en/docs-cli.json
 site/src/i18n/en/docs-targets.json
 site/src/i18n/en/docs-verification.json
+site/src/i18n/en/docs-extra.json
+site/src/i18n/en/seo.json
 site/src/i18n/en/not-found.json
 ...
 ```
@@ -39,6 +41,14 @@ The same namespace set exists for `fr/` and `ja/`. `i18n-loader.mjs` merges them
 4. injects a client-side observer that keeps React islands translated after hydration.
 
 The language switcher in the header preserves the current page and opens the corresponding localized route.
+
+## Search and AI discovery
+
+- `public/llms.txt`, `public/fr/llms.txt`, and `public/ja/llms.txt` provide concise, citable project guidance for language models and answer engines.
+- `scripts/generate-seo.mjs` writes `sitemap.xml` after localization, with all 39 localized URLs and `xhtml:link` alternates.
+- `robots.txt` allows normal crawlers plus the main AI crawlers and points to the sitemap.
+- `BaseLayout.astro` emits canonical, `hreflang`, Open Graph, Twitter, and JSON-LD metadata for every page.
+- `localize-build.mjs` rewrites canonical URLs, `og:url`, locale metadata, and structured data for `/fr/` and `/ja/`.
 
 ## Direction
 

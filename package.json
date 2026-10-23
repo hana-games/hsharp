@@ -23,7 +23,7 @@
     "vscode:install": "npm run vscode:package && node editors/vscode/install.mjs",
     "site:data": "npm run build && node site/scripts/generate-data.mjs",
     "site:dev": "npm run site:data && node site/scripts/prepare-i18n.mjs && npm --prefix site run dev",
-    "site:build": "npm run site:data && node site/scripts/prepare-i18n.mjs && npm --prefix site run build && node site/scripts/localize-build.mjs",
+    "site:build": "npm run site:data && node site/scripts/prepare-i18n.mjs && npm --prefix site run build && node site/scripts/localize-build.mjs && node site/scripts/generate-seo.mjs",
     "site:check": "npm run site:build && node site/scripts/check-links.mjs",
     "site:preview": "npm run site:build && npm --prefix site run preview",
     "doctor": "npm run build && node dist/cli/index.js doctor",

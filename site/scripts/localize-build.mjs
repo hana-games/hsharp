@@ -87,6 +87,64 @@ function pagePath(file) {
   return `/${rel.replace(/\.html$/, "")}`;
 }
 
+const SITE_URL = "https://hsharp.dev";
+const LOCALE_TAGS = { en: "en_US", fr: "fr_FR", ja: "ja_JP" };
+const SITE_DESCRIPTION = "One semantic core. Personal syntax. Four verified native outputs.";
+
+function localizedUrl(basePath, locale) {
+  const pathname = basePath.endsWith(".html")
+    ? basePath
+    : basePath === "/"
+      ? "/"
+      : `${basePath.replace(/\/+$/, "")}/`;
+  const path = locale === "en" ? pathname : `/${locale}${pathname}`;
+  return new URL(path, SITE_URL).href;
+}
+
+function localizeSeo($, locale, basePath, dict) {
+  const canonical = localizedUrl(basePath, locale);
+  $("[data-seo-canonical]").attr("href", canonical);
+  $("[data-seo-url]").attr("content", canonical);
+  $("[data-seo-og-locale]").attr("content", LOCALE_TAGS[locale]);
+  $('meta[property="og:locale:alternate"]').remove();
+  for (const [alternate, tag] of Object.entries(LOCALE_TAGS)) {
+    if (alternate !== locale) {
+      $("head").append(`<meta property="og:locale:alternate" content="${tag}">`);
+    }
+  }
+
+  const pageTitle = $("title").text().trim();
+  const pageDescription = $('meta[name="description"]').attr("content")?.trim() ?? "";
+  $('meta[property="og:title"], meta[name="twitter:title"]').attr("content", pageTitle);
+  $('meta[property="og:description"], meta[name="twitter:description"]').attr("content", pageDescription);
+
+  const script = $("script[data-seo-jsonld]").get(0);
+  if (!script) return;
+  try {
+    const data = JSON.parse($(script).text());
+    for (const node of data["@graph"] ?? []) {
+      if (node["@type"] === "WebPage") {
+        node["@id"] = `${canonical}#webpage`;
+        node.url = canonical;
+        node.name = pageTitle;
+        node.description = pageDescription;
+        node.inLanguage = locale;
+      }
+      if (node["@type"] === "WebSite") {
+        node.inLanguage = locale;
+        node.description = dict[SITE_DESCRIPTION] ?? SITE_DESCRIPTION;
+      }
+      if (node["@type"] === "SoftwareSourceCode") {
+        node.description = dict[SITE_DESCRIPTION] ?? SITE_DESCRIPTION;
+        node.inLanguage = locale;
+      }
+    }
+    $(script).text(JSON.stringify(data));
+  } catch {
+    // Leave malformed structured data untouched; the visible metadata is still correct.
+  }
+}
+
 for (const file of pages) {
   const html = readFileSync(file, "utf8");
   const basePath = pagePath(file);
@@ -102,6 +160,7 @@ for (const file of pages) {
     $("html").attr("lang", locale);
     translateNode($("html")[0], dict);
     translateAttributes($, dict);
+    localizeSeo($, locale, basePath, dict);
 
     $("a[href]").each((_, element) => {
       if ($(element).attr("data-locale")) return;
