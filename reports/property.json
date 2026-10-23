@@ -1,0 +1,131 @@
+{
+  "schema": "hs-property/1",
+  "generatedAt": "2026-10-23T13:51:28.299Z",
+  "compilerVersion": "0.1.0",
+  "coreVersion": "0.1",
+  "seed": 1,
+  "count": 3,
+  "maxSize": 2,
+  "toolchains": [
+    {
+      "target": "csharp",
+      "name": ".NET SDK",
+      "available": true,
+      "version": "10.0.401",
+      "detail": "",
+      "commands": [
+        "dotnet"
+      ]
+    },
+    {
+      "target": "rust",
+      "name": "Rust (cargo)",
+      "available": true,
+      "version": "cargo 1.98.1 (797e8a9bc 2026-08-05); rustc 1.98.1 (48a229cea 2026-09-01)",
+      "detail": "",
+      "commands": [
+        "cargo",
+        "rustc"
+      ]
+    },
+    {
+      "target": "go",
+      "name": "Go",
+      "available": true,
+      "version": "go version go1.27.0 windows/amd64",
+      "detail": "",
+      "commands": [
+        "go"
+      ]
+    },
+    {
+      "target": "java",
+      "name": "Java (javac)",
+      "available": true,
+      "version": "javac 21.0.12.1; openjdk version \"21.0.12.1\" 2026-08-18 LTS",
+      "detail": "",
+      "commands": [
+        "javac",
+        "java"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "seed-1-size-1",
+      "seed": 1,
+      "size": 1,
+      "status": "passed",
+      "source": "fn f1(p1: i32) -> i32 {\n    let v1: bool = (false || false);\n    if true {\n        return (3 + 1);\n    }\n    else {\n        return (3 + -7);\n    }\n    return 1;\n}\n\nfn main() -> i32 {\n    let v1: i32 = (-7 * 2);\n    if false {\n        return (-0);\n    }\n    return (--2147483648);\n}\n",
+      "targets": [
+        {
+          "target": "csharp",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 39
+          }
+        }
+      ],
+      "reference": {
+        "status": "error",
+        "code": "E_OVERFLOW",
+        "node": 39
+      }
+    },
+    {
+      "id": "seed-2-size-2",
+      "seed": 2,
+      "size": 2,
+      "status": "passed",
+      "source": "fn f1(p1: i32, p2: i32) -> i32 {\n    let v1: bool = (!((p2 == 0)));\n    let v2: i32 = (42 * (-p1));\n    if (v1 && false) {\n        return ((3 + 1) * 7);\n    }\n    else {\n        return -2147483648;\n    }\n    return ((-2147483648 + 7) + 42);\n}\n\nfn f2() -> bool {\n    let v1: bool = (!((false && false)));\n    let v2: bool = (!(false));\n    if (!(false)) {\n        return (false || (!(false)));\n    }\n    return (!(true));\n}\n\nfn main() -> i32 {\n    let v1: bool = f2();\n    let v2: i32 = (2 * (-7 + 3));\n    if ((!(false)) || v1) {\n        return ((-42) + 2);\n    }\n    return 0;\n}\n",
+      "targets": [
+        {
+          "target": "csharp",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -40
+          }
+        }
+      ],
+      "reference": {
+        "status": "ok",
+        "type": "i32",
+        "value": -40
+      }
+    },
+    {
+      "id": "seed-3-size-1",
+      "seed": 3,
+      "size": 1,
+      "status": "passed",
+      "source": "fn f1(p1: i32, p2: i32) -> i32 {\n    let v1: bool = (!(true));\n    if true {\n        return p2;\n    }\n    return (-2147483647);\n}\n\nfn main() -> i32 {\n    let v1: i32 = (-1 - 10);\n    if (!(true)) {\n        return (-2147483648 - -7);\n    }\n    return (2 + -1);\n}\n",
+      "targets": [
+        {
+          "target": "csharp",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        }
+      ],
+      "reference": {
+        "status": "ok",
+        "type": "i32",
+        "value": 1
+      }
+    }
+  ],
+  "summary": {
+    "cases": 3,
+    "targetRuns": 3,
+    "passed": 3,
+    "failed": 0,
+    "blocked": 0
+  }
+}

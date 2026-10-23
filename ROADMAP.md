@@ -6,7 +6,8 @@ It is dependency-driven, not calendar-driven. A phase starts when its prerequisi
 
 ## Status
 
-**0.1 POC — complete and verified.**
+**0.1 POC — complete and verified.**  
+**0.2 Verification hardening — in progress.**
 
 - Core: `i32`, `bool`, functions, calls, immutable locals, `if`/`else`, returns, checked arithmetic, short-circuit Boolean operators, acyclic call graphs.
 - Profiles: keyword-only, declarative, validated, token-aware conversion with comment preservation.
@@ -23,6 +24,17 @@ Known limits are listed in [`docs/limitations.md`](docs/limitations.md). The ori
 - Measured latency budgets (`npm run bench`, `reports/benchmark.json`): 0.05 ms warm analysis + four-target generation, 0.44 ms bridge round-trip.
 - Initial Visual Studio Code extension: syntax highlighting, live diagnostics, generated-code preview.
 - The full editor workflow still needs validation in a running VS Code window and remains part of phases 0.2 and 0.6.
+
+### 0.2 progress
+
+- Seeded, type-correct program generator with deterministic output.
+- `hs prop` runs generated programs through the reference interpreter and all selected native targets.
+- Divergences are reduced automatically by deleting source lines while the failure remains reproducible.
+- Property reports are written to `reports/property.json` and `reports/property.md`.
+- Personal-notation diagnostic mapping now has a golden line/column test.
+- Cross-platform CI workflow added for Windows, Linux, and macOS with .NET, Rust, Go, Java, and report artifacts.
+
+Still open for 0.2: a separate benchmark corpus, a verified clean-checkout CI run on all three operating systems, and committed cross-platform evidence.
 
 ## Guiding principles
 

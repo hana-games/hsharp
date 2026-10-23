@@ -10,6 +10,7 @@ const toc = [
   { id: "build", label: "build" },
   { id: "syntax", label: "syntax" },
   { id: "test", label: "test" },
+  { id: "prop", label: "prop" },
   { id: "doctor", label: "doctor and demo" },
   { id: "bridge", label: "bridge" },
 ];
@@ -53,6 +54,8 @@ hs syntax export <canonical.hs> --profile <profile.json> --out <personal.hs>
             [--manifest <file>]
 hs syntax import <personal.hs> [--manifest <file>] [--dry-run]
 hs test [--all-targets] [--targets <list>] [--quick] [--report-dir <dir>] [--json]
+hs prop [--seed <n>] [--count <n>] [--max-size <n>] [--targets <list>]
+          [--report-dir <dir>] [--no-reduce] [--quiet] [--json]
 hs doctor [--json]
 hs demo
 hs bridge`} language="bash" title="command summary" />
@@ -132,6 +135,19 @@ hs bridge`} language="bash" title="command summary" />
   <p>
     Exit 0 means every executed check passed. Exit 1 means a failure. Exit 2 means at least one target
     was blocked. Blocked is never counted as a pass.
+  </p>
+
+  <h2 id="prop">prop</h2>
+  <StaticCode code={`hs prop --seed 1 --count 10 --max-size 3
+hs prop --targets csharp,rust --no-reduce --json`} language="bash" title="terminal" />
+  <p>
+    Generates seeded, type-correct h# programs, runs the reference interpreter and every selected
+    target, and compares outcomes including failure codes and source nodes. A divergence is reduced
+    by deleting source lines while the failure remains reproducible.
+  </p>
+  <p>
+    Reports are written to reports/property.json and reports/property.md. Exit 0 means every case
+    passed, 1 means a failure, and 2 means at least one target was blocked.
   </p>
 
   <h2 id="doctor">doctor and demo</h2>

@@ -16,6 +16,7 @@ import { evaluate } from "../reference/interpreter";
 import { chooseEntry } from "../semantic/entry";
 import { exportSyntax, importSyntax } from "../syntax/transfer";
 import { runConformance } from "../testing/conformance";
+import { runProperty } from "../testing/property";
 import { runBridge } from "../service/bridge";
 
 interface Cli {
@@ -28,6 +29,7 @@ const BOOLEAN_FLAGS = new Set([
   "dry-run",
   "all-targets",
   "quick",
+  "no-reduce",
   "run",
   "help",
   "version",
@@ -138,6 +140,8 @@ function main(argv: string[]): number {
       return commandSyntax(cli);
     case "test":
       return commandTest(cli);
+    case "prop":
+      return commandProperty(cli);
     case "doctor":
       return commandDoctor(cli);
     case "demo":
@@ -358,6 +362,45 @@ function commandTest(cli: Cli): number {
   return result.exitCode;
 }
 
+function positiveInteger(cli: Cli, key: string, fallback: number): number {
+  const raw = flagString(cli, key);
+  if (!raw) return fallback;
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value < 1) {
+    throw new Error(`--${key} must be a positive integer`);
+  }
+  return value;
+}
+
+function commandProperty(cli: Cli): number {
+  const targetList = flagString(cli, "targets");
+  const targets = targetList
+    ? (targetList.split(",").map((part) => part.trim()) as TargetId[])
+    : ([...TARGET_IDS] as TargetId[]);
+  for (const target of targets) {
+    if (!(TARGET_IDS as readonly string[]).includes(target)) throw new Error(`unknown target "${target}"`);
+  }
+  const root = flagString(cli, "root") ?? process.cwd();
+  const reportDir = flagString(cli, "report-dir") ?? resolve(root, "reports");
+  const result = runProperty({
+    root,
+    seed: positiveInteger(cli, "seed", 1),
+    count: positiveInteger(cli, "count", 10),
+    maxSize: positiveInteger(cli, "max-size", 3),
+    targets,
+    reportDir,
+    quiet: flagBool(cli, "quiet"),
+    reduce: !flagBool(cli, "no-reduce"),
+  });
+  if (flagBool(cli, "json")) {
+    console.log(JSON.stringify(result.report, null, 2));
+  } else {
+    console.log(result.text);
+    console.log(`report written to ${reportDir}`);
+  }
+  return result.exitCode;
+}
+
 function commandDoctor(cli: Cli): number {
   const toolchains = detectToolchains(process.cwd());
   const payload = {
@@ -478,6 +521,9 @@ Usage:
   hs syntax import <personal.hs> [--manifest <file>] [--dry-run]
   hs test [--all-targets] [--targets csharp,rust,go,java] [--quick]
             [--report-dir <dir>] [--json]
+  hs prop [--seed <n>] [--count <n>] [--max-size <n>]
+            [--targets csharp,rust,go,java] [--report-dir <dir>]
+            [--no-reduce] [--quiet] [--json]
   hs doctor [--json]
   hs demo
   hs bridge

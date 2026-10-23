@@ -253,6 +253,17 @@ On success the manifest is refreshed, so the edit/import cycle can continue. See
 | `docs/` | Getting started, decisions, verification, acceptance, limitations |
 | `ROADMAP.md` | Phase plan and exit evidence |
 
+## Verification commands
+
+```text
+npm test             # unit, editor typecheck, bridge, conformance
+npm run test:property # seeded generated programs against the reference and all targets
+npm run verify        # both suites, in order
+```
+
+Property runs write `reports/property.json` and `reports/property.md`. A failure is reduced by
+deleting source lines while the divergence remains reproducible.
+
 ## Roadmap
 
 | Phase | Theme |

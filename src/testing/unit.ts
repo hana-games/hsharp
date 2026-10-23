@@ -6,6 +6,7 @@ import { evaluate } from "../reference/interpreter";
 import { analyze } from "../pipeline";
 import { loadProfileFile, STANDARD_PROFILE } from "../frontend/profile";
 import { exportSyntax, importSyntax } from "../syntax/transfer";
+import { generateCase, reduceSource } from "./property";
 
 let failures = 0;
 let count = 0;
@@ -322,6 +323,48 @@ test("generated target names are deterministic and avoid source names", () => {
     assert.match(text, /f1/, `${target} should use a generated function name`);
     assert.match(text, /v1/, `${target} should use a generated local name`);
   }
+});
+
+test("seeded property generator is deterministic and valid", () => {
+  for (let seed = 1; seed <= 8; seed++) {
+    const first = generateCase(seed, 2);
+    const second = generateCase(seed, 2);
+    assert.equal(first.source, second.source, `seed ${seed} should be deterministic`);
+    const loaded = analyze(first.source, `<property:${seed}>`, STANDARD_PROFILE);
+    assert.ok(
+      loaded.typed,
+      `seed ${seed} should generate a valid program: ${loaded.diagnostics.map((diagnostic) => diagnostic.message).join("; ")}`,
+    );
+    assert.ok(loaded.typed!.functions.some((fn) => fn.name === "main"), `seed ${seed} should declare main`);
+  }
+});
+
+test("property reducer deletes lines while the failure remains reproducible", () => {
+  const source = `fn main() -> i32 {
+    let a: i32 = 1;
+    let b: i32 = 2;
+    return a + b;
+}
+`;
+  const reduced = reduceSource(source, (candidate) => candidate.includes("let b"), 12);
+  assert.ok(reduced.source.length < source.length);
+  assert.ok(reduced.source.includes("let b"));
+});
+
+test("personal-profile diagnostics preserve source line and column", () => {
+  const mySyntax = profiles.find((profile) => profile.id === "my-syntax")!;
+  const loaded = analyze(
+    `function main() -> i32 {
+    give absent;
+}
+`,
+    "<personal>",
+    mySyntax,
+  );
+  const diagnostic = loaded.diagnostics.find((item) => item.code === "E_UNKNOWN_NAME");
+  assert.ok(diagnostic?.span, "expected a located unknown-name diagnostic");
+  assert.equal(diagnostic.span.start.line, 2);
+  assert.equal(diagnostic.span.start.column, 10);
 });
 
 console.log(`\n${count - failures}/${count} unit tests passed`);
