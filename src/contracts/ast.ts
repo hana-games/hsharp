@@ -41,6 +41,8 @@ export interface RecordField extends NodeBase {
 export interface TypeRef extends NodeBase {
   kind: "TypeRef";
   name: TypeName;
+  /** Present for `list<T>`; the element type reference. */
+  elementType?: TypeRef;
 }
 
 export interface Param extends NodeBase {
@@ -104,7 +106,9 @@ export type Expr =
   | UnaryExpr
   | BinaryExpr
   | RecordLiteral
-  | FieldAccess;
+  | FieldAccess
+  | ListLiteral
+  | IndexExpr;
 
 export interface IntLiteral extends NodeBase {
   kind: "IntLiteral";
@@ -172,6 +176,24 @@ export interface CallExpr extends NodeBase {
   calleeSymbolId?: string;
   calleeTargetName?: string;
   calleeReturnType?: TypeName;
+  /** Set when the call resolves to a compiler built-in such as `length`. */
+  builtin?: "length";
+}
+
+export interface ListLiteral extends NodeBase {
+  kind: "ListLiteral";
+  /** Source-order element expressions. Empty literals are parsed, then rejected. */
+  elements: Expr[];
+  /** Filled by the semantic checker: canonical `list<T>` type. */
+  resolvedType?: TypeName;
+}
+
+export interface IndexExpr extends NodeBase {
+  kind: "IndexExpr";
+  target: Expr;
+  index: Expr;
+  /** Filled by the semantic checker: element type of the indexed list. */
+  resolvedType?: TypeName;
 }
 
 export type UnaryOp = "-" | "!";
@@ -282,6 +304,10 @@ function normalizeExpr(expr: Expr): unknown {
       };
     case "FieldAccess":
       return { kind: "FieldAccess", target: normalizeExpr(expr.target), field: expr.field };
+    case "ListLiteral":
+      return { kind: "ListLiteral", elements: expr.elements.map(normalizeExpr) };
+    case "IndexExpr":
+      return { kind: "IndexExpr", target: normalizeExpr(expr.target), index: normalizeExpr(expr.index) };
   }
 }
 
@@ -304,6 +330,13 @@ export function walkExpr(expr: Expr, visit: (node: Expr) => void): void {
       break;
     case "FieldAccess":
       walkExpr(expr.target, visit);
+      break;
+    case "ListLiteral":
+      for (const element of expr.elements) walkExpr(element, visit);
+      break;
+    case "IndexExpr":
+      walkExpr(expr.target, visit);
+      walkExpr(expr.index, visit);
       break;
     default:
       break;

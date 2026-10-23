@@ -1,6 +1,7 @@
 import type { Diagnostic } from "../contracts/diagnostics";
 import { error } from "../contracts/diagnostics";
 import type { TypedProgram } from "../contracts/outcome";
+import { isListTypeName } from "../contracts/tokens";
 
 export function chooseEntry(typed: TypedProgram, requested?: string): { entry?: string; diagnostic?: Diagnostic } {
   if (requested) {
@@ -36,20 +37,30 @@ export function chooseEntry(typed: TypedProgram, requested?: string): { entry?: 
 function scalarEntry(signature: TypedProgram["functions"][number]): { diagnostic?: Diagnostic } | undefined {
   const nonScalarParam = signature.params.find((param) => param.type !== "i32" && param.type !== "bool");
   if (nonScalarParam) {
+    const list = isListTypeName(nonScalarParam.type);
     return {
       diagnostic: error(
-        nonScalarParam.type === "string" ? "E_STRING_ENTRY_PARAMETER_UNSUPPORTED" : "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
-        `entry function "${signature.name}" cannot take ${nonScalarParam.type === "string" ? "string" : "record"} parameter "${nonScalarParam.name}"`,
+        nonScalarParam.type === "string"
+          ? "E_STRING_ENTRY_PARAMETER_UNSUPPORTED"
+          : list
+            ? "E_LIST_ENTRY_PARAMETER_UNSUPPORTED"
+            : "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
+        `entry function "${signature.name}" cannot take ${nonScalarParam.type === "string" ? "string" : list ? "list" : "record"} parameter "${nonScalarParam.name}"`,
         undefined,
         "entry values come from scalar command-line arguments",
       ),
     };
   }
   if (signature.returnType !== "i32" && signature.returnType !== "bool") {
+    const list = isListTypeName(signature.returnType);
     return {
       diagnostic: error(
-        signature.returnType === "string" ? "E_STRING_ENTRY_RETURN_UNSUPPORTED" : "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
-        `entry function "${signature.name}" cannot return ${signature.returnType === "string" ? "string" : "record"} "${signature.returnType}"`,
+        signature.returnType === "string"
+          ? "E_STRING_ENTRY_RETURN_UNSUPPORTED"
+          : list
+            ? "E_LIST_ENTRY_RETURN_UNSUPPORTED"
+            : "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
+        `entry function "${signature.name}" cannot return ${signature.returnType === "string" ? "string" : list ? "list" : "record"} "${signature.returnType}"`,
         undefined,
         "entry outcomes are scalar",
       ),

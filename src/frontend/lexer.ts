@@ -11,7 +11,7 @@ import {
 import { profileKeywordMap } from "./profile";
 
 const TWO_CHAR_PUNCT = ["->", "==", "!=", "<=", ">=", "&&", "||"];
-const ONE_CHAR_PUNCT = "(){}:;,=+-*!<>.";
+const ONE_CHAR_PUNCT = "(){}[]:;,=+-*!<>.";
 
 export interface LexResult {
   tokens: Token[];

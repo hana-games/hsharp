@@ -1,5 +1,6 @@
 import type { GeneratedProject } from "../contracts/interfaces";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
+import { INDEX_FAILURE_CODE } from "../contracts/outcome";
 import { isPrimitiveTypeName } from "../contracts/tokens";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
 import {
@@ -58,6 +59,14 @@ export function emitJava(
         ? `${leftField} == ${rightField}`
         : `${leftField}.equals(${rightField})`;
     },
+    listType: (element) => `${element}[]`,
+    listLiteral: (values) => `new int[] { ${values.join(", ")} }`,
+    listValue: (expr) => expr,
+    listLength: (expr) => `${expr}.length`,
+    listIndex: (list, index, node) => `index(${list}, ${index}, ${node})`,
+    listEquals: (left, right) => `listEquals(${left}, ${right})`,
+    resOkList: (expr) => `Res.okRecord(${expr})`,
+    resListValue: (expr) => `((int[]) ${expr}.payload)`,
   };
 
   const recordDeclarations = renderRecords(records, dialect);
@@ -122,6 +131,19 @@ ${recordDeclarations}
         return Res.ok((int) r);
     }
 
+    private static Res index(int[] list, int index, int node) {
+        if (index < 0 || index >= list.length) return Res.fail(${INDEX_FAILURE_CODE}, node);
+        return Res.ok(list[index]);
+    }
+
+    private static boolean listEquals(int[] left, int[] right) {
+        if (left.length != right.length) return false;
+        for (int i = 0; i < left.length; i++) {
+            if (left[i] != right[i]) return false;
+        }
+        return true;
+    }
+
 ${functions}
 
 ${main}
@@ -140,7 +162,7 @@ function renderRecords(records: RecordMap, dialect: Dialect): string {
   return [...records.values()]
     .map((record) => {
       const components = record.fields
-        .map((field) => `${targetType(field.type, records, dialect.intType, dialect.stringType)} ${field.targetName}`)
+        .map((field) => `${targetType(field.type, records, dialect.intType, dialect.stringType, dialect.listType)} ${field.targetName}`)
         .join(", ");
       return `    private record ${record.targetName}(${components}) {}`;
     })
@@ -155,7 +177,7 @@ function renderFunction(
 ): string {
   const fn = functionBySignature(program, signature);
   const parameters = fn.params
-    .map((param) => `${targetType(param.type.name, records, dialect.intType, dialect.stringType)} ${param.targetName}`)
+    .map((param) => `${targetType(param.type.name, records, dialect.intType, dialect.stringType, dialect.listType)} ${param.targetName}`)
     .join(", ");
   const body = emitFunctionBody(fn, dialect, records);
   return `    private static Res ${signature.targetName}(${parameters}) {\n${indent(body, 8)}\n    }`;
@@ -210,7 +232,10 @@ function renderMain(entry: FunctionSignature): string {
   lines.push("            System.exit(0);");
   lines.push("        } else {");
   lines.push(
-    '            System.out.println("{\\"status\\":\\"error\\",\\"code\\":\\"E_OVERFLOW\\",\\"node\\":" + result.node + "}");',
+    '            String errorCode = result.code == ' + INDEX_FAILURE_CODE + ' ? "E_INDEX" : "E_OVERFLOW";',
+  );
+  lines.push(
+    '            System.out.println("{\\"status\\":\\"error\\",\\"code\\":\\"" + errorCode + "\\",\\"node\\":" + result.node + "}");',
   );
   lines.push("            System.exit(1);");
   lines.push("        }");

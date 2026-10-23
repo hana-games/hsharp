@@ -2,7 +2,13 @@ import type { Block, Expr, FunctionDecl, Program, RecordDecl, RecordField, Stmt 
 import type { Diagnostic } from "../contracts/diagnostics";
 import { error } from "../contracts/diagnostics";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
-import { isPrimitiveTypeName, type TypeName } from "../contracts/tokens";
+import {
+  isListTypeName,
+  isPrimitiveTypeName,
+  listElementTypeName,
+  listTypeName,
+  type TypeName,
+} from "../contracts/tokens";
 
 interface Symbol {
   symbolId: string;
@@ -148,6 +154,17 @@ class Checker {
           );
           continue;
         }
+        if (isListTypeName(field.type.name)) {
+          this.diagnostics.push(
+            error(
+              "E_LIST_FIELD_UNSUPPORTED",
+              `record field "${field.name}" cannot use a list in this slice`,
+              field.type.span,
+              "list values are supported only as locals, internal parameters, and internal returns",
+            ),
+          );
+          continue;
+        }
         if (isPrimitiveTypeName(field.type.name)) continue;
         if (this.records.has(field.type.name)) {
           recordEdges.push(field.type.name);
@@ -207,11 +224,17 @@ class Checker {
       }
       seenParams.add(param.name);
       const paramType = this.resolveType(param.type);
-      if (autoEntry && (this.records.has(paramType) || paramType === "string")) {
+      if (autoEntry && (this.records.has(paramType) || paramType === "string" || isListTypeName(paramType))) {
+        const code = paramType === "string"
+          ? "E_STRING_ENTRY_PARAMETER_UNSUPPORTED"
+          : isListTypeName(paramType)
+            ? "E_LIST_ENTRY_PARAMETER_UNSUPPORTED"
+            : "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED";
+        const kind = paramType === "string" ? "string" : isListTypeName(paramType) ? "list" : "record";
         this.diagnostics.push(
           error(
-            paramType === "string" ? "E_STRING_ENTRY_PARAMETER_UNSUPPORTED" : "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
-            `entry function "${fn.name}" cannot take ${paramType === "string" ? "string" : "record"} parameter "${param.name}"`,
+            code,
+            `entry function "${fn.name}" cannot take ${kind} parameter "${param.name}"`,
             param.type.span,
             "entry values come from scalar command-line arguments; pass scalar parameters and build the value inside the program",
           ),
@@ -225,11 +248,17 @@ class Checker {
     }
 
     const returnType = this.resolveType(fn.returnType);
-    if (autoEntry && (this.records.has(returnType) || returnType === "string")) {
+    if (autoEntry && (this.records.has(returnType) || returnType === "string" || isListTypeName(returnType))) {
+      const code = returnType === "string"
+        ? "E_STRING_ENTRY_RETURN_UNSUPPORTED"
+        : isListTypeName(returnType)
+          ? "E_LIST_ENTRY_RETURN_UNSUPPORTED"
+          : "E_RECORD_ENTRY_RETURN_UNSUPPORTED";
+      const kind = returnType === "string" ? "string" : isListTypeName(returnType) ? "list" : "record";
       this.diagnostics.push(
         error(
-          returnType === "string" ? "E_STRING_ENTRY_RETURN_UNSUPPORTED" : "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
-          `entry function "${fn.name}" cannot return ${returnType === "string" ? "string" : "record"} "${returnType}"`,
+          code,
+          `entry function "${fn.name}" cannot return ${kind} "${returnType}"`,
           fn.returnType.span,
           "entry outcomes are scalar; return i32 or bool and compare data inside the program",
         ),
@@ -251,13 +280,44 @@ class Checker {
   }
 
   private resolveType(type: import("../contracts/ast").TypeRef): TypeName {
+    if (type.elementType) {
+      const element = this.resolveType(type.elementType);
+      if (element !== "i32" && element !== "bool") {
+        this.diagnostics.push(
+          error(
+            "E_LIST_ELEMENT_UNSUPPORTED",
+            `list element type "${element}" is not supported in this slice`,
+            type.elementType.span,
+            "only list<i32> and list<bool> are implemented",
+          ),
+        );
+        return listTypeName("i32");
+      }
+      return listTypeName(element);
+    }
+    if (isListTypeName(type.name)) {
+      // Defensive: a canonical list name that was not produced through elementType.
+      const element = listElementTypeName(type.name) ?? "i32";
+      if (element !== "i32" && element !== "bool") {
+        this.diagnostics.push(
+          error(
+            "E_LIST_ELEMENT_UNSUPPORTED",
+            `list element type "${element}" is not supported in this slice`,
+            type.span,
+            "only list<i32> and list<bool> are implemented",
+          ),
+        );
+        return listTypeName("i32");
+      }
+      return type.name;
+    }
     if (isPrimitiveTypeName(type.name) || this.records.has(type.name)) return type.name;
     this.diagnostics.push(
       error(
         "E_UNKNOWN_TYPE",
         `unknown type "${type.name}"`,
         type.span,
-        "types are i32, bool, or a declared record name",
+        "types are i32, bool, string, list<i32>, list<bool>, or a declared record name",
       ),
     );
     return "i32";
@@ -363,6 +423,79 @@ class Checker {
         return "bool";
       case "StringLiteral":
         return "string";
+      case "ListLiteral": {
+        if (expr.elements.length === 0) {
+          this.diagnostics.push(
+            error(
+              "E_EMPTY_LIST_UNSUPPORTED",
+              "empty list literals are not supported in this slice",
+              expr.span,
+              "write at least one element; empty lists need an expected element type",
+            ),
+          );
+          expr.resolvedType = listTypeName("i32");
+          return expr.resolvedType;
+        }
+        const elementTypes = expr.elements.map((element) => this.checkExpr(element, scope));
+        const first = elementTypes[0];
+        if (!isListElementType(first)) {
+          this.diagnostics.push(
+            error(
+              "E_LIST_ELEMENT_UNSUPPORTED",
+              `list literal element type ${first} is not supported in this slice`,
+              expr.elements[0].span,
+              "only list<i32> and list<bool> are implemented",
+            ),
+          );
+          expr.resolvedType = listTypeName("i32");
+          return expr.resolvedType;
+        }
+        const mismatched = elementTypes.findIndex((elementType) => elementType !== first);
+        if (mismatched >= 0) {
+          this.diagnostics.push(
+            error(
+              "E_LIST_ELEMENT_TYPE",
+              `list literal mixes ${first} and ${elementTypes[mismatched]} elements`,
+              expr.elements[mismatched].span,
+              "every element of a list literal must have the same type",
+            ),
+          );
+        }
+        expr.resolvedType = listTypeName(first);
+        return expr.resolvedType;
+      }
+      case "IndexExpr": {
+        const targetType = this.checkExpr(expr.target, scope);
+        const indexType = this.checkExpr(expr.index, scope);
+        if (indexType !== "i32") {
+          this.diagnostics.push(
+            error(
+              "E_LIST_INDEX_TYPE",
+              `list index must be i32, found ${indexType}`,
+              expr.index.span,
+            ),
+          );
+        }
+        if (!isListTypeName(targetType)) {
+          this.diagnostics.push(
+            error(
+              "E_INDEX_ON_NON_LIST",
+              `cannot index value of type ${targetType}`,
+              expr.target.span,
+              "only list<i32> and list<bool> values support [i] in this slice",
+            ),
+          );
+          expr.resolvedType = "i32";
+          return expr.resolvedType;
+        }
+        const elementType = listElementTypeName(targetType) ?? "i32";
+        if (!isListElementType(elementType)) {
+          expr.resolvedType = "i32";
+          return expr.resolvedType;
+        }
+        expr.resolvedType = elementType;
+        return elementType;
+      }
       case "VarRef": {
         const symbol = scope.lookup(expr.name);
         if (!symbol) {
@@ -450,7 +583,7 @@ class Checker {
         const targetType = this.checkExpr(expr.target, scope);
         const record = this.records.get(targetType);
         if (!record) {
-          if (isPrimitiveTypeName(targetType)) {
+          if (isPrimitiveTypeName(targetType) || isListTypeName(targetType)) {
             this.diagnostics.push(
               error(
                 "E_FIELD_ACCESS_ON_SCALAR",
@@ -477,6 +610,32 @@ class Checker {
         return field.type.name;
       }
       case "CallExpr": {
+        if (expr.callee === "length" && !this.signatures.has(expr.callee)) {
+          expr.builtin = "length";
+          expr.calleeReturnType = "i32";
+          if (expr.args.length !== 1) {
+            this.diagnostics.push(
+              error(
+                "E_ARITY",
+                `length expects 1 argument, received ${expr.args.length}`,
+                expr.span,
+              ),
+            );
+          }
+          expr.args.forEach((arg) => {
+            const argType = this.checkExpr(arg, scope);
+            if (!isListTypeName(argType)) {
+              this.diagnostics.push(
+                error(
+                  "E_LENGTH_ARGUMENT_TYPE",
+                  `length expects list<i32> or list<bool>, found ${argType}`,
+                  arg.span,
+                ),
+              );
+            }
+          });
+          return "i32";
+        }
         const signature = this.signatures.get(expr.callee);
         if (!signature) {
           this.diagnostics.push(
@@ -621,6 +780,10 @@ class Checker {
 
     for (const name of this.callGraph.keys()) visit(name);
   }
+}
+
+function isListElementType(type: TypeName): boolean {
+  return type === "i32" || type === "bool";
 }
 
 function definitelyReturns(block: Block): boolean {

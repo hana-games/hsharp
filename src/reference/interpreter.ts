@@ -1,7 +1,14 @@
 import type { Block, Expr, FunctionDecl, RecordDecl, Stmt, UnaryOp } from "../contracts/ast";
 import type { FunctionSignature, Outcome, RuntimeArguments, TypedProgram, HsValue } from "../contracts/outcome";
-import { isRecordValue, OVERFLOW_CODE, type RecordValue } from "../contracts/outcome";
-import { isPrimitiveTypeName, type TypeName } from "../contracts/tokens";
+import {
+  INDEX_CODE,
+  isListValue,
+  isRecordValue,
+  OVERFLOW_CODE,
+  type ListValue,
+  type RecordValue,
+} from "../contracts/outcome";
+import { isPrimitiveTypeName, listTypeName, type TypeName } from "../contracts/tokens";
 
 const I32_MIN = -2147483648n;
 const I32_MAX = 2147483647n;
@@ -49,10 +56,10 @@ export function evaluate(program: TypedProgram, entry: string, args: RuntimeArgu
       `entry function "${entry}" expects ${entryFunction.signature.params.length} argument(s), received ${args.values.length}`,
     );
   }
-  const recordParam = entryFunction.signature.params.find((param) => !isPrimitiveTypeName(param.type));
-  if (recordParam) {
+  const nonScalarParam = entryFunction.signature.params.find((param) => !isPrimitiveTypeName(param.type));
+  if (nonScalarParam) {
     throw new EvaluationError(
-      `entry function "${entry}" cannot take record parameter "${recordParam.name}"`,
+      `entry function "${entry}" cannot take non-scalar parameter "${nonScalarParam.name}"`,
     );
   }
   args.values.forEach((value, index) => {
@@ -82,6 +89,9 @@ export function evaluate(program: TypedProgram, entry: string, args: RuntimeArgu
     const result = interpreter.call(entryFunction, values);
     if (isRecordValue(result.value)) {
       throw new EvaluationError(`entry function "${entry}" returned a record`);
+    }
+    if (isListValue(result.value)) {
+      throw new EvaluationError(`entry function "${entry}" returned a list`);
     }
     return { status: "ok", type: result.type, value: result.value };
   } catch (cause) {
@@ -149,12 +159,41 @@ class Interpreter {
         return { type: "bool", value: expr.value };
       case "StringLiteral":
         return { type: "string", value: expr.value };
+      case "ListLiteral": {
+        // Elements are evaluated left to right.
+        const elements = expr.elements.map((element) => this.evalExpr(element, env));
+        const elementType = elements[0]?.type ?? "i32";
+        const value: ListValue = { kind: "list", elementType, elements };
+        return { type: expr.resolvedType ?? listTypeName(elementType), value };
+      }
+      case "IndexExpr": {
+        const target = this.evalExpr(expr.target, env);
+        const index = this.evalExpr(expr.index, env);
+        if (!isListValue(target.value)) {
+          throw new EvaluationError(`internal: indexing a non-list value`);
+        }
+        if (typeof index.value !== "number") {
+          throw new EvaluationError(`internal: list index is not an integer`);
+        }
+        if (index.value < 0 || index.value >= target.value.elements.length) {
+          // The indexing expression node identifies the failing operation.
+          throw new RuntimeFailure(INDEX_CODE, expr.id);
+        }
+        return target.value.elements[index.value];
+      }
       case "VarRef": {
         const value = env.get(expr.symbolId!);
         if (!value) throw new EvaluationError(`internal: unbound local "${expr.name}"`);
         return value;
       }
       case "CallExpr": {
+        if (expr.builtin === "length") {
+          const argument = this.evalExpr(expr.args[0], env);
+          if (!isListValue(argument.value)) {
+            throw new EvaluationError(`internal: length argument is not a list`);
+          }
+          return { type: "i32", value: argument.value.elements.length };
+        }
         const target = this.functions.get(expr.callee);
         if (!target) throw new EvaluationError(`internal: unresolved call to "${expr.callee}"`);
         // Arguments are evaluated left to right before the call.
@@ -274,6 +313,13 @@ class Interpreter {
 function valuesEqual(left: HsValue, right: HsValue): boolean {
   const leftValue = left.value;
   const rightValue = right.value;
+  if (isListValue(leftValue) || isListValue(rightValue)) {
+    if (!isListValue(leftValue) || !isListValue(rightValue)) return false;
+    if (left.type !== right.type) return false;
+    if (leftValue.elements.length !== rightValue.elements.length) return false;
+    const rightElements = rightValue.elements;
+    return leftValue.elements.every((element, index) => valuesEqual(element, rightElements[index]));
+  }
   if (isRecordValue(leftValue) || isRecordValue(rightValue)) {
     if (!isRecordValue(leftValue) || !isRecordValue(rightValue)) return false;
     if (left.type !== right.type) return false;

@@ -25,14 +25,29 @@ export interface RecordValue {
   fields: HsValue[];
 }
 
+export interface ListValue {
+  kind: "list";
+  elementType: TypeName;
+  /** Values in source order. */
+  elements: HsValue[];
+}
+
 export interface HsValue {
   type: TypeName;
-  value: ScalarValue | RecordValue;
+  value: ScalarValue | RecordValue | ListValue;
 }
 
 export function isRecordValue(value: HsValue["value"]): value is RecordValue {
   return typeof value === "object" && value !== null && value.kind === "record";
 }
+
+export function isListValue(value: HsValue["value"]): value is ListValue {
+  return typeof value === "object" && value !== null && value.kind === "list";
+}
+
+export const INDEX_CODE = "E_INDEX";
+/** Numeric failure code used by generated targets for E_INDEX. */
+export const INDEX_FAILURE_CODE = 4;
 
 /** Entry functions remain scalar: record values never cross the process boundary. */
 export type Outcome =

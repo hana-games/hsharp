@@ -1,5 +1,6 @@
 import type { GeneratedProject } from "../contracts/interfaces";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
+import { INDEX_FAILURE_CODE } from "../contracts/outcome";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
 import {
   collectRecords,
@@ -55,6 +56,14 @@ export function emitGo(
     fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}`,
     fieldEquals: (left, right, record, index) =>
       `${left}.${record.fields[index].targetName} == ${right}.${record.fields[index].targetName}`,
+    listType: (element) => `[]${element}`,
+    listLiteral: (values) => `[]int32{${values.join(", ")}}`,
+    listValue: (expr) => expr,
+    listLength: (expr) => `int32(len(${expr}))`,
+    listIndex: (list, index, node) => `index(${list}, ${index}, ${node})`,
+    listEquals: (left, right) => `listEquals(${left}, ${right})`,
+    resOkList: (expr) => `okRecord(${expr})`,
+    resListValue: (expr) => `${expr}.payload.([]int32)`,
   };
 
   const recordDeclarations = renderRecords(records, dialect);
@@ -129,6 +138,25 @@ func neg(a int32, node int) Res {
 	return ok(int32(r))
 }
 
+func index(list []int32, index int32, node int) Res {
+	if index < 0 || int(index) >= len(list) {
+		return fail(${INDEX_FAILURE_CODE}, node)
+	}
+	return ok(list[index])
+}
+
+func listEquals(left []int32, right []int32) bool {
+	if len(left) != len(right) {
+		return false
+	}
+	for i := range left {
+		if left[i] != right[i] {
+			return false
+		}
+	}
+	return true
+}
+
 ${recordDeclarations}
 
 ${functions}
@@ -158,7 +186,7 @@ function renderRecords(records: RecordMap, dialect: Dialect): string {
     .map((record) => {
       const lines = [`type ${record.targetName} struct {`];
       for (const field of record.fields) {
-        lines.push(`\t${field.targetName} ${targetType(field.type, records, dialect.intType, dialect.stringType)}`);
+        lines.push(`\t${field.targetName} ${targetType(field.type, records, dialect.intType, dialect.stringType, dialect.listType)}`);
       }
       lines.push("}");
       return lines.join("\n");
@@ -174,7 +202,7 @@ function renderFunction(
 ): string {
   const fn = functionBySignature(program, signature);
   const parameters = fn.params
-    .map((param) => `${param.targetName} ${targetType(param.type.name, records, dialect.intType, dialect.stringType)}`)
+    .map((param) => `${param.targetName} ${targetType(param.type.name, records, dialect.intType, dialect.stringType, dialect.listType)}`)
     .join(", ");
   const body = emitFunctionBody(fn, dialect, records);
   return `func ${signature.targetName}(${parameters}) Res {\n${indent(body, 1)}\n}`;
@@ -231,8 +259,12 @@ function renderMain(entry: FunctionSignature): string {
     );
   }
   lines.push("\t} else {");
+  lines.push('\t\tcode := "E_OVERFLOW"');
+  lines.push(`\t\tif result.code == ${INDEX_FAILURE_CODE} {`);
+  lines.push('\t\t\tcode = "E_INDEX"');
+  lines.push("\t\t}");
   lines.push(
-    '\t\tfmt.Printf("{\\"status\\":\\"error\\",\\"code\\":\\"E_OVERFLOW\\",\\"node\\":%d}\\n", result.node)',
+    '\t\tfmt.Printf("{\\"status\\":\\"error\\",\\"code\\":\\"%s\\",\\"node\\":%d}\\n", code, result.node)',
   );
   lines.push("\t\tos.Exit(1)");
   lines.push("\t}");

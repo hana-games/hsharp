@@ -100,13 +100,15 @@ Delivered slice:
 - records as locals and internal function parameters;
 - record returns from internal functions, using a generated result payload;
 - strings with literals, escapes, equality, locals, internal parameters, and internal returns;
+- `list<i32>` / `list<bool>` with non-empty literals, indexing, `length`, structural equality, locals, internal parameters, and internal returns;
+- `E_INDEX` runtime failure;
 - update-as-new-value (`Point { ...p, x: 3 }`);
 - collision-safe generated record/field names;
 - reference interpreter and all four backends;
 - positive record conformance case, unit coverage for nested/update, and negative record diagnostics;
 - recursive records, record returns, and record entry parameters are explicitly rejected.
 
-Not yet delivered: string length/indexing, lists, variants, `Option`, and `Result`.
+Not yet delivered: empty lists, string length/indexing, variants, `Option`, and `Result`.
 
 Scope:
 
@@ -279,9 +281,9 @@ Dependencies: all prior phases for the features they extend.
 
 ## Immediate next actions
 
-1. Add string length/indexing policy and string record fields.
-2. Extend the tagged payload to lists, variants, `Option`, and `Result`.
-3. Prototype Rust ownership for immutable records and lists.
+1. Add empty lists, string length/indexing, and list element coverage beyond i32/bool.
+2. Add variants, `Option`, and `Result`.
+3. Prototype Rust ownership measurements for immutable records and lists.
 4. Draft the CST/printer design before adding syntax families.
 5. Re-enable automatic Ubuntu CI after the manual workflow is validated.
 6. Revisit Windows/macOS CI when the cross-platform hardening pass starts.

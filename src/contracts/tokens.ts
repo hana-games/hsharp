@@ -26,11 +26,26 @@ export const CANONICAL_KEYWORDS: Readonly<Record<KeywordRole, string>> = {
 export const TYPE_NAMES = ["i32", "bool", "string"] as const;
 export type PrimitiveTypeName = (typeof TYPE_NAMES)[number];
 
-/** A resolved type: a primitive or a declared record name. */
+/** A resolved type: a primitive, a declared record name, or a canonical list type. */
 export type TypeName = string;
 
 export function isPrimitiveTypeName(name: string): name is PrimitiveTypeName {
   return name === "i32" || name === "bool" || name === "string";
+}
+
+/** Canonical spelling of a list type, e.g. `list<i32>`. */
+export function listTypeName(elementType: TypeName): string {
+  return `list<${elementType}>`;
+}
+
+export function isListTypeName(name: string): boolean {
+  return name.startsWith("list<") && name.endsWith(">");
+}
+
+/** Element type of a canonical list type name, if it is one. */
+export function listElementTypeName(name: string): TypeName | undefined {
+  if (!isListTypeName(name)) return undefined;
+  return name.slice("list<".length, -1);
 }
 
 export type TokenKind =

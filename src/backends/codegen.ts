@@ -1,7 +1,12 @@
 import type { Block, Expr, FunctionDecl, Stmt } from "../contracts/ast";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
 import type { TargetId } from "../contracts/interfaces";
-import { isPrimitiveTypeName, type TypeName } from "../contracts/tokens";
+import {
+  isListTypeName,
+  isPrimitiveTypeName,
+  listElementTypeName,
+  type TypeName,
+} from "../contracts/tokens";
 
 export type CheckedOp = "add" | "sub" | "mul" | "neg";
 
@@ -38,7 +43,18 @@ export function collectRecords(program: TypedProgram): RecordMap {
 }
 
 /** Target type spelling: primitives share the integer representation. */
-export function targetType(type: TypeName, records: RecordMap, intType: string, stringType: string): string {
+export function targetType(
+  type: TypeName,
+  records: RecordMap,
+  intType: string,
+  stringType: string,
+  listType?: (element: string) => string,
+): string {
+  if (isListTypeName(type)) {
+    const element = listElementTypeName(type) ?? "i32";
+    const elementTarget = targetType(element, records, intType, stringType, listType);
+    return listType ? listType(elementTarget) : elementTarget;
+  }
   if (type === "string") return stringType;
   if (isPrimitiveTypeName(type)) return intType;
   return records.get(type)?.targetName ?? intType;
@@ -82,6 +98,17 @@ export interface Dialect {
   recordLiteral(record: RecordInfo, values: string[]): string;
   fieldAccess(target: string, record: RecordInfo, index: number): string;
   fieldEquals(left: string, right: string, record: RecordInfo, index: number): string;
+  /** Target spelling of a list of the given element type. */
+  listType(elementType: string): string;
+  listLiteral(values: string[]): string;
+  /** Read a list value as an expression, cloning where ownership requires it. */
+  listValue(expr: string): string;
+  listLength(expr: string): string;
+  /** Bounds-checked indexing; returns a target `Res` expression. */
+  listIndex(list: string, index: string, node: number): string;
+  listEquals(left: string, right: string, elementType: TypeName): string;
+  resOkList(expr: string): string;
+  resListValue(expr: string): string;
 }
 
 interface Lowered {
@@ -175,6 +202,8 @@ class Lowerer {
         const value = this.lowerExpr(stmt.value);
         if (value.type === "string") {
           this.builder.line(this.dialect.returnStmt(this.dialect.resOkString(value.text)));
+        } else if (isListTypeName(value.type)) {
+          this.builder.line(this.dialect.returnStmt(this.dialect.resOkList(value.text)));
         } else if (isPrimitiveTypeName(value.type)) {
           this.builder.line(this.dialect.returnStmt(this.dialect.resOk(value.text)));
         } else {
@@ -188,7 +217,7 @@ class Lowerer {
   }
 
   private typeText(type: TypeName): string {
-    return targetType(type, this.records, this.dialect.intType, this.dialect.stringType);
+    return targetType(type, this.records, this.dialect.intType, this.dialect.stringType, this.dialect.listType);
   }
 
   private lowerExpr(expr: Expr): Lowered {
@@ -205,9 +234,35 @@ class Lowerer {
       case "VarRef": {
         const type = expr.resolvedType ?? "i32";
         return {
-          text: type === "string" ? this.dialect.stringValue(expr.targetName!) : expr.targetName!,
+          text:
+            type === "string"
+              ? this.dialect.stringValue(expr.targetName!)
+              : isListTypeName(type)
+                ? this.dialect.listValue(expr.targetName!)
+                : expr.targetName!,
           type,
         };
+      }
+      case "ListLiteral": {
+        const type = expr.resolvedType ?? "list<i32>";
+        // Arguments are lowered in source order before the literal is built.
+        const values = expr.elements.map((element) => this.lowerExpr(element).text);
+        const temp = this.builder.temp("t");
+        this.builder.declare(temp, this.typeText(type), this.dialect.listLiteral(values));
+        return { text: temp, type };
+      }
+      case "IndexExpr": {
+        const target = this.lowerExpr(expr.target);
+        const index = this.lowerExpr(expr.index);
+        const elementType = expr.resolvedType ?? "i32";
+        const res = this.builder.temp("r");
+        this.builder.declareRes(res, this.dialect.listIndex(target.text, index.text, expr.id));
+        this.builder.ifOpen(this.dialect.resFailed(res));
+        this.builder.line(this.dialect.returnStmt(res));
+        this.builder.closeBlock();
+        const temp = this.builder.temp("t");
+        this.builder.declare(temp, this.dialect.intType, this.dialect.resValue(res));
+        return { text: temp, type: elementType };
       }
       case "RecordLiteral": {
         const record = this.records.get(expr.recordName);
@@ -301,6 +356,10 @@ class Lowerer {
         }
       }
       case "CallExpr": {
+        if (expr.builtin === "length") {
+          const argument = this.lowerExpr(expr.args[0]);
+          return { text: this.dialect.listLength(argument.text), type: "i32" };
+        }
         const returnType = expr.calleeReturnType ?? "i32";
         // Left-to-right evaluation is preserved by lowering arguments in order.
         const args = expr.args.map((arg) => this.lowerExpr(arg).text);
@@ -312,6 +371,8 @@ class Lowerer {
         const temp = this.builder.temp("t");
         if (returnType === "string") {
           this.builder.declare(temp, this.typeText(returnType), this.dialect.resStringValue(res));
+        } else if (isListTypeName(returnType)) {
+          this.builder.declare(temp, this.typeText(returnType), this.dialect.resListValue(res));
         } else if (isPrimitiveTypeName(returnType)) {
           this.builder.declare(temp, this.typeText(returnType), this.dialect.resValue(res));
         } else {
@@ -327,9 +388,11 @@ class Lowerer {
   private comparison(op: string, left: Lowered, right: Lowered): string {
     if (op === "==" || op === "!=") {
       const record = this.records.get(left.type);
-      const equality = record
-        ? this.recordEquality(left.text, right.text, record)
-        : this.dialect.valueEquals(left.text, right.text, left.type);
+      const equality = isListTypeName(left.type)
+        ? this.dialect.listEquals(left.text, right.text, listElementTypeName(left.type) ?? "i32")
+        : record
+          ? this.recordEquality(left.text, right.text, record)
+          : this.dialect.valueEquals(left.text, right.text, left.type);
       return op === "==" ? equality : `!(${equality})`;
     }
     return `${left.text} ${op} ${right.text}`;

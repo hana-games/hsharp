@@ -1,5 +1,6 @@
 import type { GeneratedProject } from "../contracts/interfaces";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
+import { INDEX_FAILURE_CODE } from "../contracts/outcome";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
 import {
   collectRecords,
@@ -57,11 +58,21 @@ export function emitRust(
     fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}`,
     fieldEquals: (left, right, record, index) =>
       `${left}.${record.fields[index].targetName} == ${right}.${record.fields[index].targetName}`,
+    listType: (element) => `Vec<${element}>`,
+    listLiteral: (values) => `vec![${values.join(", ")}]`,
+    listValue: (expr) => `${expr}.clone()`,
+    listLength: (expr) => `(${expr}.len() as i32)`,
+    listIndex: (list, index, node) => `index(&${list}, ${index}, ${node})`,
+    listEquals: (left, right) => `${left} == ${right}`,
+    resOkList: (expr) => `Res::ok_list(${expr})`,
+    resListValue: (expr) =>
+      `match ${expr}.payload { Payload::List(value) => value, _ => return Res::fail(2, 0) }`,
   };
 
   const recordDeclarations = renderRecords(records, dialect);
   const payloadVariants = [
     "    String(String),",
+    "    List(Vec<i32>),",
     ...[...records.values()].map((record) => `    ${record.targetName}(${record.targetName}),`),
   ].join("\n");
   const functions = program.functions
@@ -95,6 +106,10 @@ impl Res {
 
     fn ok_string(value: String) -> Res {
         Res { ok: true, value: 0, payload: Payload::String(value), code: 0, node: 0 }
+    }
+
+    fn ok_list(value: Vec<i32>) -> Res {
+        Res { ok: true, value: 0, payload: Payload::List(value), code: 0, node: 0 }
     }
 
     fn fail(code: i32, node: i32) -> Res {
@@ -134,6 +149,13 @@ fn neg(a: i32, node: i32) -> Res {
     Res::ok(r as i32)
 }
 
+fn index(list: &Vec<i32>, index: i32, node: i32) -> Res {
+    if index < 0 || (index as usize) >= list.len() {
+        return Res::fail(${INDEX_FAILURE_CODE}, node);
+    }
+    Res::ok(list[index as usize])
+}
+
 ${recordDeclarations}
 
 ${functions}
@@ -171,7 +193,7 @@ function renderRecords(records: RecordMap, dialect: Dialect): string {
     .map((record) => {
       const lines = [`#[derive(Clone, Copy, PartialEq, Eq)]`, `struct ${record.targetName} {`];
       for (const field of record.fields) {
-        lines.push(`    ${field.targetName}: ${targetType(field.type, records, dialect.intType, dialect.stringType)},`);
+        lines.push(`    ${field.targetName}: ${targetType(field.type, records, dialect.intType, dialect.stringType, dialect.listType)},`);
       }
       lines.push("}");
       return lines.join("\n");
@@ -187,7 +209,7 @@ function renderFunction(
 ): string {
   const fn = functionBySignature(program, signature);
   const parameters = fn.params
-    .map((param) => `${param.targetName}: ${targetType(param.type.name, records, dialect.intType, dialect.stringType)}`)
+    .map((param) => `${param.targetName}: ${targetType(param.type.name, records, dialect.intType, dialect.stringType, dialect.listType)}`)
     .join(", ");
   const body = emitFunctionBody(fn, dialect, records);
   return `fn ${signature.targetName}(${parameters}) -> Res {\n${indent(body, 4)}\n}`;
@@ -235,8 +257,9 @@ function renderMain(entry: FunctionSignature): string {
     );
   }
   lines.push("    } else {");
+  lines.push(`        let code = if result.code == ${INDEX_FAILURE_CODE} { "E_INDEX" } else { "E_OVERFLOW" };`);
   lines.push(
-    '        println!("{{\\"status\\":\\"error\\",\\"code\\":\\"E_OVERFLOW\\",\\"node\\":{}}}", result.node);',
+    '        println!("{{\\"status\\":\\"error\\",\\"code\\":\\"{}\\",\\"node\\":{}}}", code, result.node);',
   );
   lines.push("        std::process::exit(1);");
   lines.push("    }");

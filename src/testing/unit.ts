@@ -1,7 +1,7 @@
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import assert from "node:assert/strict";
-import { normalizeAst } from "../contracts/ast";
+import { normalizeAst, walkExpr, walkStatements } from "../contracts/ast";
 import { evaluate } from "../reference/interpreter";
 import { analyze } from "../pipeline";
 import { loadProfileFile, STANDARD_PROFILE } from "../frontend/profile";
@@ -551,6 +551,131 @@ fn main() -> bool {
     assert.match(text, /R1/, `${target} should use a generated record name`);
     assert.match(text, /f1/, `${target} should use generated field names`);
     assert.ok(!/\bClass\b/.test(text), `${target} must not emit the source record name`);
+  }
+});
+
+test("lists support literals, indexing, length, internal calls, and equality", () => {
+  const source = `fn pick(xs: list<i32>, i: i32) -> i32 {
+    return xs[i];
+}
+fn flags() -> list<bool> {
+    return [true, false, true];
+}
+fn main() -> bool {
+    let xs: list<i32> = [10, 20, 30];
+    let copy: list<i32> = xs;
+    let bs: list<bool> = flags();
+    return length(xs) == 3 && xs[0] == 10 && xs[2] == 30 && pick(xs, 1) == 20
+        && xs == copy && bs[0] && !bs[1] && length(bs) == 3;
+}
+`;
+  assert.deepEqual(resultOf(source), { status: "ok", type: "bool", value: true });
+});
+
+test("out-of-range list indexing fails with E_INDEX at the indexing node", () => {
+  const source = `fn main(i: i32) -> i32 {
+    let xs: list<i32> = [1, 2, 3];
+    return xs[i];
+}
+`;
+  const loaded = analyze(source, "<list>", STANDARD_PROFILE);
+  assert.ok(loaded.typed, loaded.diagnostics.map((d) => d.message).join("; "));
+  let indexNode: number | undefined;
+  walkStatements(loaded.program!.functions[0].body, (stmt) => {
+    if (stmt.kind !== "ReturnStmt") return;
+    walkExpr(stmt.value, (expr) => {
+      if (expr.kind === "IndexExpr" && indexNode === undefined) indexNode = expr.id;
+    });
+  });
+  assert.equal(typeof indexNode, "number");
+
+  for (const argument of [-1, 3, 99]) {
+    const outcome = evaluate(loaded.typed!, "main", { values: [argument] });
+    assert.deepEqual(outcome, { status: "error", code: "E_INDEX", node: indexNode });
+  }
+  assert.deepEqual(evaluate(loaded.typed!, "main", { values: [1] }), {
+    status: "ok",
+    type: "i32",
+    value: 2,
+  });
+});
+
+test("empty and unsupported list literals are rejected with clear diagnostics", () => {
+  const empty = analyze("fn main() -> bool { let xs: list<i32> = []; return true; }\n", "<list>", STANDARD_PROFILE);
+  assert.ok(empty.diagnostics.some((d) => d.code === "E_EMPTY_LIST_UNSUPPORTED"));
+
+  const mixed = analyze(
+    "fn main() -> bool { let xs: list<i32> = [1, true]; return true; }\n",
+    "<list>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(mixed.diagnostics.some((d) => d.code === "E_LIST_ELEMENT_TYPE"));
+
+  const stringList = analyze(
+    'fn main() -> bool { let xs: list<string> = ["a"]; return true; }\n',
+    "<list>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(stringList.diagnostics.some((d) => d.code === "E_LIST_ELEMENT_UNSUPPORTED"));
+
+  const recordList = analyze(
+    "record Point { x: i32 }\nfn main() -> bool { let xs: list<Point> = [Point { x: 1 }]; return true; }\n",
+    "<list>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(recordList.diagnostics.some((d) => d.code === "E_LIST_ELEMENT_UNSUPPORTED"));
+});
+
+test("list entry values and list record fields are rejected in this slice", () => {
+  const entryParam = analyze(
+    "fn main(xs: list<i32>) -> i32 { return length(xs); }\n",
+    "<list>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(entryParam.diagnostics.some((d) => d.code === "E_LIST_ENTRY_PARAMETER_UNSUPPORTED"));
+
+  const entryReturn = analyze(
+    "fn main() -> list<i32> { return [1]; }\n",
+    "<list>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(entryReturn.diagnostics.some((d) => d.code === "E_LIST_ENTRY_RETURN_UNSUPPORTED"));
+
+  const recordField = analyze(
+    "record Bad { xs: list<i32> }\nfn main() -> i32 { return 1; }\n",
+    "<list>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(recordField.diagnostics.some((d) => d.code === "E_LIST_FIELD_UNSUPPORTED"));
+
+  const indexType = analyze(
+    "fn main() -> i32 { let xs: list<i32> = [1]; return xs[true]; }\n",
+    "<list>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(indexType.diagnostics.some((d) => d.code === "E_LIST_INDEX_TYPE"));
+});
+
+test("list code generation uses target list types and hides source identifiers", () => {
+  const source = readFileSync(resolve("examples", "list.hs"), "utf8");
+  const loaded = analyze(source, "<list>", STANDARD_PROFILE);
+  assert.ok(loaded.typed, loaded.diagnostics.map((d) => d.message).join("; "));
+  const { emit } = require("../backends") as typeof import("../backends");
+  const expectations: Record<string, RegExp> = {
+    csharp: /List<int>/,
+    go: /\[\]int32/,
+    java: /int\[\]/,
+    rust: /Vec<i32>/,
+  };
+  for (const target of ["csharp", "rust", "go", "java"] as const) {
+    const project = emit(loaded.typed!, target, "main");
+    const text = project.files.map((file) => file.content).join("\n");
+    assert.match(text, expectations[target], `${target} should use its list representation`);
+    assert.match(text, /E_INDEX/, `${target} should print E_INDEX for failure code 4`);
+    assert.match(text, /Index|index/, `${target} should generate a bounds-checked index helper`);
+    for (const sourceName of ["xs", "copy", "bs", "pick", "flags"]) {
+      assert.ok(!new RegExp(`\\b${sourceName}\\b`).test(text), `${target} must not emit source name ${sourceName}`);
+    }
   }
 });
 

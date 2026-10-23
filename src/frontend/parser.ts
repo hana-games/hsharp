@@ -6,8 +6,10 @@ import type {
   FieldAccess,
   FunctionDecl,
   IfStmt,
+  IndexExpr,
   IntLiteral,
   LetStmt,
+  ListLiteral,
   Param,
   Program,
   RecordDecl,
@@ -179,6 +181,19 @@ class Parser {
 
   private parseType(): TypeRef {
     const token = this.current();
+    if (token.kind === "identifier" && token.text === "list" && isPunct(this.peek(1), "<")) {
+      this.advance();
+      this.advance();
+      const elementType = this.parseType();
+      const close = this.expectPunct(">");
+      return {
+        kind: "TypeRef",
+        id: this.nextId++,
+        span: { file: this.file, start: token.span.start, end: close.span.end },
+        name: `list<${elementType.name}>`,
+        elementType,
+      };
+    }
     if (token.kind === "type" && token.typeName !== undefined) {
       this.advance();
       return { kind: "TypeRef", id: this.nextId++, span: token.span, name: token.typeName };
@@ -384,16 +399,30 @@ class Parser {
 
   private parsePostfix(): Expr {
     let expr = this.parsePrimary();
-    while (isPunct(this.current(), ".")) {
+    while (isPunct(this.current(), ".") || isPunct(this.current(), "[")) {
+      if (isPunct(this.current(), ".")) {
+        this.advance();
+        const field = this.expectIdentifier("field name");
+        const access: FieldAccess = {
+          kind: "FieldAccess",
+          id: this.nextId++,
+          span: { file: this.file, start: expr.span.start, end: field.span.end },
+          target: expr,
+          field: field.text,
+          fieldSpan: field.span,
+        };
+        expr = access;
+        continue;
+      }
       this.advance();
-      const field = this.expectIdentifier("field name");
-      const access: FieldAccess = {
-        kind: "FieldAccess",
+      const index = this.parseExpression();
+      const close = this.expectPunct("]");
+      const access: IndexExpr = {
+        kind: "IndexExpr",
         id: this.nextId++,
-        span: { file: this.file, start: expr.span.start, end: field.span.end },
+        span: { file: this.file, start: expr.span.start, end: close.span.end },
         target: expr,
-        field: field.text,
-        fieldSpan: field.span,
+        index,
       };
       expr = access;
     }
@@ -464,6 +493,24 @@ class Parser {
         span: token.span,
         name: token.text,
       };
+    }
+
+    if (isPunct(token, "[")) {
+      this.advance();
+      const elements: Expr[] = [];
+      if (!isPunct(this.current(), "]")) {
+        do {
+          elements.push(this.parseExpression());
+        } while (this.matchPunct(","));
+      }
+      const close = this.expectPunct("]");
+      const literal: ListLiteral = {
+        kind: "ListLiteral",
+        id: this.nextId++,
+        span: { file: this.file, start: token.span.start, end: close.span.end },
+        elements,
+      };
+      return literal;
     }
 
     if (isPunct(token, "(")) {
