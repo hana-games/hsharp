@@ -22,6 +22,7 @@ interface Measurement {
 
 const budgets = {
   analyzeSmall: 2,
+  analyzeMedium: 30,
   analyzeLarge: 150,
   emitSmallAll: 8,
   emitLargeAll: 150,
@@ -30,21 +31,29 @@ const budgets = {
 };
 
 async function main(): Promise<void> {
-  const smallSource = readFileSync(resolve("examples", "calculate.hs"), "utf8");
-  const largeSource = makeLargeProgram(500);
-  const small = analyze(smallSource, "calculate.hs", STANDARD_PROFILE);
+  const smallSource = readFileSync(resolve("tests", "benchmarks", "small.hs"), "utf8");
+  const mediumSource = readFileSync(resolve("tests", "benchmarks", "medium.hs"), "utf8");
+  const largeSource = readFileSync(resolve("tests", "benchmarks", "large.hs"), "utf8");
+  const small = analyze(smallSource, "small.hs", STANDARD_PROFILE);
+  const medium = analyze(mediumSource, "medium.hs", STANDARD_PROFILE);
   const large = analyze(largeSource, "large.hs", STANDARD_PROFILE);
   if (!small.typed) throw new Error(`small benchmark source did not compile: ${describe(small.diagnostics)}`);
+  if (!medium.typed) throw new Error(`medium benchmark source did not compile: ${describe(medium.diagnostics)}`);
   if (!large.typed) throw new Error(`large benchmark source did not compile: ${describe(large.diagnostics)}`);
 
   const measurements: Measurement[] = [];
   measurements.push(
     measure("analyze small document", 1000, budgets.analyzeSmall, () => {
-      analyze(smallSource, "calculate.hs", STANDARD_PROFILE);
+      analyze(smallSource, "small.hs", STANDARD_PROFILE);
     }, `${smallSource.length} chars`),
   );
   measurements.push(
-    measure("analyze 500 functions", 50, budgets.analyzeLarge, () => {
+    measure("analyze 40 functions", 200, budgets.analyzeMedium, () => {
+      analyze(mediumSource, "medium.hs", STANDARD_PROFILE);
+    }, `${mediumSource.length} chars`),
+  );
+  measurements.push(
+    measure("analyze 300 functions", 50, budgets.analyzeLarge, () => {
       analyze(largeSource, "large.hs", STANDARD_PROFILE);
     }, `${largeSource.length} chars`),
   );
@@ -54,13 +63,13 @@ async function main(): Promise<void> {
     }, "C# + Rust + Go + Java"),
   );
   measurements.push(
-    measure("generate all four 500 functions", 20, budgets.emitLargeAll, () => {
+    measure("generate all four 300 functions", 20, budgets.emitLargeAll, () => {
       for (const target of TARGET_IDS) emit(large.typed!, target, "main");
     }, "C# + Rust + Go + Java"),
   );
 
   const preview = measure("analyze + generate all four", 500, budgets.previewSmall, () => {
-    const result = analyze(smallSource, "calculate.hs", STANDARD_PROFILE);
+    const result = analyze(smallSource, "small.hs", STANDARD_PROFILE);
     if (!result.typed) return;
     for (const target of TARGET_IDS) emit(result.typed, target, "calculate");
   }, "cold preview pipeline");
@@ -179,23 +188,6 @@ async function measureBridge(smallSource: string): Promise<Measurement> {
     pass: averageMs <= budgets.bridgeRoundtrip,
     detail: "persistent process, one JSON line per edit",
   };
-}
-
-function makeLargeProgram(functionCount: number): string {
-  const parts: string[] = [];
-  for (let i = 0; i < functionCount; i++) {
-    parts.push(
-      `fn f${i}(x: i32) -> i32 {\n` +
-        `    let y: i32 = x * 3 + ${i};\n` +
-        `    if y > 10 {\n` +
-        `        return y - 1;\n` +
-        `    }\n` +
-        `    return y;\n` +
-        `}\n`,
-    );
-  }
-  parts.push("fn main() -> i32 {\n    return f0(1);\n}\n");
-  return parts.join("\n");
 }
 
 function describe(diagnostics: { message: string }[]): string {

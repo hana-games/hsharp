@@ -6,8 +6,9 @@ It is dependency-driven, not calendar-driven. A phase starts when its prerequisi
 
 ## Status
 
-**0.1 POC — complete and verified.**  
-**0.2 Verification hardening — in progress.**
+- **0.1 POC — complete and verified.**
+- **0.2 Verification hardening — complete for the current Ubuntu-only scope.**
+- **0.3 Data and memory semantics — next.**
 
 - Core: `i32`, `bool`, functions, calls, immutable locals, `if`/`else`, returns, checked arithmetic, short-circuit Boolean operators, acyclic call graphs.
 - Profiles: keyword-only, declarative, validated, token-aware conversion with comment preservation.
@@ -25,16 +26,19 @@ Known limits are listed in [`docs/limitations.md`](docs/limitations.md). The ori
 - Initial Visual Studio Code extension: syntax highlighting, live diagnostics, generated-code preview.
 - The full editor workflow still needs validation in a running VS Code window and remains part of phases 0.2 and 0.6.
 
-### 0.2 progress
+### 0.2 delivered
 
 - Seeded, type-correct program generator with deterministic output.
 - `hs prop` runs generated programs through the reference interpreter and all selected native targets.
 - Divergences are reduced automatically by deleting source lines while the failure remains reproducible.
 - Property reports are written to `reports/property.json` and `reports/property.md`.
-- Personal-notation diagnostic mapping now has a golden line/column test.
-- Manual Ubuntu-only CI workflow scaffolded with .NET, Rust, Go, Java, and report artifacts. Automatic push/PR runs and the Windows/macOS matrix are temporarily disabled.
+- Personal-notation diagnostic mapping has a golden line/column test.
+- Benchmark corpus lives in `tests/benchmarks/`, separate from the conformance cases.
+- Unit tests cover generator determinism, validity, the reducer, and the diagnostics golden case.
+- Manual Ubuntu CI workflow runs the complete verification and uploads reports. Automatic push/PR runs and the Windows/macOS matrix remain disabled by request.
 
-Still open for 0.2: a separate benchmark corpus, re-enabling automatic and cross-platform CI, and committed cross-platform evidence.
+Deferred: automatic CI triggers, Windows/macOS execution, and cross-platform evidence. These remain
+tracked for a later hardening pass and are not claimed as complete.
 
 ## Guiding principles
 
@@ -49,7 +53,7 @@ Still open for 0.2: a separate benchmark corpus, re-enabling automatic and cross
 
 | Phase | Theme | Exit evidence |
 |---|---|---|
-| 0.2 | Verification hardening | Seeded property tests and cross-platform CI run in one command |
+| 0.2 | Verification hardening | Seeded property tests, benchmark corpus, and Ubuntu CI run in one command |
 | 0.3 | Data and memory semantics | Records, strings, lists, `Option`, `Result` pass on all four targets |
 | 0.4 | Control flow and abstraction | Loops, recursion, controlled mutation, generics pass on all targets |
 | 0.5 | Modules and host embedding | Multi-file programs; libraries/packages callable from each ecosystem |
@@ -67,7 +71,7 @@ Work:
 - Compare the reference interpreter and all four targets, including failure codes and node IDs.
 - Implement automatic failure reduction to minimal programs.
 - Add a benchmark corpus separate from correctness cases.
-- Add CI for Windows, Linux, and macOS with all four toolchains.
+- Add Ubuntu CI with all four toolchains. The Windows/macOS matrix is deferred by request.
 - Verify from a clean checkout: install, build, test, report.
 - Add a diagnostics golden test that checks line/column mapping in personal files.
 
@@ -75,8 +79,9 @@ Exit evidence:
 
 - One command generates, checks, compiles, executes, and reports from a clean environment.
 - Any divergence produces a minimal reproducer.
-- CI publishes the conformance report as an artifact.
+- CI publishes the conformance and property reports as artifacts.
 - Blocked toolchains still fail the job as "not verified" rather than passing.
+- Cross-platform execution is explicitly deferred, not silently assumed.
 
 Dependencies: none beyond 0.1.
 
@@ -255,12 +260,11 @@ Dependencies: all prior phases for the features they extend.
 
 ## Immediate next actions
 
-1. Implement the seeded property-test generator and reducer.
-2. Add cross-platform CI with all four toolchains and report artifacts.
-3. Write the data semantics specification (records, strings, lists, variants, `Option`, `Result`).
-4. Build a small benchmark harness for compile time, output size, and runtime.
-5. Prototype Rust ownership for immutable records and lists.
-6. Draft the CST/printer design before adding syntax families.
+1. Write the data semantics specification (records, strings, lists, variants, `Option`, `Result`).
+2. Prototype Rust ownership for immutable records and lists.
+3. Draft the CST/printer design before adding syntax families.
+4. Re-enable automatic Ubuntu CI after the manual workflow is validated.
+5. Revisit Windows/macOS CI when the cross-platform hardening pass starts.
 
 ## Non-goals for now
 

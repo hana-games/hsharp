@@ -1,11 +1,12 @@
 {
   "schema": "hs-benchmark/1",
-  "generatedAt": "2026-10-22T13:31:25.386Z",
+  "generatedAt": "2026-10-23T14:50:36.195Z",
   "node": "v24.21.0",
   "platform": "win32-x64",
   "compilerVersion": "0.1.0",
   "budgets": {
     "analyzeSmall": 2,
+    "analyzeMedium": 30,
     "analyzeLarge": 150,
     "emitSmallAll": 8,
     "emitLargeAll": 150,
@@ -16,35 +17,44 @@
     {
       "name": "analyze small document",
       "iterations": 1000,
-      "totalMs": 85.906,
-      "averageMs": 0.086,
+      "totalMs": 34.509,
+      "averageMs": 0.035,
       "budgetMs": 2,
       "pass": true,
-      "detail": "246 chars"
+      "detail": "212 chars"
     },
     {
-      "name": "analyze 500 functions",
+      "name": "analyze 40 functions",
+      "iterations": 200,
+      "totalMs": 235.103,
+      "averageMs": 1.176,
+      "budgetMs": 30,
+      "pass": true,
+      "detail": "4654 chars"
+    },
+    {
+      "name": "analyze 300 functions",
       "iterations": 50,
-      "totalMs": 1705.941,
-      "averageMs": 34.119,
+      "totalMs": 504.962,
+      "averageMs": 10.099,
       "budgetMs": 150,
       "pass": true,
-      "detail": "57819 chars"
+      "detail": "34693 chars"
     },
     {
       "name": "generate all four small",
       "iterations": 500,
-      "totalMs": 71.704,
-      "averageMs": 0.143,
+      "totalMs": 22.725,
+      "averageMs": 0.045,
       "budgetMs": 8,
       "pass": true,
       "detail": "C# + Rust + Go + Java"
     },
     {
-      "name": "generate all four 500 functions",
+      "name": "generate all four 300 functions",
       "iterations": 20,
-      "totalMs": 847.985,
-      "averageMs": 42.399,
+      "totalMs": 244.916,
+      "averageMs": 12.246,
       "budgetMs": 150,
       "pass": true,
       "detail": "C# + Rust + Go + Java"
@@ -52,8 +62,8 @@
     {
       "name": "analyze + generate all four",
       "iterations": 500,
-      "totalMs": 40.034,
-      "averageMs": 0.08,
+      "totalMs": 26.052,
+      "averageMs": 0.052,
       "budgetMs": 25,
       "pass": true,
       "detail": "cold preview pipeline"
@@ -61,8 +71,8 @@
     {
       "name": "bridge analyze + C# over stdio",
       "iterations": 100,
-      "totalMs": 80.443,
-      "averageMs": 0.804,
+      "totalMs": 60.159,
+      "averageMs": 0.602,
       "budgetMs": 30,
       "pass": true,
       "detail": "persistent process, one JSON line per edit"
