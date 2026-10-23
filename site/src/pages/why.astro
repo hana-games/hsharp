@@ -1,44 +1,106 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import StaticCode from "../components/StaticCode.astro";
+import { BoundaryLab } from "../components/BoundaryLab";
 import { siteData } from "../data/data";
+import { targets } from "../lib/site";
 
-const source = `fn calculate(x: i32, bonus: bool) -> i32 {
-    let base: i32 = x * 3;
+const standard = siteData.demo.sources.standard;
+const personal = siteData.demo.sources["my-syntax"];
 
-    if bonus {
-        return base + 2;
-    }
+const surfaceChanges = [
+  { from: "fn", to: "function" },
+  { from: "let", to: "value" },
+  { from: "if", to: "when" },
+  { from: "else", to: "otherwise" },
+  { from: "return", to: "give" },
+  { from: "true", to: "yes" },
+  { from: "false", to: "no" },
+];
 
-    return base;
-}`;
-const targets = `// C#      int + long checks + Res
-// Rust    i32 + i64 checks + Res
-// Go      int32 + int64 checks + Res
-// Java    int + long checks + nested Res`;
+const invariants = [
+  { title: "Typed AST", note: "Same structure" },
+  { title: "Evaluation order", note: "Same left-to-right order" },
+  { title: "Overflow behavior", note: "Same failure nodes" },
+  { title: "Generated targets", note: "Same four backend projects" },
+  { title: "Identifiers", note: "Program names are untouched" },
+];
+
+const driftBehaviors: Record<string, string> = {
+  csharp: "unchecked int addition",
+  rust: "debug panic / release wrap",
+  go: "int32 wraps",
+  java: "int wraps",
+};
+
+const driftStatus: Record<string, string> = {
+  csharp: "silent wrap",
+  rust: "panic / wrap",
+  go: "silent wrap",
+  java: "silent wrap",
+};
 ---
 
 <BaseLayout
   title="Why h#"
-  description="Universality as an engineering property: one semantic core, bounded portable features, personal notation, and four independently verified outputs."
+  description="Portability as a checked engineering property: one semantic core, a bounded portable feature set, personal notation, and four independently verified outputs."
   active="/why"
 >
-  <section class="band-dark" style="padding: clamp(4rem, 8vw, 7rem) 0;">
+  <section class="band-dark why-hero">
     <div class="container">
-      <div class="eyebrow">Why h#</div>
-      <h1 class="display" style="margin-top:1rem; max-width:16ch;">
-        Universality is an <em class="italic lime">engineering property.</em>
-      </h1>
-      <p class="lede" style="margin-top:1.4rem;">
-        Not a slogan, not a single universal runtime, and not a promise that every ecosystem behaves
-        the same. h# defines one contract precisely enough that four different compiler toolchains can
-        be checked against it.
-      </p>
-      <div class="hero-stats" style="margin-top:3rem;">
-        <div class="hero-stat"><strong>{siteData.meta.stats.targets}</strong><span>native outputs</span></div>
-        <div class="hero-stat"><strong>{siteData.meta.stats.profiles}</strong><span>syntax profiles</span></div>
-        <div class="hero-stat"><strong>{siteData.meta.stats.executions}</strong><span>verified executions</span></div>
-        <div class="hero-stat"><strong>{siteData.conformance.summary.failed}</strong><span>known divergences</span></div>
+      <div class="why-hero-grid">
+        <div class="why-hero-copy">
+          <h1 class="display">
+            Portability should be <em class="italic lime">provable.</em>
+          </h1>
+          <p class="lede">
+            The same edge case can wrap, panic, or disappear depending on the toolchain. h# makes the
+            contract explicit before anything is generated.
+          </p>
+          <div class="row">
+            <a class="btn btn-solid" href="/docs/verification">See what is verified</a>
+            <a class="btn btn-ghost" href="#boundary">Explore the boundary</a>
+          </div>
+        </div>
+
+        <div class="drift-panel">
+          <div class="drift-panel-head">
+            <div>
+              <span class="drift-kicker">Same operation</span>
+              <code>return x + 1;</code>
+            </div>
+            <span class="drift-input">x = 2147483647</span>
+          </div>
+          <div class="drift-rows">
+            {
+              targets.map((target) => (
+                <div class="drift-row" data-target={target.id}>
+                  <span class="drift-target">
+                    <img src={target.logo} alt={`${target.label} logo`} width="14" height="14" />
+                    {target.label}
+                  </span>
+                  <span class="drift-behavior">{driftBehaviors[target.id]}</span>
+                  <span class="drift-status">{driftStatus[target.id]}</span>
+                </div>
+              ))
+            }
+            <div class="drift-row reference">
+              <span class="drift-target">h#</span>
+              <span class="drift-behavior">E_OVERFLOW · node 11</span>
+              <span class="drift-status">checked</span>
+            </div>
+          </div>
+          <div class="drift-foot">
+            h# checks the range before emitting. Native defaults never become the contract.
+          </div>
+        </div>
+      </div>
+
+      <div class="why-hero-proof">
+        <div><strong>{targets.length}</strong><span>native outputs</span></div>
+        <div><strong>{siteData.meta.stats.profiles}</strong><span>syntax profiles</span></div>
+        <div><strong>{siteData.meta.stats.executions}</strong><span>verified executions</span></div>
+        <div><strong>{siteData.conformance.summary.failed}</strong><span>known divergences</span></div>
       </div>
     </div>
   </section>
@@ -47,7 +109,6 @@ const targets = `// C#      int + long checks + Res
     <div class="container">
       <div class="section-head">
         <div>
-          <div class="eyebrow">01 — The problem</div>
           <h2 class="h2">Portability is usually a promise.<br /><em class="italic">Drift is the reality.</em></h2>
         </div>
         <p class="lede">
@@ -60,8 +121,7 @@ const targets = `// C#      int + long checks + Res
       <div class="thesis">
         <div class="thesis-sticky">
           <div class="card card-lime">
-            <div class="eyebrow">The h# answer</div>
-            <h3 class="h2" style="font-size:clamp(1.8rem,3.4vw,2.8rem); margin-top:0.8rem;">
+            <h3 class="h2" style="font-size:clamp(1.8rem,3.4vw,2.8rem);">
               Specify once.<br />Generate four times.<br />Verify every time.
             </h3>
           </div>
@@ -112,11 +172,10 @@ const targets = `// C#      int + long checks + Res
     </div>
   </section>
 
-  <section class="section band-paper-2">
+  <section class="section band-paper-2" id="boundary">
     <div class="container">
       <div class="section-head">
         <div>
-          <div class="eyebrow">02 — The boundary</div>
           <h2 class="h2">Universality needs<br />a boundary.</h2>
         </div>
         <p class="lede">
@@ -125,23 +184,38 @@ const targets = `// C#      int + long checks + Res
         </p>
       </div>
 
-      <div class="grid grid-2">
-        <div class="card">
-          <div class="eyebrow">In the portable core</div>
-          <ul style="margin-top:0.7rem; display:grid; gap:0.4rem; color:var(--muted); font-size:0.86rem;">
-            <li>i32 and bool</li>
-            <li>functions and checked calls</li>
+      <div class="boundary-board reveal">
+        <div class="boundary-col core">
+          <span class="boundary-tag">Portable core</span>
+          <h3>Checked by contract</h3>
+          <p>
+            Small enough to specify exhaustively. Rich enough to express real functions and failure
+            behavior without a hidden runtime.
+          </p>
+          <div class="boundary-chips">
+            <span>i32</span>
+            <span>bool</span>
+            <span>checked + − *</span>
+            <span>short-circuit</span>
+            <span>acyclic calls</span>
+          </div>
+          <ul class="boundary-list">
             <li>immutable typed locals</li>
+            <li>functions and checked calls</li>
             <li>if / else and returns</li>
-            <li>checked +, −, *, unary −</li>
             <li>comparisons and Boolean logic</li>
             <li>short-circuit evaluation</li>
-            <li>acyclic call graphs</li>
           </ul>
         </div>
-        <div class="card">
-          <div class="eyebrow">Deliberately outside</div>
-          <ul style="margin-top:0.7rem; display:grid; gap:0.4rem; color:var(--muted); font-size:0.86rem;">
+
+        <div class="boundary-col outside">
+          <span class="boundary-tag">Outside</span>
+          <h3>No hidden portability</h3>
+          <p>
+            Features that cannot be specified and verified across all four targets stay out of the
+            core. They are extension work, not accidental behavior.
+          </p>
+          <ul class="boundary-list">
             <li>strings, lists, records</li>
             <li>loops and recursion</li>
             <li>mutation and shared memory</li>
@@ -152,13 +226,36 @@ const targets = `// C#      int + long checks + Res
             <li>continuous personalized editing</li>
           </ul>
         </div>
+
+        <div class="boundary-col gate">
+          <span class="boundary-tag">Acceptance gate</span>
+          <h3>How a feature enters</h3>
+          <p>Every gate is required. A green result on one target cannot compensate for a blocked one.</p>
+          <ol class="gate-steps">
+            <li><span>01</span>Written semantics</li>
+            <li><span>02</span>Expected examples</li>
+            <li><span>03</span>Typed AST</li>
+            <li><span>04</span>Four translations</li>
+            <li><span>05</span>All targets pass</li>
+          </ol>
+          <p class="boundary-note">
+            Each future feature must earn its place: a written semantics, expected examples, typed
+            representation, four translations, and acceptance on every target. The roadmap makes that
+            dependency explicit.
+          </p>
+        </div>
       </div>
 
-      <p style="margin-top:1.5rem; max-width:70ch; color:var(--muted);">
-        Each future feature must earn its place: a written semantics, expected examples, typed
-        representation, four translations, and acceptance on every target. The roadmap makes that
-        dependency explicit.
-      </p>
+      <div class="boundary-try reveal">
+        <div class="boundary-try-head">
+          <div>
+            <h3>Try the boundary.</h3>
+            <p>Change an operand and inspect the exact failure node. No h# code runs in the browser.</p>
+          </div>
+          <span class="chip">client-side · precomputed</span>
+        </div>
+        <BoundaryLab client:visible />
+      </div>
     </div>
   </section>
 
@@ -166,19 +263,139 @@ const targets = `// C#      int + long checks + Res
     <div class="container">
       <div class="section-head">
         <div>
-          <div class="eyebrow">03 — The same program</div>
-          <h2 class="h2">Meaning survives<br /><em class="italic">the translation.</em></h2>
+          <h2 class="h2">Different surface.<br />Same structure.</h2>
+        </div>
+        <p class="lede">
+          Conversion rewrites keyword tokens only. The normalized AST ignores locations, comments,
+          and profile words, so the structure is identical before and after export.
+        </p>
+      </div>
+
+      <div class="equivalence-grid">
+        <div class="reveal">
+          <StaticCode code={standard.code} language="hsharp" keywords={standard.keywords} title="calculate.hs" meta="standard" />
+        </div>
+        <div class="reveal">
+          <StaticCode code={personal.code} language="hsharp" keywords={personal.keywords} title="calculate.personal.hs" meta="my-syntax" />
         </div>
       </div>
 
-      <div class="grid grid-2">
-        <StaticCode code={source} language="hsharp" title="calculate.hs" meta="one typed AST" />
-        <StaticCode code={targets} language="csharp" title="four backends" meta="same outcome: 32" />
+      <div class="equivalence-badge reveal" style="margin-top:1rem;">
+        <strong>Normalized AST equality</strong>
+        <span>profile-independent · comments preserved separately</span>
       </div>
 
-      <div class="equivalence-badge" style="margin-top:1rem;">
-        <strong>calculate(10, true) → 32</strong>
-        <span>reference + C# + Rust + Go + Java</span>
+      <div class="semantic-diff reveal">
+        <div class="semantic-diff-pane changes-pane">
+          <div class="semantic-diff-head">
+            <span class="semantic-diff-icon">Aa</span>
+            <div>
+              <div class="eyebrow">What changes</div>
+              <p>Surface tokens in <code>my-syntax</code></p>
+            </div>
+            <span class="semantic-diff-count">7 roles</span>
+          </div>
+
+          <div class="change-grid">
+            {
+              surfaceChanges.map((change) => (
+                <div class="change-chip">
+                  <code data-i18n-skip>{change.from}</code>
+                  <span class="change-arrow">→</span>
+                  <code data-i18n-skip class="change-to">{change.to}</code>
+                </div>
+              ))
+            }
+          </div>
+
+          <p class="semantic-diff-foot">
+            Only keyword tokens. Operators, types, braces, and semicolons stay fixed.
+          </p>
+        </div>
+
+        <div class="semantic-diff-divider" aria-hidden="true">
+          <span>=</span>
+          <small>same core</small>
+        </div>
+
+        <div class="semantic-diff-pane invariants-pane">
+          <div class="semantic-diff-head">
+            <span class="semantic-diff-icon check">✓</span>
+            <div>
+              <div class="eyebrow">What does not</div>
+              <p>Semantic contract</p>
+            </div>
+            <span class="semantic-diff-count zero">0 changes</span>
+          </div>
+
+          <ul class="invariant-list">
+            {
+              invariants.map((invariant) => (
+                <li>
+                  <span class="invariant-check">✓</span>
+                  <span>
+                    <strong>{invariant.title}</strong>
+                    <small>{invariant.note}</small>
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+
+          <p class="semantic-diff-foot">
+            Comments are preserved separately. Source locations are not compared.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band-paper-2">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2 class="h2">The proof is executable.</h2>
+        </div>
+        <p class="lede">
+          Every advertised number comes from a compile and a run. Missing toolchains block the suite;
+          they never turn into optimistic green.
+        </p>
+      </div>
+
+      <div class="proof-strip reveal">
+        <div class="proof-item"><strong>{siteData.conformance.summary.cases}</strong><span>cases</span></div>
+        <div class="proof-item"><strong>{siteData.conformance.summary.targets}</strong><span>target executions</span></div>
+        <div class="proof-item"><strong>{siteData.conformance.summary.failed}</strong><span>failed</span></div>
+        <div class="proof-item"><strong>{siteData.conformance.summary.blocked}</strong><span>blocked</span></div>
+      </div>
+
+      <div class="grid grid-3" style="margin-top:2rem;">
+        <div class="card reveal">
+          <h3 class="h3">Stable expectations</h3>
+          <p class="small" style="margin-top:0.6rem;">
+            Values and error codes are specified independently of the compiler and pinned in the
+            corpus. Overflow failures also pin their source node.
+          </p>
+        </div>
+        <div class="card reveal">
+          <h3 class="h3">Four profiles</h3>
+          <p class="small" style="margin-top:0.6rem;">
+            Standard, my-syntax, terse, and casual are all parsed, checked, compared, and executed.
+            A cosmetic profile never buys a semantic shortcut.
+          </p>
+        </div>
+        <div class="card reveal">
+          <h3 class="h3">Blocked is not pass</h3>
+          <p class="small" style="margin-top:0.6rem;">
+            A missing or too-old toolchain marks the target blocked and makes the suite exit non-zero.
+            There is no optimistic green.
+          </p>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:1.5rem;">
+        <a class="btn btn-solid" href="/docs/verification">Read the verification evidence</a>
+        <a class="btn btn-ghost" href="/examples">Browse real examples</a>
       </div>
     </div>
   </section>
@@ -187,7 +404,6 @@ const targets = `// C#      int + long checks + Res
     <div class="container">
       <div class="section-head" style="margin-bottom:0;">
         <div>
-          <div class="eyebrow">04 — The claim</div>
           <h2 class="display" style="font-size:clamp(2.6rem,5.5vw,5rem);">
             A shared semantic core<br />is more useful than a<br /><em class="italic">shared syntax.</em>
           </h2>

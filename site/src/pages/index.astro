@@ -3,36 +3,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { HeroEditor } from "../components/HeroEditor";
 import { ProfileComposer } from "../components/ProfileComposer";
 import { TargetPrism } from "../components/TargetPrism";
-import { BoundaryLab } from "../components/BoundaryLab";
-import { ExportStepper } from "../components/ExportStepper";
-import StaticCode from "../components/StaticCode.astro";
 import ExampleSnippet from "../components/ExampleSnippet.astro";
 import { siteData } from "../data/data";
 import { profiles, site, targets } from "../lib/site";
 
-const standard = siteData.demo.sources.standard;
-const personal = siteData.demo.sources["my-syntax"];
 const featured = ["demo-bonus-true", "function-call", "overflow-add-max"]
   .map((id) => siteData.examples.find((example) => example.id === id))
   .filter((example): example is NonNullable<typeof example> => Boolean(example));
-
-const surfaceChanges = [
-  { from: "fn", to: "function" },
-  { from: "let", to: "value" },
-  { from: "if", to: "when" },
-  { from: "else", to: "otherwise" },
-  { from: "return", to: "give" },
-  { from: "true", to: "yes" },
-  { from: "false", to: "no" },
-];
-
-const invariants = [
-  { title: "Typed AST", note: "Same structure" },
-  { title: "Evaluation order", note: "Same left-to-right order" },
-  { title: "Overflow behavior", note: "Same failure nodes" },
-  { title: "Generated targets", note: "Same four backend projects" },
-  { title: "Identifiers", note: "Program names are untouched" },
-];
 
 function prettyId(id: string) {
   return id.split("-").map((part) => part[0].toUpperCase() + part.slice(1)).join(" ");
@@ -76,7 +53,6 @@ function prettyId(id: string) {
     <div class="container">
       <div class="section-head reveal">
         <div>
-          <div class="eyebrow">01 — The contract</div>
           <h2 class="h2">A language is a semantic promise.</h2>
         </div>
         <p class="lede">
@@ -143,7 +119,6 @@ function prettyId(id: string) {
 
       <div class="direction-grid reveal">
         <div class="direction-card both">
-          <div class="eyebrow">Bidirectional</div>
           <h3>Canonical source ↔ personal notation</h3>
           <p>
             Export and reimport share the same normalized AST. Fingerprints protect both ends; comments
@@ -151,7 +126,6 @@ function prettyId(id: string) {
           </p>
         </div>
         <div class="direction-card oneway">
-          <div class="eyebrow">One-way by design</div>
           <h3>h# → generated targets</h3>
           <p>
             Target source is generated output, not a second source of truth. C#, Rust, Go, and Java are
@@ -159,7 +133,6 @@ function prettyId(id: string) {
           </p>
         </div>
         <div class="direction-card future">
-          <div class="eyebrow">Not in the POC</div>
           <h3>JavaScript target · target → h# import</h3>
           <p>
             JavaScript is a candidate fifth backend. Importing JavaScript back into h# is a separate,
@@ -168,68 +141,7 @@ function prettyId(id: string) {
         </div>
       </div>
 
-      <div class="thesis">
-        <div class="thesis-sticky">
-          <div class="card card-lime">
-            <div class="eyebrow">The invariant</div>
-            <h3 class="h2" style="font-size:clamp(1.9rem,3.6vw,3rem); margin-top:0.8rem;">
-              Syntax may change.<br />Meaning does not.
-            </h3>
-            <p style="margin-top:1rem; font-size:0.88rem; line-height:1.6;">
-              A profile can rename seven keyword roles. It cannot change types, precedence,
-              evaluation order, failure behavior, or the normalized AST.
-            </p>
-          </div>
-        </div>
-
-        <div class="thesis-list">
-          <div class="thesis-item reveal">
-            <div class="num">01</div>
-            <div>
-              <h3 class="h3">Core semantics</h3>
-              <p>
-                i32 and bool, explicit types, immutable locals, acyclic calls, short-circuit
-                evaluation, and a range check after every arithmetic operation. Failures carry
-                E_OVERFLOW and the source node.
-              </p>
-            </div>
-          </div>
-          <div class="thesis-item reveal">
-            <div class="num">02</div>
-            <div>
-              <h3 class="h3">Profiles are data</h3>
-              <p>
-                Seven keyword roles, validated JSON, token-aware conversion. Comments, identifiers,
-                and operators survive. There is no implicit local preference and no executable
-                grammar.
-              </p>
-            </div>
-          </div>
-          <div class="thesis-item reveal">
-            <div class="num">03</div>
-            <div>
-              <h3 class="h3">Targets are real</h3>
-              <p>
-                Generated projects are compiled and executed by .NET, Cargo, Go, and javac. No
-                simulation, no hidden runtime, no manual corrections.
-              </p>
-            </div>
-          </div>
-          <div class="thesis-item reveal">
-            <div class="num">04</div>
-            <div>
-              <h3 class="h3">Names cannot collide</h3>
-              <p>
-                Target identifiers come from compiler-assigned IDs. An h# function named
-                <code class="code-inline">int</code> or a local named <code class="code-inline">class</code>
-                still becomes <code class="code-inline">f1</code> / <code class="code-inline">v1</code>.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="stat-band" style="margin-top:3rem;">
+      <div class="stat-band" style="margin-top:2rem;">
         <div class="stat-band-item"><strong>{siteData.meta.stats.cases}</strong><span>conformance cases</span></div>
         <div class="stat-band-item"><strong>{siteData.meta.stats.profiles}</strong><span>syntax profiles</span></div>
         <div class="stat-band-item"><strong>{siteData.meta.stats.targets}</strong><span>native targets</span></div>
@@ -242,7 +154,6 @@ function prettyId(id: string) {
     <div class="container">
       <div class="section-head reveal">
         <div>
-          <div class="eyebrow">02 — Profiles</div>
           <h2 class="h2">Rename the surface.<br /><em class="italic lime">Keep the program.</em></h2>
         </div>
         <p class="lede">
@@ -255,103 +166,10 @@ function prettyId(id: string) {
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="section-head reveal">
-        <div>
-          <div class="eyebrow">03 — Equivalence</div>
-          <h2 class="h2">Different surface.<br />Same structure.</h2>
-        </div>
-        <p class="lede">
-          Conversion rewrites keyword tokens only. The normalized AST ignores locations, comments,
-          and profile words, so the structure is identical before and after export.
-        </p>
-      </div>
-
-      <div class="equivalence-grid">
-        <div class="reveal">
-          <StaticCode code={standard.code} language="hsharp" keywords={standard.keywords} title="calculate.hs" meta="standard" />
-        </div>
-        <div class="reveal">
-          <StaticCode code={personal.code} language="hsharp" keywords={personal.keywords} title="calculate.personal.hs" meta="my-syntax" />
-        </div>
-      </div>
-
-      <div class="equivalence-badge reveal" style="margin-top:1rem;">
-        <strong>Normalized AST equality</strong>
-        <span>profile-independent · comments preserved separately</span>
-      </div>
-
-      <div class="semantic-diff reveal">
-        <div class="semantic-diff-pane changes-pane">
-          <div class="semantic-diff-head">
-            <span class="semantic-diff-icon">Aa</span>
-            <div>
-              <div class="eyebrow">What changes</div>
-              <p>Surface tokens in <code>my-syntax</code></p>
-            </div>
-            <span class="semantic-diff-count">7 roles</span>
-          </div>
-
-          <div class="change-grid">
-            {
-              surfaceChanges.map((change) => (
-                <div class="change-chip">
-                  <code data-i18n-skip>{change.from}</code>
-                  <span class="change-arrow">→</span>
-                  <code data-i18n-skip class="change-to">{change.to}</code>
-                </div>
-              ))
-            }
-          </div>
-
-          <p class="semantic-diff-foot">
-            Only keyword tokens. Operators, types, braces, and semicolons stay fixed.
-          </p>
-        </div>
-
-        <div class="semantic-diff-divider" aria-hidden="true">
-          <span>=</span>
-          <small>same core</small>
-        </div>
-
-        <div class="semantic-diff-pane invariants-pane">
-          <div class="semantic-diff-head">
-            <span class="semantic-diff-icon check">✓</span>
-            <div>
-              <div class="eyebrow">What does not</div>
-              <p>Semantic contract</p>
-            </div>
-            <span class="semantic-diff-count zero">0 changes</span>
-          </div>
-
-          <ul class="invariant-list">
-            {
-              invariants.map((invariant) => (
-                <li>
-                  <span class="invariant-check">✓</span>
-                  <span>
-                    <strong>{invariant.title}</strong>
-                    <small>{invariant.note}</small>
-                  </span>
-                </li>
-              ))
-            }
-          </ul>
-
-          <p class="semantic-diff-foot">
-            Comments are preserved separately. Source locations are not compared.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="section band-paper-2">
     <div class="container">
       <div class="section-head reveal">
         <div>
-          <div class="eyebrow">04 — Targets</div>
           <h2 class="h2">One typed AST.<br />Four native dialects.</h2>
         </div>
         <p class="lede">
@@ -360,6 +178,10 @@ function prettyId(id: string) {
         </p>
       </div>
       <TargetPrism client:visible demo={siteData.demo} />
+      <div class="row" style="margin-top:1rem;">
+        <a class="btn btn-ghost" href="/why#boundary">Explore the boundary lab</a>
+        <a class="btn btn-ghost" href="/playground#workflow">Try the collaboration workflow</a>
+      </div>
     </div>
   </section>
 
@@ -367,39 +189,6 @@ function prettyId(id: string) {
     <div class="container">
       <div class="section-head reveal">
         <div>
-          <div class="eyebrow">05 — Boundaries</div>
-          <h2 class="h2">Boundaries are part<br />of the language.</h2>
-        </div>
-        <p class="lede">
-          Overflow is not undefined behavior. Every operation is checked independently, failures
-          carry the failing node, and short-circuit operators do not evaluate what they should skip.
-        </p>
-      </div>
-      <BoundaryLab client:visible />
-    </div>
-  </section>
-
-  <section class="section band-dark">
-    <div class="container">
-      <div class="section-head reveal">
-        <div>
-          <div class="eyebrow">06 — Collaboration</div>
-          <h2 class="h2">Personal notation.<br /><em class="italic lime">Shared source of truth.</em></h2>
-        </div>
-        <p class="lede">
-          Export a canonical program to a personal file, edit it, and reimport. Fingerprints protect
-          the base and the profile; the manifest is refreshed after a successful apply.
-        </p>
-      </div>
-      <ExportStepper client:visible demo={siteData.demo} />
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="section-head reveal">
-        <div>
-          <div class="eyebrow">07 — Evidence</div>
           <h2 class="h2">Proof,<br />not promises.</h2>
         </div>
         <p class="lede">
@@ -415,33 +204,9 @@ function prettyId(id: string) {
         <div class="proof-item"><strong>{siteData.conformance.summary.blocked}</strong><span>blocked</span></div>
       </div>
 
-      <div class="grid grid-3" style="margin-top:2rem;">
-        <div class="card reveal">
-          <div class="eyebrow">Stable expectations</div>
-          <p class="small" style="margin-top:0.6rem;">
-            Values and error codes are specified independently of the compiler and pinned in the
-            corpus. Overflow failures also pin their source node.
-          </p>
-        </div>
-        <div class="card reveal">
-          <div class="eyebrow">Four profiles</div>
-          <p class="small" style="margin-top:0.6rem;">
-            Standard, my-syntax, terse, and casual are all parsed, checked, compared, and executed.
-            A cosmetic profile never buys a semantic shortcut.
-          </p>
-        </div>
-        <div class="card reveal">
-          <div class="eyebrow">Blocked is not pass</div>
-          <p class="small" style="margin-top:0.6rem;">
-            A missing or too-old toolchain marks the target blocked and makes the suite exit non-zero.
-            There is no optimistic green.
-          </p>
-        </div>
-      </div>
-
       <div class="row" style="margin-top:1.5rem;">
         <a class="btn btn-solid" href="/docs/verification">Read the verification evidence</a>
-        <a class="btn btn-ghost" href="/examples">Browse real examples</a>
+        <a class="btn btn-ghost" href="/why">Why this matters</a>
       </div>
     </div>
   </section>
@@ -450,7 +215,6 @@ function prettyId(id: string) {
     <div class="container">
       <div class="section-head reveal">
         <div>
-          <div class="eyebrow">08 — Real programs</div>
           <h2 class="h2">Small programs.<br />Real guarantees.</h2>
         </div>
         <p class="lede">
@@ -491,8 +255,7 @@ function prettyId(id: string) {
   <section class="cta-band">
     <div class="container cta-inner">
       <div>
-        <div class="eyebrow">Start with the specification</div>
-        <h2 class="display" style="font-size:clamp(2.8rem,6vw,5.4rem); margin-top:0.8rem;">
+        <h2 class="display" style="font-size:clamp(2.8rem,6vw,5.4rem);">
           Make the next<br /><em class="italic">translation</em> unnecessary.
         </h2>
       </div>
