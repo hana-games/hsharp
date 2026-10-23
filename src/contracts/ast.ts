@@ -11,9 +11,31 @@ export interface NodeBase {
 
 export interface Program extends NodeBase {
   kind: "Program";
+  records: RecordDecl[];
   functions: FunctionDecl[];
   /** Identifier spelling per node id is available through the source spans; the AST is not printed. */
   sourceText: string;
+}
+
+export interface RecordDecl extends NodeBase {
+  kind: "RecordDecl";
+  name: string;
+  nameSpan: SourceSpan;
+  fields: RecordField[];
+  /** Filled by the semantic checker. */
+  symbolId?: string;
+  targetName?: string;
+}
+
+export interface RecordField extends NodeBase {
+  kind: "RecordField";
+  name: string;
+  nameSpan: SourceSpan;
+  type: TypeRef;
+  /** Filled by the semantic checker. */
+  symbolId?: string;
+  targetName?: string;
+  fieldIndex?: number;
 }
 
 export interface TypeRef extends NodeBase {
@@ -79,7 +101,9 @@ export type Expr =
   | VarRef
   | CallExpr
   | UnaryExpr
-  | BinaryExpr;
+  | BinaryExpr
+  | RecordLiteral
+  | FieldAccess;
 
 export interface IntLiteral extends NodeBase {
   kind: "IntLiteral";
@@ -97,6 +121,37 @@ export interface VarRef extends NodeBase {
   /** Filled by the semantic checker. */
   symbolId?: string;
   targetName?: string;
+  resolvedType?: TypeName;
+}
+
+export interface RecordLiteral extends NodeBase {
+  kind: "RecordLiteral";
+  recordName: string;
+  recordNameSpan: SourceSpan;
+  fields: RecordFieldInitializer[];
+  /** Filled by the semantic checker. */
+  recordTargetName?: string;
+}
+
+export interface RecordFieldInitializer extends NodeBase {
+  kind: "RecordFieldInitializer";
+  name: string;
+  nameSpan: SourceSpan;
+  value: Expr;
+  /** Filled by the semantic checker. */
+  fieldIndex?: number;
+  fieldTargetName?: string;
+}
+
+export interface FieldAccess extends NodeBase {
+  kind: "FieldAccess";
+  target: Expr;
+  field: string;
+  fieldSpan: SourceSpan;
+  /** Filled by the semantic checker. */
+  fieldIndex?: number;
+  /** Record type of the access target. */
+  recordType?: TypeName;
 }
 
 export interface CallExpr extends NodeBase {
@@ -148,6 +203,11 @@ export function normalizeAst(program: Program): unknown {
 function normalizeProgram(program: Program): unknown {
   return {
     kind: "Program",
+    records: program.records.map((record) => ({
+      kind: "RecordDecl",
+      name: record.name,
+      fields: record.fields.map((field) => ({ name: field.name, type: field.type.name })),
+    })),
     functions: program.functions.map((fn) => ({
       kind: "FunctionDecl",
       name: fn.name,
@@ -202,6 +262,14 @@ function normalizeExpr(expr: Expr): unknown {
         left: normalizeExpr(expr.left),
         right: normalizeExpr(expr.right),
       };
+    case "RecordLiteral":
+      return {
+        kind: "RecordLiteral",
+        recordName: expr.recordName,
+        fields: expr.fields.map((field) => ({ name: field.name, value: normalizeExpr(field.value) })),
+      };
+    case "FieldAccess":
+      return { kind: "FieldAccess", target: normalizeExpr(expr.target), field: expr.field };
   }
 }
 
@@ -217,6 +285,12 @@ export function walkExpr(expr: Expr, visit: (node: Expr) => void): void {
       break;
     case "CallExpr":
       for (const arg of expr.args) walkExpr(arg, visit);
+      break;
+    case "RecordLiteral":
+      for (const field of expr.fields) walkExpr(field.value, visit);
+      break;
+    case "FieldAccess":
+      walkExpr(expr.target, visit);
       break;
     default:
       break;

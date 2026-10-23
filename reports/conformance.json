@@ -1,7 +1,7 @@
 {
   "schema": "hs-conformance-report/1",
   "mode": "full",
-  "generatedAt": "2026-10-23T13:32:40.670Z",
+  "generatedAt": "2026-10-23T15:36:34.321Z",
   "compilerVersion": "0.1.0",
   "coreVersion": "0.1",
   "nodeVersion": "v24.21.0",
@@ -5988,6 +5988,211 @@
           }
         }
       ]
+    },
+    {
+      "id": "records-structural",
+      "notes": "Records as locals and internal parameters, field access, field-order-independent structural equality.",
+      "reference": {
+        "status": "passed",
+        "expected": {
+          "status": "ok",
+          "type": "bool",
+          "value": true
+        },
+        "outcome": {
+          "status": "ok",
+          "type": "bool",
+          "value": true
+        }
+      },
+      "profiles": [
+        {
+          "id": "standard",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "my-syntax",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "terse",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        },
+        {
+          "id": "casual",
+          "structure": true,
+          "roundTrip": true,
+          "diagnostics": []
+        }
+      ],
+      "targets": [
+        {
+          "target": "csharp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "csharp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "rust",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "go",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        }
+      ]
     }
   ],
   "negative": [
@@ -6153,6 +6358,22 @@
       ]
     },
     {
+      "id": "record-return-unsupported",
+      "status": "passed",
+      "expectedDiagnostic": "E_RECORD_RETURN_UNSUPPORTED",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_record_return.hs:5:14: error E_RECORD_RETURN_UNSUPPORTED: function \"make\" cannot return record \"Point\" in this slice\n  hint: return a scalar (i32 or bool) and keep record values inside the function body or pass them to internal calls"
+      ]
+    },
+    {
+      "id": "unknown-record-field",
+      "status": "passed",
+      "expectedDiagnostic": "E_UNKNOWN_FIELD",
+      "diagnostics": [
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_record_field.hs:8:18: error E_UNKNOWN_FIELD: record \"Point\" has no field \"z\""
+      ]
+    },
+    {
       "id": "profile-duplicate-keyword",
       "status": "passed",
       "expectedDiagnostic": "E_PROFILE_DUPLICATE_KEYWORD",
@@ -6210,9 +6431,9 @@
     }
   ],
   "summary": {
-    "cases": 29,
-    "targets": 464,
-    "passed": 520,
+    "cases": 30,
+    "targets": 480,
+    "passed": 539,
     "failed": 0,
     "blocked": 0
   }

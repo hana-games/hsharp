@@ -22,8 +22,16 @@ export const CANONICAL_KEYWORDS: Readonly<Record<KeywordRole, string>> = {
   false: "false",
 };
 
+/** Primitive types spelled directly in source. Record names are also types. */
 export const TYPE_NAMES = ["i32", "bool"] as const;
-export type TypeName = (typeof TYPE_NAMES)[number];
+export type PrimitiveTypeName = (typeof TYPE_NAMES)[number];
+
+/** A resolved type: a primitive or a declared record name. */
+export type TypeName = string;
+
+export function isPrimitiveTypeName(name: string): name is PrimitiveTypeName {
+  return name === "i32" || name === "bool";
+}
 
 export type TokenKind =
   | "keyword"
@@ -44,7 +52,7 @@ export interface Token {
   /** Set for kind === "keyword". */
   role?: KeywordRole;
   /** Set for kind === "type". */
-  typeName?: TypeName;
+  typeName?: PrimitiveTypeName;
   /** Absolute span including start/end offsets and line/column. */
   span: SourceSpan;
 }

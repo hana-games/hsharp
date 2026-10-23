@@ -325,6 +325,118 @@ test("generated target names are deterministic and avoid source names", () => {
   }
 });
 
+test("records evaluate through literals, field access, equality, and internal calls", () => {
+  const source = `record Point {
+    x: i32,
+    y: i32,
+}
+
+fn add(a: Point, b: Point) -> i32 {
+    return a.x + b.x + a.y + b.y;
+}
+
+fn main() -> bool {
+    let first: Point = Point { x: 1, y: 2 };
+    let second: Point = Point { y: 4, x: 3 };
+    let mirrored: Point = Point { y: 2, x: 1 };
+    return first == mirrored && first != second && add(first, second) == 10;
+}
+`;
+  assert.deepEqual(resultOf(source), { status: "ok", type: "bool", value: true });
+});
+
+test("record fields are compared field-wise and field order is not observable", () => {
+  const source = `record Pair {
+    left: bool,
+    right: i32,
+}
+
+fn main() -> bool {
+    let a: Pair = Pair { right: 7, left: true };
+    let b: Pair = Pair { left: true, right: 7 };
+    let c: Pair = Pair { left: false, right: 7 };
+    return a == b && a != c && a.left && a.right == 7;
+}
+`;
+  assert.deepEqual(resultOf(source), { status: "ok", type: "bool", value: true });
+});
+
+test("record-returning functions and record entry parameters are rejected", () => {
+  const returned = analyze(
+    "record Point { x: i32 }\nfn make() -> Point { return Point { x: 1 }; }\nfn main() -> i32 { return 0; }\n",
+    "<unit>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(returned.diagnostics.some((d) => d.code === "E_RECORD_RETURN_UNSUPPORTED"));
+
+  const entry = analyze(
+    "record Point { x: i32 }\nfn main(p: Point) -> i32 { return p.x; }\n",
+    "<unit>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(entry.diagnostics.some((d) => d.code === "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED"));
+});
+
+test("record diagnostics cover unknown records, fields, and missing fields", () => {
+  const unknownRecord = analyze(
+    "fn main() -> i32 { return Nope { x: 1 }.x; }",
+    "<unit>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(unknownRecord.diagnostics.some((d) => d.code === "E_UNKNOWN_RECORD"));
+
+  const unknownField = analyze(
+    "record Point { x: i32 }\nfn main() -> i32 { let p: Point = Point { x: 1 }; return p.y; }",
+    "<unit>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(unknownField.diagnostics.some((d) => d.code === "E_UNKNOWN_FIELD"));
+
+  const missing = analyze(
+    "record Point { x: i32, y: i32 }\nfn main() -> i32 { return Point { x: 1 }.x; }",
+    "<unit>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(missing.diagnostics.some((d) => d.code === "E_MISSING_FIELD"));
+
+  const update = analyze(
+    "record Point { x: i32, y: i32 }\nfn main() -> i32 { let p: Point = Point { x: 1, y: 2 }; let q: Point = Point { ...p, x: 3 }; return q.x; }\n",
+    "<unit>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(update.diagnostics.some((d) => d.code === "E_RECORD_UPDATE_UNSUPPORTED"));
+});
+
+test("record target names and field names avoid source keyword collisions", () => {
+  const source = `record Class {
+    class: i32,
+    struct: i32,
+    type: bool,
+}
+
+fn main() -> bool {
+    let string: Class = Class { type: true, class: 3, struct: 4 };
+    let other: Class = Class { struct: 4, class: 3, type: true };
+    return string == other && string.class + string.struct == 7 && string.type;
+}
+`;
+  const loaded = analyze(source, "<unit>", STANDARD_PROFILE);
+  assert.ok(loaded.typed, loaded.diagnostics.map((d) => d.message).join("; "));
+  assert.deepEqual(evaluate(loaded.typed!, "main", { values: [] }), {
+    status: "ok",
+    type: "bool",
+    value: true,
+  });
+  const { emit } = require("../backends") as typeof import("../backends");
+  for (const target of ["csharp", "rust", "go", "java"] as const) {
+    const project = emit(loaded.typed!, target, "main");
+    const text = project.files.map((file) => file.content).join("\n");
+    assert.match(text, /R1/, `${target} should use a generated record name`);
+    assert.match(text, /f1/, `${target} should use generated field names`);
+    assert.ok(!/\bClass\b/.test(text), `${target} must not emit the source record name`);
+  }
+});
+
 test("seeded property generator is deterministic and valid", () => {
   for (let seed = 1; seed <= 8; seed++) {
     const first = generateCase(seed, 2);

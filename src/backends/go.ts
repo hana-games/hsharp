@@ -1,7 +1,14 @@
 import type { GeneratedProject } from "../contracts/interfaces";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
-import { emitFunctionBody, functionBySignature, type Dialect } from "./codegen";
+import {
+  collectRecords,
+  emitFunctionBody,
+  functionBySignature,
+  targetType,
+  type Dialect,
+  type RecordMap,
+} from "./codegen";
 
 export function emitGo(
   program: TypedProgram,
@@ -11,12 +18,13 @@ export function emitGo(
   void options;
   const entry = program.functions.find((fn) => fn.name === entryName);
   if (!entry) throw new Error(`entry function "${entryName}" was not found`);
+  const records = collectRecords(program);
 
   const dialect: Dialect = {
     target: "go",
     intType: "int32",
     intMinLiteral: "int32(-2147483648)",
-    declare: (name, init) => [`var ${name} int32 = ${init}`, `_ = ${name}`],
+    declare: (name, type, init) => [`var ${name} ${type} = ${init}`, `_ = ${name}`],
     declareRes: (name, init) => [`var ${name} Res = ${init}`, `_ = ${name}`],
     assign: (name, expr) => [`${name} = ${expr}`],
     ifOpen: (cond) => `if ${cond} {`,
@@ -29,10 +37,18 @@ export function emitGo(
     resFail: (code, node) => `fail(${code}, ${node})`,
     checked: (op, args, node) => `${op}(${[...args, String(node)].join(", ")})`,
     call: (fn, args) => `${fn}(${args.join(", ")})`,
+    recordLiteral: (record, values) =>
+      record.fields.length === 0
+        ? `${record.targetName}{}`
+        : `${record.targetName}{${record.fields
+            .map((field, index) => `${field.targetName}: ${values[index]}`)
+            .join(", ")}}`,
+    fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}`,
   };
 
+  const recordDeclarations = renderRecords(records);
   const functions = program.functions
-    .map((signature) => renderFunction(program, signature, dialect))
+    .map((signature) => renderFunction(program, signature, dialect, records))
     .join("\n\n");
 
   const main = renderMain(entry);
@@ -93,6 +109,8 @@ func neg(a int32, node int) Res {
 	return ok(int32(r))
 }
 
+${recordDeclarations}
+
 ${functions}
 
 ${main}
@@ -115,10 +133,28 @@ go 1.22
   };
 }
 
-function renderFunction(program: TypedProgram, signature: FunctionSignature, dialect: Dialect): string {
+function renderRecords(records: RecordMap): string {
+  return [...records.values()]
+    .map((record) => {
+      const lines = [`type ${record.targetName} struct {`];
+      for (const field of record.fields) lines.push(`\t${field.targetName} int32`);
+      lines.push("}");
+      return lines.join("\n");
+    })
+    .join("\n\n");
+}
+
+function renderFunction(
+  program: TypedProgram,
+  signature: FunctionSignature,
+  dialect: Dialect,
+  records: RecordMap,
+): string {
   const fn = functionBySignature(program, signature);
-  const parameters = fn.params.map((param) => `${param.targetName} int32`).join(", ");
-  const body = emitFunctionBody(fn, dialect);
+  const parameters = fn.params
+    .map((param) => `${param.targetName} ${targetType(param.type.name, records, dialect.intType)}`)
+    .join(", ");
+  const body = emitFunctionBody(fn, dialect, records);
   return `func ${signature.targetName}(${parameters}) Res {\n${indent(body, 1)}\n}`;
 }
 

@@ -3,12 +3,17 @@ import type {
   Block,
   CallExpr,
   Expr,
+  FieldAccess,
   FunctionDecl,
   IfStmt,
   IntLiteral,
   LetStmt,
   Param,
   Program,
+  RecordDecl,
+  RecordField,
+  RecordFieldInitializer,
+  RecordLiteral,
   ReturnStmt,
   Stmt,
   TypeRef,
@@ -57,26 +62,81 @@ export function parse(text: string, profile: Profile, file: string): ParseOutput
 class Parser {
   private index = 0;
   private nextId = 0;
+  private readonly declaredRecordNames = new Set<string>();
 
   constructor(
     private readonly tokens: Token[],
     private readonly text: string,
     private readonly file: string,
-  ) {}
+  ) {
+    // `record` is fixed data syntax, not a profile keyword. Identify declared
+    // record names up front so a record literal can be told apart from the
+    // block that follows an if condition.
+    for (let offset = 0; offset + 2 < tokens.length; offset++) {
+      const token = tokens[offset];
+      const name = tokens[offset + 1];
+      const open = tokens[offset + 2];
+      if (
+        token.kind === "identifier" &&
+        token.text === "record" &&
+        name.kind === "identifier" &&
+        isPunct(open, "{")
+      ) {
+        this.declaredRecordNames.add(name.text);
+      }
+    }
+  }
 
   parseProgram(): Program {
     const start = this.current().span.start;
+    const records: RecordDecl[] = [];
     const functions: FunctionDecl[] = [];
     while (!this.atEnd()) {
-      functions.push(this.parseFunction());
+      if (this.current().kind === "identifier" && this.current().text === "record") {
+        records.push(this.parseRecord());
+      } else {
+        functions.push(this.parseFunction());
+      }
     }
     const end = this.current().span.end;
     return {
       kind: "Program",
       id: this.nextId++,
       span: { file: this.file, start, end },
+      records,
       functions,
       sourceText: this.text,
+    };
+  }
+
+  private parseRecord(): RecordDecl {
+    const recordToken = this.expectIdentifier("record name");
+    const nameToken = this.expectIdentifier("record name");
+    this.expectPunct("{");
+    const fields: RecordField[] = [];
+    while (!isPunct(this.current(), "}")) {
+      if (this.atEnd()) throw this.fail("E_SYNTAX", "unclosed record; expected \"}\"", this.current());
+      const fieldName = this.expectIdentifier("field name");
+      this.expectPunct(":");
+      const type = this.parseType();
+      fields.push({
+        kind: "RecordField",
+        id: this.nextId++,
+        span: { file: this.file, start: fieldName.span.start, end: type.span.end },
+        name: fieldName.text,
+        nameSpan: fieldName.span,
+        type,
+      });
+      if (!this.matchPunct(",")) break;
+    }
+    const close = this.expectPunct("}");
+    return {
+      kind: "RecordDecl",
+      id: this.nextId++,
+      span: { file: this.file, start: recordToken.span.start, end: close.span.end },
+      name: nameToken.text,
+      nameSpan: nameToken.span,
+      fields,
     };
   }
 
@@ -119,11 +179,15 @@ class Parser {
 
   private parseType(): TypeRef {
     const token = this.current();
-    if (token.kind !== "type" || token.typeName === undefined) {
-      throw this.fail("E_SYNTAX", `expected type "i32" or "bool"`, token);
+    if (token.kind === "type" && token.typeName !== undefined) {
+      this.advance();
+      return { kind: "TypeRef", id: this.nextId++, span: token.span, name: token.typeName };
     }
-    this.advance();
-    return { kind: "TypeRef", id: this.nextId++, span: token.span, name: token.typeName };
+    if (token.kind === "identifier") {
+      this.advance();
+      return { kind: "TypeRef", id: this.nextId++, span: token.span, name: token.text };
+    }
+    throw this.fail("E_SYNTAX", `expected a type but found ${describe(token)}`, token);
   }
 
   private parseBlock(): Block {
@@ -315,7 +379,25 @@ class Parser {
       const operand = this.parseUnary();
       return this.unary("!", operand, bang.span.start);
     }
-    return this.parsePrimary();
+    return this.parsePostfix();
+  }
+
+  private parsePostfix(): Expr {
+    let expr = this.parsePrimary();
+    while (isPunct(this.current(), ".")) {
+      this.advance();
+      const field = this.expectIdentifier("field name");
+      const access: FieldAccess = {
+        kind: "FieldAccess",
+        id: this.nextId++,
+        span: { file: this.file, start: expr.span.start, end: field.span.end },
+        target: expr,
+        field: field.text,
+        fieldSpan: field.span,
+      };
+      expr = access;
+    }
+    return expr;
   }
 
   private parsePrimary(): Expr {
@@ -363,6 +445,9 @@ class Parser {
       if (isPunct(this.current(), "(")) {
         return this.parseCall(token);
       }
+      if (isPunct(this.current(), "{") && this.isRecordLiteralStart(token.text)) {
+        return this.parseRecordLiteral(token);
+      }
       return {
         kind: "VarRef",
         id: this.nextId++,
@@ -384,6 +469,55 @@ class Parser {
       token,
       this.expectedKeywordHint(token),
     );
+  }
+
+  private isRecordLiteralStart(name: string): boolean {
+    const afterOpen = this.peek(1);
+    if (this.declaredRecordNames.has(name)) {
+      return (
+        afterOpen.kind === "identifier" ||
+        isPunct(afterOpen, "}") ||
+        isPunct(afterOpen, ".")
+      );
+    }
+    return afterOpen.kind === "identifier" && isPunct(this.peek(2), ":");
+  }
+
+  private parseRecordLiteral(nameToken: Token): RecordLiteral {
+    this.expectPunct("{");
+    const fields: RecordFieldInitializer[] = [];
+    while (!isPunct(this.current(), "}")) {
+      if (this.atEnd()) throw this.fail("E_SYNTAX", "unclosed record literal; expected \"}\"", this.current());
+      if (isPunct(this.current(), ".")) {
+        throw this.fail(
+          "E_RECORD_UPDATE_UNSUPPORTED",
+          "record update syntax is not supported in this slice",
+          this.current(),
+          "construct a new record literal and name every field",
+        );
+      }
+      const fieldName = this.expectIdentifier("field name");
+      this.expectPunct(":");
+      const value = this.parseExpression();
+      fields.push({
+        kind: "RecordFieldInitializer",
+        id: this.nextId++,
+        span: { file: this.file, start: fieldName.span.start, end: value.span.end },
+        name: fieldName.text,
+        nameSpan: fieldName.span,
+        value,
+      });
+      if (!this.matchPunct(",")) break;
+    }
+    const close = this.expectPunct("}");
+    return {
+      kind: "RecordLiteral",
+      id: this.nextId++,
+      span: { file: this.file, start: nameToken.span.start, end: close.span.end },
+      recordName: nameToken.text,
+      recordNameSpan: nameToken.span,
+      fields,
+    };
   }
 
   private parseCall(calleeToken: Token): CallExpr {

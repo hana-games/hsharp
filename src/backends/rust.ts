@@ -1,7 +1,14 @@
 import type { GeneratedProject } from "../contracts/interfaces";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
-import { emitFunctionBody, functionBySignature, type Dialect } from "./codegen";
+import {
+  collectRecords,
+  emitFunctionBody,
+  functionBySignature,
+  targetType,
+  type Dialect,
+  type RecordMap,
+} from "./codegen";
 
 export function emitRust(
   program: TypedProgram,
@@ -11,12 +18,13 @@ export function emitRust(
   void options;
   const entry = program.functions.find((fn) => fn.name === entryName);
   if (!entry) throw new Error(`entry function "${entryName}" was not found`);
+  const records = collectRecords(program);
 
   const dialect: Dialect = {
     target: "rust",
     intType: "i32",
     intMinLiteral: "i32::MIN",
-    declare: (name, init) => [`let mut ${name}: i32 = ${init};`],
+    declare: (name, type, init) => [`let mut ${name}: ${type} = ${init};`],
     declareRes: (name, init) => [`let ${name}: Res = ${init};`],
     assign: (name, expr) => [`${name} = ${expr};`],
     ifOpen: (cond) => `if ${cond} {`,
@@ -29,10 +37,18 @@ export function emitRust(
     resFail: (code, node) => `Res::fail(${code}, ${node})`,
     checked: (op, args, node) => `${op}(${[...args, String(node)].join(", ")})`,
     call: (fn, args) => `${fn}(${args.join(", ")})`,
+    recordLiteral: (record, values) =>
+      record.fields.length === 0
+        ? `${record.targetName} {}`
+        : `${record.targetName} { ${record.fields
+            .map((field, index) => `${field.targetName}: ${values[index]}`)
+            .join(", ")} }`,
+    fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}`,
   };
 
+  const recordDeclarations = renderRecords(records);
   const functions = program.functions
-    .map((signature) => renderFunction(program, signature, dialect))
+    .map((signature) => renderFunction(program, signature, dialect, records))
     .join("\n\n");
 
   const main = renderMain(entry);
@@ -88,6 +104,8 @@ fn neg(a: i32, node: i32) -> Res {
     Res::ok(r as i32)
 }
 
+${recordDeclarations}
+
 ${functions}
 
 ${main}
@@ -118,10 +136,28 @@ path = "src/main.rs"
   };
 }
 
-function renderFunction(program: TypedProgram, signature: FunctionSignature, dialect: Dialect): string {
+function renderRecords(records: RecordMap): string {
+  return [...records.values()]
+    .map((record) => {
+      const lines = [`#[derive(Clone, Copy, PartialEq, Eq)]`, `struct ${record.targetName} {`];
+      for (const field of record.fields) lines.push(`    ${field.targetName}: i32,`);
+      lines.push("}");
+      return lines.join("\n");
+    })
+    .join("\n\n");
+}
+
+function renderFunction(
+  program: TypedProgram,
+  signature: FunctionSignature,
+  dialect: Dialect,
+  records: RecordMap,
+): string {
   const fn = functionBySignature(program, signature);
-  const parameters = fn.params.map((param) => `${param.targetName}: i32`).join(", ");
-  const body = emitFunctionBody(fn, dialect);
+  const parameters = fn.params
+    .map((param) => `${param.targetName}: ${targetType(param.type.name, records, dialect.intType)}`)
+    .join(", ");
+  const body = emitFunctionBody(fn, dialect, records);
   return `fn ${signature.targetName}(${parameters}) -> Res {\n${indent(body, 4)}\n}`;
 }
 

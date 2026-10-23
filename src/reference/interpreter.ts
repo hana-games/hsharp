@@ -1,7 +1,7 @@
-import type { Block, Expr, FunctionDecl, Stmt, UnaryOp } from "../contracts/ast";
+import type { Block, Expr, FunctionDecl, RecordDecl, Stmt, UnaryOp } from "../contracts/ast";
 import type { FunctionSignature, Outcome, RuntimeArguments, TypedProgram, HsValue } from "../contracts/outcome";
-import { OVERFLOW_CODE } from "../contracts/outcome";
-import type { TypeName } from "../contracts/tokens";
+import { isRecordValue, OVERFLOW_CODE, type RecordValue } from "../contracts/outcome";
+import { isPrimitiveTypeName, type TypeName } from "../contracts/tokens";
 
 const I32_MIN = -2147483648n;
 const I32_MAX = 2147483647n;
@@ -49,6 +49,12 @@ export function evaluate(program: TypedProgram, entry: string, args: RuntimeArgu
       `entry function "${entry}" expects ${entryFunction.signature.params.length} argument(s), received ${args.values.length}`,
     );
   }
+  const recordParam = entryFunction.signature.params.find((param) => !isPrimitiveTypeName(param.type));
+  if (recordParam) {
+    throw new EvaluationError(
+      `entry function "${entry}" cannot take record parameter "${recordParam.name}"`,
+    );
+  }
   args.values.forEach((value, index) => {
     const param = entryFunction.signature.params[index];
     const actual = valueTypeOf(value);
@@ -64,10 +70,20 @@ export function evaluate(program: TypedProgram, entry: string, args: RuntimeArgu
     }
   });
 
-  const interpreter = new Interpreter(functions);
+  const records = new Map<string, RecordDecl>();
+  for (const record of program.ast.records) records.set(record.name, record);
+
+  const interpreter = new Interpreter(functions, records);
   try {
-    const value = interpreter.call(entryFunction, args.values);
-    return { status: "ok", type: value.type, value: value.value };
+    const values: HsValue[] = args.values.map((value, index) => ({
+      type: entryFunction.signature.params[index].type,
+      value,
+    }));
+    const result = interpreter.call(entryFunction, values);
+    if (isRecordValue(result.value)) {
+      throw new EvaluationError(`entry function "${entry}" returned a record`);
+    }
+    return { status: "ok", type: result.type, value: result.value };
   } catch (cause) {
     if (cause instanceof RuntimeFailure) {
       return { status: "error", code: cause.code, node: cause.node };
@@ -77,16 +93,15 @@ export function evaluate(program: TypedProgram, entry: string, args: RuntimeArgu
 }
 
 class Interpreter {
-  constructor(private readonly functions: Map<string, RuntimeFunction>) {}
+  constructor(
+    private readonly functions: Map<string, RuntimeFunction>,
+    private readonly records: Map<string, RecordDecl>,
+  ) {}
 
-  call(fn: RuntimeFunction, args: (number | boolean)[]): HsValue {
+  call(fn: RuntimeFunction, args: HsValue[]): HsValue {
     const env = new Map<string, HsValue>();
-    fn.signature.params.forEach((param, index) => {
-      const value = args[index];
-      env.set(fn.decl.params[index].symbolId!, {
-        type: param.type,
-        value,
-      });
+    fn.signature.params.forEach((_param, index) => {
+      env.set(fn.decl.params[index].symbolId!, args[index]);
     });
     try {
       this.executeBlock(fn.decl.body, env);
@@ -142,10 +157,43 @@ class Interpreter {
         if (!target) throw new EvaluationError(`internal: unresolved call to "${expr.callee}"`);
         // Arguments are evaluated left to right before the call.
         const values = expr.args.map((arg) => this.evalExpr(arg, env));
-        return this.call(
-          target,
-          values.map((v) => v.value),
-        );
+        return this.call(target, values);
+      }
+      case "RecordLiteral": {
+        const record = this.records.get(expr.recordName);
+        if (!record) throw new EvaluationError(`internal: unknown record "${expr.recordName}"`);
+        const fields: HsValue[] = record.fields.map((field) => ({
+          type: field.type.name,
+          value: field.type.name === "bool" ? false : 0,
+        }));
+        for (const initializer of expr.fields) {
+          const index =
+            initializer.fieldIndex ??
+            record.fields.findIndex((field) => field.name === initializer.name);
+          if (index < 0) {
+            throw new EvaluationError(`internal: unknown field "${initializer.name}"`);
+          }
+          // Source-order evaluation is preserved; storage uses declaration order.
+          fields[index] = this.evalExpr(initializer.value, env);
+        }
+        const value: RecordValue = {
+          kind: "record",
+          recordName: expr.recordName,
+          fields,
+        };
+        return { type: expr.recordName, value };
+      }
+      case "FieldAccess": {
+        const target = this.evalExpr(expr.target, env);
+        if (!isRecordValue(target.value)) {
+          throw new EvaluationError(`internal: field access on non-record value`);
+        }
+        const index = expr.fieldIndex ?? -1;
+        const field = target.value.fields[index];
+        if (index < 0 || field === undefined) {
+          throw new EvaluationError(`internal: unknown field "${expr.field}"`);
+        }
+        return field;
       }
       case "UnaryExpr": {
         const operand = this.evalExpr(expr.operand, env);
@@ -199,9 +247,9 @@ class Interpreter {
       case ">=":
         return { type: "bool", value: toBigInt(left) >= toBigInt(right) };
       case "==":
-        return { type: "bool", value: left.value === right.value };
+        return { type: "bool", value: valuesEqual(left, right) };
       case "!=":
-        return { type: "bool", value: left.value !== right.value };
+        return { type: "bool", value: !valuesEqual(left, right) };
       default:
         throw new EvaluationError(`internal: unsupported operator ${op}`);
     }
@@ -214,9 +262,23 @@ class Interpreter {
   }
 }
 
+function valuesEqual(left: HsValue, right: HsValue): boolean {
+  const leftValue = left.value;
+  const rightValue = right.value;
+  if (isRecordValue(leftValue) || isRecordValue(rightValue)) {
+    if (!isRecordValue(leftValue) || !isRecordValue(rightValue)) return false;
+    if (left.type !== right.type) return false;
+    if (leftValue.recordName !== rightValue.recordName) return false;
+    if (leftValue.fields.length !== rightValue.fields.length) return false;
+    const rightFields = rightValue.fields;
+    return leftValue.fields.every((field, index) => valuesEqual(field, rightFields[index]));
+  }
+  return leftValue === rightValue;
+}
+
 function toBigInt(value: HsValue): bigint {
   if (typeof value.value !== "number") {
-    throw new EvaluationError("internal: arithmetic on a Boolean value");
+    throw new EvaluationError("internal: arithmetic on a non-integer value");
   }
   return BigInt(value.value);
 }

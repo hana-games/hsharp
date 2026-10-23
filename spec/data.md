@@ -1,7 +1,10 @@
 # h# 0.3 — Data and memory semantics
 
-Status: **specification draft**. No data feature is advertised until it has a conformance corpus entry
-and executes on every advertised target.
+Status: **partially implemented (0.3 record slice)**. A data feature is advertised only after it has a
+conformance corpus entry and executes on every advertised target. The current slice covers immutable
+records with `i32`/`bool` fields, record literals, field access, records as locals and internal
+parameters, and structural equality. Strings, lists, variants, `Option`, `Result`, nested records,
+record update, record returns, and record entry parameters remain specification-only.
 
 This document defines the portable data model for phase 0.3. It is normative for profiles,
 generated code, the reference interpreter, and the conformance suite.
@@ -86,6 +89,17 @@ record Point {
 - Equality is field-wise equality.
 - Field order is not observable in equality or construction.
 - A record value is a value, not an identity. Backends may copy it or share immutable storage.
+
+**Implemented slice (0.3):** top-level record declarations with unique `i32`/`bool` fields, record
+literals with every field required, field access, records as locals and internal parameters, and
+structural `==`/`!=`. Record names and field names are nominal; field order is preserved in the AST
+but not observable in equality.
+
+**Deliberately rejected in this slice:** nested record fields (`E_UNSUPPORTED_FIELD_TYPE`), record
+update syntax (`E_RECORD_UPDATE_UNSUPPORTED`), record-returning functions
+(`E_RECORD_RETURN_UNSUPPORTED`), and record parameters on entry functions
+(`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`). Unknown records, fields, and types have dedicated
+diagnostics; duplicate record and field declarations are rejected.
 
 ## Variants, Option, and Result
 
@@ -202,6 +216,10 @@ Initial corpus must cover:
 - variant construction and exhaustive/non-exhaustive matching;
 - `Option`, `Result`, and equality;
 - zero-copy observation tests where a backend shares immutable storage.
+
+The committed 0.3 corpus currently covers only the record slice: scalar records, field access,
+internal record parameters, and structural equality. The other bullets remain acceptance work for
+future slices.
 
 ## Migration
 

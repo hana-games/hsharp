@@ -1,7 +1,14 @@
 import type { GeneratedProject } from "../contracts/interfaces";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
-import { emitFunctionBody, functionBySignature, type Dialect } from "./codegen";
+import {
+  collectRecords,
+  emitFunctionBody,
+  functionBySignature,
+  targetType,
+  type Dialect,
+  type RecordMap,
+} from "./codegen";
 
 export function emitJava(
   program: TypedProgram,
@@ -11,12 +18,13 @@ export function emitJava(
   void options;
   const entry = program.functions.find((fn) => fn.name === entryName);
   if (!entry) throw new Error(`entry function "${entryName}" was not found`);
+  const records = collectRecords(program);
 
   const dialect: Dialect = {
     target: "java",
     intType: "int",
     intMinLiteral: "Integer.MIN_VALUE",
-    declare: (name, init) => [`int ${name} = ${init};`],
+    declare: (name, type, init) => [`${type} ${name} = ${init};`],
     declareRes: (name, init) => [`Res ${name} = ${init};`],
     assign: (name, expr) => [`${name} = ${expr};`],
     ifOpen: (cond) => `if (${cond}) {`,
@@ -29,10 +37,13 @@ export function emitJava(
     resFail: (code, node) => `Res.fail(${code}, ${node})`,
     checked: (op, args, node) => `${op}(${[...args, String(node)].join(", ")})`,
     call: (fn, args) => `${fn}(${args.join(", ")})`,
+    recordLiteral: (record, values) => `new ${record.targetName}(${values.join(", ")})`,
+    fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}()`,
   };
 
+  const recordDeclarations = renderRecords(records);
   const functions = program.functions
-    .map((signature) => renderFunction(program, signature, dialect))
+    .map((signature) => renderFunction(program, signature, dialect, records))
     .join("\n\n");
 
   const main = renderMain(entry);
@@ -59,6 +70,8 @@ public final class HsProgram {
             return new Res(false, 0, code, node);
         }
     }
+
+${recordDeclarations}
 
     private static Res add(int a, int b, int node) {
         long r = (long) a + (long) b;
@@ -98,10 +111,26 @@ ${main}
   };
 }
 
-function renderFunction(program: TypedProgram, signature: FunctionSignature, dialect: Dialect): string {
+function renderRecords(records: RecordMap): string {
+  return [...records.values()]
+    .map((record) => {
+      const components = record.fields.map((field) => `int ${field.targetName}`).join(", ");
+      return `    private record ${record.targetName}(${components}) {}`;
+    })
+    .join("\n\n");
+}
+
+function renderFunction(
+  program: TypedProgram,
+  signature: FunctionSignature,
+  dialect: Dialect,
+  records: RecordMap,
+): string {
   const fn = functionBySignature(program, signature);
-  const parameters = fn.params.map((param) => `int ${param.targetName}`).join(", ");
-  const body = emitFunctionBody(fn, dialect);
+  const parameters = fn.params
+    .map((param) => `${targetType(param.type.name, records, dialect.intType)} ${param.targetName}`)
+    .join(", ");
+  const body = emitFunctionBody(fn, dialect, records);
   return `    private static Res ${signature.targetName}(${parameters}) {\n${indent(body, 8)}\n    }`;
 }
 

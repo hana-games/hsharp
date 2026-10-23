@@ -1,8 +1,8 @@
-import type { Block, Expr, FunctionDecl, Program, Stmt } from "../contracts/ast";
+import type { Block, Expr, FunctionDecl, Program, RecordDecl, RecordField, Stmt } from "../contracts/ast";
 import type { Diagnostic } from "../contracts/diagnostics";
 import { error } from "../contracts/diagnostics";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
-import type { TypeName } from "../contracts/tokens";
+import { isPrimitiveTypeName, type TypeName } from "../contracts/tokens";
 
 interface Symbol {
   symbolId: string;
@@ -10,6 +10,11 @@ interface Symbol {
   name: string;
   type: TypeName;
   kind: "local" | "param";
+}
+
+interface RecordSymbol {
+  decl: RecordDecl;
+  fields: Map<string, RecordField>;
 }
 
 class Scope {
@@ -44,6 +49,7 @@ class Checker {
   private readonly diagnostics: Diagnostic[] = [];
   private readonly functions = new Map<string, FunctionDecl>();
   private readonly signatures = new Map<string, FunctionSignature>();
+  private readonly records = new Map<string, RecordSymbol>();
   private readonly callGraph = new Map<string, Set<string>>();
   private localCounter = 0;
 
@@ -51,6 +57,7 @@ class Checker {
 
   run(): CheckResult {
     this.registerFunctions();
+    this.registerRecords();
     for (const fn of this.functions.values()) {
       this.checkFunction(fn);
     }
@@ -91,11 +98,72 @@ class Checker {
     });
   }
 
+  private registerRecords(): void {
+    this.program.records.forEach((record, index) => {
+      if (this.records.has(record.name)) {
+        this.diagnostics.push(
+          error(
+            "E_DUPLICATE_RECORD",
+            `record "${record.name}" is declared more than once`,
+            record.nameSpan,
+          ),
+        );
+        return;
+      }
+      record.symbolId = `record:${index + 1}`;
+      record.targetName = `R${index + 1}`;
+      const fields = new Map<string, RecordField>();
+      record.fields.forEach((field, fieldIndex) => {
+        field.symbolId = `record:${index + 1}:field:${fieldIndex + 1}`;
+        field.targetName = `f${fieldIndex + 1}`;
+        field.fieldIndex = fieldIndex;
+        if (fields.has(field.name)) {
+          this.diagnostics.push(
+            error(
+              "E_DUPLICATE_FIELD",
+              `field "${field.name}" is declared more than once in record "${record.name}"`,
+              field.nameSpan,
+            ),
+          );
+        } else {
+          fields.set(field.name, field);
+        }
+      });
+      this.records.set(record.name, { decl: record, fields });
+    });
+
+    // Field types may name a record declared later, so validate after every
+    // record name is registered.
+    for (const record of this.program.records) {
+      for (const field of record.fields) {
+        if (isPrimitiveTypeName(field.type.name)) continue;
+        if (this.records.has(field.type.name)) {
+          this.diagnostics.push(
+            error(
+              "E_UNSUPPORTED_FIELD_TYPE",
+              `record field "${field.name}" has record type "${field.type.name}"; nested records are not supported in this slice`,
+              field.type.span,
+              "use only i32 and bool fields",
+            ),
+          );
+        } else {
+          this.diagnostics.push(
+            error(
+              "E_UNKNOWN_TYPE",
+              `unknown type "${field.type.name}" for field "${field.name}"`,
+              field.type.span,
+            ),
+          );
+        }
+      }
+    }
+  }
+
   private checkFunction(fn: FunctionDecl): void {
-    const signature = this.signatures.get(fn.name)!;
     this.currentFunctionName = fn.name;
     const scope = new Scope(null);
     const seenParams = new Set<string>();
+    const autoEntry = fn.name === "main" || this.program.functions.length === 1;
     for (const param of fn.params) {
       if (seenParams.has(param.name)) {
         this.diagnostics.push(
@@ -103,14 +171,37 @@ class Checker {
         );
       }
       seenParams.add(param.name);
-      const symbol = this.declareLocal(scope, param.name, param.type.name, param.nameSpan, "param");
+      const paramType = this.resolveType(param.type);
+      if (autoEntry && this.records.has(paramType)) {
+        this.diagnostics.push(
+          error(
+            "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
+            `entry function "${fn.name}" cannot take record parameter "${param.name}"`,
+            param.type.span,
+            "entry values come from scalar command-line arguments; pass scalar parameters and build the record inside the program",
+          ),
+        );
+      }
+      const symbol = this.declareLocal(scope, param.name, paramType, param.nameSpan, "param");
       if (symbol) {
         param.symbolId = symbol.symbolId;
         param.targetName = symbol.targetName;
       }
     }
 
-    this.checkBlock(fn.body, scope, signature.returnType);
+    const returnType = this.resolveType(fn.returnType);
+    if (this.records.has(returnType)) {
+      this.diagnostics.push(
+        error(
+          "E_RECORD_RETURN_UNSUPPORTED",
+          `function "${fn.name}" cannot return record "${returnType}" in this slice`,
+          fn.returnType.span,
+          "return a scalar (i32 or bool) and keep record values inside the function body or pass them to internal calls",
+        ),
+      );
+    }
+
+    this.checkBlock(fn.body, scope, returnType);
 
     if (!definitelyReturns(fn.body)) {
       this.diagnostics.push(
@@ -118,10 +209,23 @@ class Checker {
           "E_MISSING_RETURN",
           `function "${fn.name}" can reach the end without returning a value`,
           fn.nameSpan,
-          `return a value of type ${signature.returnType} on every path`,
+          `return a value of type ${returnType} on every path`,
         ),
       );
     }
+  }
+
+  private resolveType(type: import("../contracts/ast").TypeRef): TypeName {
+    if (isPrimitiveTypeName(type.name) || this.records.has(type.name)) return type.name;
+    this.diagnostics.push(
+      error(
+        "E_UNKNOWN_TYPE",
+        `unknown type "${type.name}"`,
+        type.span,
+        "types are i32, bool, or a declared record name",
+      ),
+    );
+    return "i32";
   }
 
   private declareLocal(
@@ -167,17 +271,18 @@ class Checker {
   private checkStatement(stmt: Stmt, scope: Scope, returnType: TypeName): void {
     switch (stmt.kind) {
       case "LetStmt": {
+        const declaredType = this.resolveType(stmt.type);
         const valueType = this.checkExpr(stmt.value, scope);
-        if (valueType !== stmt.type.name) {
+        if (valueType !== declaredType) {
           this.diagnostics.push(
             error(
               "E_TYPE_MISMATCH",
-              `cannot bind ${valueType} to "${stmt.name}" of type ${stmt.type.name}`,
+              `cannot bind ${valueType} to "${stmt.name}" of type ${declaredType}`,
               stmt.value.span,
             ),
           );
         }
-        const symbol = this.declareLocal(scope, stmt.name, stmt.type.name, stmt.nameSpan, "local");
+        const symbol = this.declareLocal(scope, stmt.name, declaredType, stmt.nameSpan, "local");
         if (symbol) {
           stmt.symbolId = symbol.symbolId;
           stmt.targetName = symbol.targetName;
@@ -229,7 +334,98 @@ class Checker {
         }
         expr.symbolId = symbol.symbolId;
         expr.targetName = symbol.targetName;
+        expr.resolvedType = symbol.type;
         return symbol.type;
+      }
+      case "RecordLiteral": {
+        const record = this.records.get(expr.recordName);
+        if (!record) {
+          this.diagnostics.push(
+            error("E_UNKNOWN_RECORD", `unknown record "${expr.recordName}"`, expr.recordNameSpan),
+          );
+          for (const field of expr.fields) this.checkExpr(field.value, scope);
+          return "i32";
+        }
+        expr.recordTargetName = record.decl.targetName;
+        const provided = new Set<string>();
+        for (const initializer of expr.fields) {
+          if (provided.has(initializer.name)) {
+            this.diagnostics.push(
+              error(
+                "E_DUPLICATE_FIELD_INITIALIZER",
+                `field "${initializer.name}" is initialized more than once`,
+                initializer.nameSpan,
+              ),
+            );
+          }
+          provided.add(initializer.name);
+          const field = record.fields.get(initializer.name);
+          if (!field) {
+            this.diagnostics.push(
+              error(
+                "E_UNKNOWN_FIELD",
+                `record "${expr.recordName}" has no field "${initializer.name}"`,
+                initializer.nameSpan,
+              ),
+            );
+            this.checkExpr(initializer.value, scope);
+            continue;
+          }
+          initializer.fieldIndex = field.fieldIndex;
+          initializer.fieldTargetName = field.targetName;
+          const valueType = this.checkExpr(initializer.value, scope);
+          if (valueType !== field.type.name) {
+            this.diagnostics.push(
+              error(
+                "E_FIELD_TYPE",
+                `field "${initializer.name}" of record "${expr.recordName}" expects ${field.type.name}, found ${valueType}`,
+                initializer.value.span,
+              ),
+            );
+          }
+        }
+        for (const field of record.decl.fields) {
+          if (!provided.has(field.name)) {
+            this.diagnostics.push(
+              error(
+                "E_MISSING_FIELD",
+                `record literal for "${expr.recordName}" is missing field "${field.name}"`,
+                expr.span,
+              ),
+            );
+          }
+        }
+        return expr.recordName;
+      }
+      case "FieldAccess": {
+        const targetType = this.checkExpr(expr.target, scope);
+        const record = this.records.get(targetType);
+        if (!record) {
+          if (isPrimitiveTypeName(targetType)) {
+            this.diagnostics.push(
+              error(
+                "E_FIELD_ACCESS_ON_SCALAR",
+                `cannot access field "${expr.field}" on value of type ${targetType}`,
+                expr.fieldSpan,
+              ),
+            );
+          }
+          return "i32";
+        }
+        const field = record.fields.get(expr.field);
+        if (!field) {
+          this.diagnostics.push(
+            error(
+              "E_UNKNOWN_FIELD",
+              `record "${targetType}" has no field "${expr.field}"`,
+              expr.fieldSpan,
+            ),
+          );
+          return "i32";
+        }
+        expr.recordType = targetType;
+        expr.fieldIndex = field.fieldIndex;
+        return field.type.name;
       }
       case "CallExpr": {
         const signature = this.signatures.get(expr.callee);

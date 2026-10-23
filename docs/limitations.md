@@ -4,7 +4,16 @@ The POC intentionally covers a small language core. The following limits are kno
 
 ## Language core
 
-- Only `i32` and `bool`; no strings, collections, records, variants, `Option`, or `Result`.
+- Scalars are `i32` and `bool`. The 0.3 slice adds immutable records whose fields are only `i32` or
+  `bool`; there are no strings, collections, variants, `Option`, or `Result`.
+- Records are top-level and nominal. They support literals, field access, locals, internal function
+  parameters, and structural equality.
+- Record fields are scalar only: nested records are rejected with `E_UNSUPPORTED_FIELD_TYPE`.
+- Record update-as-new-value is not implemented and is rejected with `E_RECORD_UPDATE_UNSUPPORTED`.
+- Functions cannot return records (`E_RECORD_RETURN_UNSUPPORTED`), and entry functions cannot take
+  records because command-line arguments remain scalar (`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`).
+- Generated record and field names are compiler-generated, so source names that collide with target
+  keywords never appear in generated type declarations.
 - No loops, recursion, mutation, modules, generics, exceptions, I/O, or concurrency.
 - No division or modulo.
 - No floating-point values.
@@ -53,14 +62,14 @@ The POC intentionally covers a small language core. The following limits are kno
 
 ## Verification
 
-- The committed corpus is small (29 positive cases, 27 negative program/profile cases, 22 unit tests, one bridge protocol test). It covers the specified rules and boundaries but is not a proof of correctness.
+- The committed corpus is small (30 positive cases, 29 negative program/profile cases, 27 unit tests, one bridge protocol test). It covers the specified rules and boundaries but is not a proof of correctness.
 - Seeded property tests, automatic line reduction, a separate benchmark corpus, and manual Ubuntu CI are part of the 0.2 command. Windows/macOS CI is explicitly deferred.
 - Target artifacts are compiled once per program/entry and executed per profile; independent compilation per profile is unnecessary because generated code is profile-independent.
 - Semantics of concurrency, shared memory, ecosystem interoperability, and large applications are completely out of scope.
 
 ## Prioritized next work
 
-1. **Data and memory semantics.** The normative specification is in [`spec/data.md`](../spec/data.md). Implement the tag-capable value model and immutable records first, then strings, lists, variants, `Option`, and `Result`. Evaluate Rust ownership early.
+1. **Data and memory semantics.** The normative specification is in [`spec/data.md`](../spec/data.md). The immutable scalar-record slice is implemented across the reference interpreter and all four targets. Next: strings, lists, variants, `Option`, `Result`, nested records, and record update. Evaluate Rust ownership early.
 2. **Re-enable CI hardening.** Validate the manual Ubuntu workflow, then restore automatic runs and the deferred Windows/macOS matrix.
 3. **Loops and controlled recursion.** Add specified termination/overflow behavior and update call-graph checks.
 4. **Syntax families and a printer.** Explicit-block and indentation families require a concrete syntax tree that preserves comments reliably.

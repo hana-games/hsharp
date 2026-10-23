@@ -151,6 +151,15 @@ export function validateProfile(raw: unknown): ProfileValidation {
   for (const role of KEYWORD_ROLES) {
     const word = keywords[role];
     if (word === undefined) continue;
+    if (word === "record") {
+      diagnostics.push(
+        error(
+          "E_PROFILE_RESERVED_KEYWORD",
+          `keyword "${word}" for "${role}" collides with fixed record declaration syntax`,
+        ),
+      );
+      continue;
+    }
     if ((TYPE_NAMES as readonly string[]).includes(word)) {
       diagnostics.push(
         error(

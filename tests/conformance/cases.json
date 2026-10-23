@@ -191,6 +191,13 @@
       "args": [],
       "expected": { "status": "ok", "type": "bool", "value": true },
       "notes": "Explicit parentheses permit Boolean equality of comparison results."
+    },
+    {
+      "id": "records-structural",
+      "program": "programs/records.hs",
+      "args": [],
+      "expected": { "status": "ok", "type": "bool", "value": true },
+      "notes": "Records as locals and internal parameters, field access, field-order-independent structural equality."
     }
   ],
   "negative": [
@@ -293,6 +300,16 @@
       "id": "duplicate-parameter",
       "program": "programs/neg_duplicate_param.hs",
       "expectDiagnostic": "E_DUPLICATE_PARAMETER"
+    },
+    {
+      "id": "record-return-unsupported",
+      "program": "programs/neg_record_return.hs",
+      "expectDiagnostic": "E_RECORD_RETURN_UNSUPPORTED"
+    },
+    {
+      "id": "unknown-record-field",
+      "program": "programs/neg_record_field.hs",
+      "expectDiagnostic": "E_UNKNOWN_FIELD"
     },
     {
       "id": "profile-duplicate-keyword",

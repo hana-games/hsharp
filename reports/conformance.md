@@ -1,11 +1,11 @@
 # h# Conformance Report
 
-- Generated: 2026-10-23T13:32:40.670Z
+- Generated: 2026-10-23T15:36:34.321Z
 - Compiler: 0.1.0 (core 0.1)
 - Node: v24.21.0
 - Mode: full (all configured targets executed)
 - Profiles: standard, my-syntax, terse, casual
-- Cases: 29; target executions: 464
+- Cases: 30; target executions: 480
 - Result: PASS (0 failed, 0 blocked)
 
 ## Toolchains
@@ -50,6 +50,7 @@
 | dead-code-after-return | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
 | dead-code-after-if | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
 | grouped-comparison-equality | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
+| records-structural | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
 
 Each target artifact is compiled once per program and entry function; the same profile-independent artifact is then executed for every profile. Structural equivalence and round-trip preservation are verified separately for each profile.
 
@@ -77,6 +78,8 @@ Each target artifact is compiled once per program and entry function; the same p
 | integer-range | E_INT_RANGE | passed |
 | shadow-function | E_NAME_SHADOWS_FUNCTION | passed |
 | duplicate-parameter | E_DUPLICATE_PARAMETER | passed |
+| record-return-unsupported | E_RECORD_RETURN_UNSUPPORTED | passed |
+| unknown-record-field | E_UNKNOWN_FIELD | passed |
 | profile-duplicate-keyword | E_PROFILE_DUPLICATE_KEYWORD | passed |
 | profile-unknown-option | E_PROFILE_UNKNOWN_OPTION | passed |
 | profile-reassigned-canonical-word | E_PROFILE_RESERVED_KEYWORD | passed |

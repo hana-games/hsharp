@@ -34,10 +34,12 @@ const phases = [
   {
     phase: "0.3",
     title: "Data and memory semantics",
-    status: "Next",
-    summary: "Add useful values without importing target-specific behavior.",
+    status: "In progress",
+    summary: "Add useful values without importing target-specific behavior. Immutable scalar records are the first slice.",
     points: [
-      "Immutable records, strings, lists, variants",
+      "Immutable records with scalar fields",
+      "Nested records and update-as-new-value",
+      "Strings, lists, variants",
       "Option and Result as language values",
       "Equality, copying, and aliasing rules",
       "Unicode behavior specified before implementation",
@@ -138,7 +140,7 @@ const phases = [
       <div class="row" style="margin-top:1.4rem;">
         <span class="chip chip-lime">0.1 complete</span>
         <span class="chip chip-lime">0.2 complete</span>
-        <span class="chip chip-dark">0.3 next</span>
+        <span class="chip chip-dark">0.3 in progress</span>
         <span class="chip chip-dark">evidence over estimates</span>
       </div>
     </div>
