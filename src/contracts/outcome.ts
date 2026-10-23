@@ -32,9 +32,19 @@ export interface ListValue {
   elements: HsValue[];
 }
 
+export interface VariantValue {
+  kind: "variant";
+  variantName: string;
+  alternativeName: string;
+  /** Declaration-order index of the alternative. */
+  tag: number;
+  /** Positional payload values in declaration order. */
+  payload: HsValue[];
+}
+
 export interface HsValue {
   type: TypeName;
-  value: ScalarValue | RecordValue | ListValue;
+  value: ScalarValue | RecordValue | ListValue | VariantValue;
 }
 
 export function isRecordValue(value: HsValue["value"]): value is RecordValue {
@@ -43,6 +53,10 @@ export function isRecordValue(value: HsValue["value"]): value is RecordValue {
 
 export function isListValue(value: HsValue["value"]): value is ListValue {
   return typeof value === "object" && value !== null && value.kind === "list";
+}
+
+export function isVariantValue(value: HsValue["value"]): value is VariantValue {
+  return typeof value === "object" && value !== null && value.kind === "variant";
 }
 
 export const INDEX_CODE = "E_INDEX";

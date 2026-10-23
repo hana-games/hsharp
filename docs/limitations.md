@@ -4,8 +4,9 @@ The POC intentionally covers a small language core. The following limits are kno
 
 ## Language core
 
-- Scalars are `i32` and `bool`. The 0.3 slice adds immutable records, strings, and
-  `list<i32>`/`list<bool>`; there are no other collections, variants, `Option`, or `Result`.
+- Scalars are `i32` and `bool`. The 0.3 slice adds immutable records, strings,
+  `list<i32>`/`list<bool>`, and nominal variants with `i32`/`bool` payloads. There are no other
+  collections, `Option`, or `Result`.
 - Records are top-level and nominal. They support literals, nested non-recursive fields, field
   access, locals, internal function parameters, structural equality, and update-as-new-value.
 - Recursive record types are rejected with `E_RECURSIVE_RECORD`.
@@ -16,11 +17,21 @@ The POC intentionally covers a small language core. The following limits are kno
   internal parameters, and internal returns. Only `list<i32>` and `list<bool>` exist in this slice.
   Empty literals (`E_EMPTY_LIST_UNSUPPORTED`), other element types, mixed literals, record fields,
   concatenation, slicing, and mutation are rejected. Out-of-range indexing fails with `E_INDEX`.
-- Internal functions can return records. Entry functions cannot return records
-  (`E_RECORD_ENTRY_RETURN_UNSUPPORTED`) and cannot take record parameters because command-line
-  arguments remain scalar (`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`).
-- Generated record and field names are compiler-generated, so source names that collide with target
-  keywords never appear in generated type declarations.
+- Variants are top-level and nominal. Alternatives carry zero or more `i32`/`bool` payload values.
+  Constructors use normal call syntax (`circle(3)`, `empty()`); a call resolves to a constructor only
+  when the callee names exactly one alternative and no function. Ambiguous constructor/function
+  names are rejected with `E_AMBIGUOUS_CONSTRUCTOR`. `match` is exhaustive unless a final `_` arm is
+  present; the scrutinee is evaluated once and only the selected arm runs. Variants support
+  structural equality, locals, internal parameters, and internal returns. Guards, nested patterns,
+  and binding modes are not implemented. Payload types other than `i32`/`bool`
+  (`E_VARIANT_PAYLOAD_UNSUPPORTED`), variant record fields (`E_VARIANT_FIELD_UNSUPPORTED`), and lists
+  of variants (`E_VARIANT_IN_LIST`) are rejected.
+- Internal functions can return records and variants. Entry functions cannot return records or
+  variants (`E_RECORD_ENTRY_RETURN_UNSUPPORTED`, `E_VARIANT_ENTRY_RETURN_UNSUPPORTED`) and cannot take
+  record or variant parameters because command-line arguments remain scalar
+  (`E_RECORD_ENTRY_PARAMETER_UNSUPPORTED`, `E_VARIANT_ENTRY_PARAMETER_UNSUPPORTED`).
+- Generated record, field, variant, and alternative names are compiler-generated, so source names
+  that collide with target keywords never appear in generated type declarations.
 - No loops, recursion, mutation, modules, generics, exceptions, I/O, or concurrency.
 - No division or modulo.
 - No floating-point values.
@@ -69,14 +80,14 @@ The POC intentionally covers a small language core. The following limits are kno
 
 ## Verification
 
-- The committed corpus is small (30 positive cases, 29 negative program/profile cases, 39 unit tests, one bridge protocol test). It covers the specified rules and boundaries but is not a proof of correctness.
+- The committed corpus is small (30 positive cases, 29 negative program/profile cases, 47 unit tests, one bridge protocol test). It covers the specified rules and boundaries but is not a proof of correctness. The variant slice is covered by focused unit tests and `examples/variants.hs`, not by a new conformance-corpus entry.
 - Seeded property tests, automatic line reduction, a separate benchmark corpus, and manual Ubuntu CI are part of the 0.2 command. Windows/macOS CI is explicitly deferred.
 - Target artifacts are compiled once per program/entry and executed per profile; independent compilation per profile is unnecessary because generated code is profile-independent.
 - Semantics of concurrency, shared memory, ecosystem interoperability, and large applications are completely out of scope.
 
 ## Prioritized next work
 
-1. **Data and memory semantics.** The normative specification is in [`spec/data.md`](../spec/data.md). Immutable records with nested fields, record returns, update-as-new-value, strings with equality and internal returns, and the `list<i32>`/`list<bool>` slice (literals, indexing, `length`, equality) are implemented across the reference interpreter and all four targets. Next: empty lists, string length/indexing policy, variants, `Option`, and `Result`. Evaluate Rust ownership early.
+1. **Data and memory semantics.** The normative specification is in [`spec/data.md`](../spec/data.md). Immutable records with nested fields, record returns, update-as-new-value, strings with equality and internal returns, the `list<i32>`/`list<bool>` slice (literals, indexing, `length`, equality), and scalar-payload variants with exhaustive `match` and structural equality are implemented across the reference interpreter and all four targets. Next: empty lists, string length/indexing policy, `Option`, and `Result`. Evaluate Rust ownership early.
 2. **Re-enable CI hardening.** Validate the manual Ubuntu workflow, then restore automatic runs and the deferred Windows/macOS matrix.
 3. **Loops and controlled recursion.** Add specified termination/overflow behavior and update call-graph checks.
 4. **Syntax families and a printer.** Explicit-block and indentation families require a concrete syntax tree that preserves comments reliably.

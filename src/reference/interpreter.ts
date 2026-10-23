@@ -4,9 +4,11 @@ import {
   INDEX_CODE,
   isListValue,
   isRecordValue,
+  isVariantValue,
   OVERFLOW_CODE,
   type ListValue,
   type RecordValue,
+  type VariantValue,
 } from "../contracts/outcome";
 import { isPrimitiveTypeName, listTypeName, type TypeName } from "../contracts/tokens";
 
@@ -92,6 +94,9 @@ export function evaluate(program: TypedProgram, entry: string, args: RuntimeArgu
     }
     if (isListValue(result.value)) {
       throw new EvaluationError(`entry function "${entry}" returned a list`);
+    }
+    if (isVariantValue(result.value)) {
+      throw new EvaluationError(`entry function "${entry}" returned a variant`);
     }
     return { status: "ok", type: result.type, value: result.value };
   } catch (cause) {
@@ -186,7 +191,44 @@ class Interpreter {
         if (!value) throw new EvaluationError(`internal: unbound local "${expr.name}"`);
         return value;
       }
+      case "MatchExpr": {
+        // Evaluate the scrutinee exactly once; only the selected arm is run.
+        const subject = this.evalExpr(expr.scrutinee, env);
+        if (!isVariantValue(subject.value)) {
+          throw new EvaluationError(`internal: match scrutinee is not a variant`);
+        }
+        const scrutinee = subject.value;
+        const arm = expr.arms.find(
+          (candidate) =>
+            candidate.pattern.kind === "VariantPattern" && candidate.pattern.tag === scrutinee.tag,
+        );
+        const selected =
+          arm ?? expr.arms.find((candidate) => candidate.pattern.kind === "WildcardPattern");
+        if (!selected) {
+          throw new EvaluationError(`internal: match has no arm for alternative "${scrutinee.alternativeName}"`);
+        }
+        if (selected.pattern.kind === "VariantPattern") {
+          selected.pattern.bindings.forEach((binding, index) => {
+            const value = scrutinee.payload[index];
+            if (!value) throw new EvaluationError(`internal: missing match payload value`);
+            env.set(binding.symbolId!, value);
+          });
+        }
+        return this.evalExpr(selected.body, env);
+      }
       case "CallExpr": {
+        if (expr.variantConstructor) {
+          // Constructor arguments are evaluated left to right in payload order.
+          const values = expr.args.map((arg) => this.evalExpr(arg, env));
+          const value: VariantValue = {
+            kind: "variant",
+            variantName: expr.variantConstructor.variantName,
+            alternativeName: expr.variantConstructor.alternativeName,
+            tag: expr.variantConstructor.tag,
+            payload: values,
+          };
+          return { type: expr.variantConstructor.variantName, value };
+        }
         if (expr.builtin === "length") {
           const argument = this.evalExpr(expr.args[0], env);
           if (!isListValue(argument.value)) {
@@ -327,6 +369,15 @@ function valuesEqual(left: HsValue, right: HsValue): boolean {
     if (leftValue.fields.length !== rightValue.fields.length) return false;
     const rightFields = rightValue.fields;
     return leftValue.fields.every((field, index) => valuesEqual(field, rightFields[index]));
+  }
+  if (isVariantValue(leftValue) || isVariantValue(rightValue)) {
+    if (!isVariantValue(leftValue) || !isVariantValue(rightValue)) return false;
+    if (left.type !== right.type) return false;
+    if (leftValue.variantName !== rightValue.variantName) return false;
+    if (leftValue.tag !== rightValue.tag) return false;
+    if (leftValue.payload.length !== rightValue.payload.length) return false;
+    const rightPayload = rightValue.payload;
+    return leftValue.payload.every((value, index) => valuesEqual(value, rightPayload[index]));
   }
   return leftValue === rightValue;
 }

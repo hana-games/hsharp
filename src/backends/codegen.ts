@@ -24,6 +24,24 @@ export interface RecordInfo {
 
 export type RecordMap = Map<string, RecordInfo>;
 
+export interface VariantAlternativeInfo {
+  name: string;
+  targetName: string;
+  tag: number;
+  /** Positional payload types; every type is scalar in this slice. */
+  payload: TypeName[];
+}
+
+export interface VariantInfo {
+  name: string;
+  targetName: string;
+  alternatives: VariantAlternativeInfo[];
+  /** Largest payload arity, used to size the generated tagged value. */
+  maxArity: number;
+}
+
+export type VariantMap = Map<string, VariantInfo>;
+
 /** Collects checked record declarations using their collision-safe target names. */
 export function collectRecords(program: TypedProgram): RecordMap {
   const records: RecordMap = new Map();
@@ -42,6 +60,27 @@ export function collectRecords(program: TypedProgram): RecordMap {
   return records;
 }
 
+/** Collects checked variant declarations using their collision-safe target names. */
+export function collectVariants(program: TypedProgram): VariantMap {
+  const variants: VariantMap = new Map();
+  for (const variant of program.ast.variants) {
+    if (!variant.targetName) continue;
+    const alternatives = variant.alternatives.map((alternative, index) => ({
+      name: alternative.name,
+      targetName: alternative.targetName ?? `a${index + 1}`,
+      tag: alternative.tag ?? index,
+      payload: alternative.payloadTypes ?? alternative.payload.map((type) => type.name),
+    }));
+    variants.set(variant.name, {
+      name: variant.name,
+      targetName: variant.targetName,
+      alternatives,
+      maxArity: alternatives.reduce((max, alternative) => Math.max(max, alternative.payload.length), 0),
+    });
+  }
+  return variants;
+}
+
 /** Target type spelling: primitives share the integer representation. */
 export function targetType(
   type: TypeName,
@@ -49,15 +88,16 @@ export function targetType(
   intType: string,
   stringType: string,
   listType?: (element: string) => string,
+  variants?: VariantMap,
 ): string {
   if (isListTypeName(type)) {
     const element = listElementTypeName(type) ?? "i32";
-    const elementTarget = targetType(element, records, intType, stringType, listType);
+    const elementTarget = targetType(element, records, intType, stringType, listType, variants);
     return listType ? listType(elementTarget) : elementTarget;
   }
   if (type === "string") return stringType;
   if (isPrimitiveTypeName(type)) return intType;
-  return records.get(type)?.targetName ?? intType;
+  return records.get(type)?.targetName ?? variants?.get(type)?.targetName ?? intType;
 }
 
 export function quoteString(value: string): string {
@@ -79,6 +119,7 @@ export interface Dialect {
   declareRes(name: string, init: string): string[];
   assign(name: string, expr: string): string[];
   ifOpen(cond: string): string;
+  elseIfOpen(cond: string): string;
   elseOpen(): string;
   closeBlock(): string;
   returnStmt(expr: string): string;
@@ -87,10 +128,13 @@ export interface Dialect {
   resOk(expr: string): string;
   resOkRecord(record: RecordInfo, expr: string): string;
   resRecordValue(expr: string, record: RecordInfo): string;
+  resOkVariant(variant: VariantInfo, expr: string): string;
+  resVariantValue(expr: string, variant: VariantInfo): string;
   resOkString(expr: string): string;
   resStringValue(expr: string): string;
   stringLiteral(value: string): string;
   stringValue(expr: string): string;
+  emptyString(): string;
   valueEquals(left: string, right: string, type: TypeName): string;
   resFail(code: number, node: number): string;
   checked(op: CheckedOp, args: string[], node: number): string;
@@ -98,9 +142,15 @@ export interface Dialect {
   recordLiteral(record: RecordInfo, values: string[]): string;
   fieldAccess(target: string, record: RecordInfo, index: number): string;
   fieldEquals(left: string, right: string, record: RecordInfo, index: number): string;
+  /** Tagged value constructor for one variant alternative, padded to max arity. */
+  constructVariant(variant: VariantInfo, alternative: VariantAlternativeInfo, values: string[]): string;
+  variantTag(expr: string, variant: VariantInfo): string;
+  variantPayload(expr: string, variant: VariantInfo, index: number): string;
+  variantEquals(left: string, right: string, variant: VariantInfo): string;
   /** Target spelling of a list of the given element type. */
   listType(elementType: string): string;
   listLiteral(values: string[]): string;
+  emptyList(): string;
   /** Read a list value as an expression, cloning where ownership requires it. */
   listValue(expr: string): string;
   listLength(expr: string): string;
@@ -144,6 +194,12 @@ class CodeBuilder {
     this.indent += 1;
   }
 
+  elseIfOpen(cond: string): void {
+    this.indent -= 1;
+    this.line(this.dialect.elseIfOpen(cond));
+    this.indent += 1;
+  }
+
   elseOpen(): void {
     this.indent -= 1;
     this.line(this.dialect.elseOpen());
@@ -169,6 +225,7 @@ class Lowerer {
     private readonly builder: CodeBuilder,
     private readonly dialect: Dialect,
     private readonly records: RecordMap,
+    private readonly variants: VariantMap,
   ) {}
 
   lowerBlock(block: Block): void {
@@ -207,8 +264,13 @@ class Lowerer {
         } else if (isPrimitiveTypeName(value.type)) {
           this.builder.line(this.dialect.returnStmt(this.dialect.resOk(value.text)));
         } else {
+          const variant = this.variants.get(value.type);
+          if (variant) {
+            this.builder.line(this.dialect.returnStmt(this.dialect.resOkVariant(variant, value.text)));
+            return;
+          }
           const record = this.records.get(value.type);
-          if (!record) throw new Error(`internal: unknown return record "${value.type}"`);
+          if (!record) throw new Error(`internal: unknown return type "${value.type}"`);
           this.builder.line(this.dialect.returnStmt(this.dialect.resOkRecord(record, value.text)));
         }
         return;
@@ -217,7 +279,39 @@ class Lowerer {
   }
 
   private typeText(type: TypeName): string {
-    return targetType(type, this.records, this.dialect.intType, this.dialect.stringType, this.dialect.listType);
+    return targetType(
+      type,
+      this.records,
+      this.dialect.intType,
+      this.dialect.stringType,
+      this.dialect.listType,
+      this.variants,
+    );
+  }
+
+  /** A type-correct placeholder used to initialize a match result before an arm runs. */
+  private defaultFor(type: TypeName): string {
+    if (type === "string") return this.dialect.emptyString();
+    if (isListTypeName(type)) return this.dialect.emptyList();
+    if (isPrimitiveTypeName(type)) return "0";
+    const record = this.records.get(type);
+    if (record) {
+      return this.dialect.recordLiteral(
+        record,
+        record.fields.map((field) => this.defaultFor(field.type)),
+      );
+    }
+    const variant = this.variants.get(type);
+    if (variant) {
+      const alternative = variant.alternatives[0];
+      if (!alternative) throw new Error(`internal: variant "${type}" has no alternatives`);
+      return this.dialect.constructVariant(
+        variant,
+        alternative,
+        alternative.payload.map((payload) => this.defaultFor(payload)),
+      );
+    }
+    throw new Error(`internal: cannot build a default value for "${type}"`);
   }
 
   private lowerExpr(expr: Expr): Lowered {
@@ -356,6 +450,23 @@ class Lowerer {
         }
       }
       case "CallExpr": {
+        if (expr.variantConstructor) {
+          const variant = this.variants.get(expr.variantConstructor.variantName);
+          const alternative = variant?.alternatives.find(
+            (candidate) => candidate.name === expr.variantConstructor!.alternativeName,
+          );
+          if (!variant || !alternative) {
+            throw new Error(`internal: unresolved constructor "${expr.callee}"`);
+          }
+          const values = expr.args.map((arg) => this.lowerExpr(arg).text);
+          const temp = this.builder.temp("t");
+          this.builder.declare(
+            temp,
+            this.typeText(expr.variantConstructor.variantName),
+            this.dialect.constructVariant(variant, alternative, values),
+          );
+          return { text: temp, type: expr.variantConstructor.variantName };
+        }
         if (expr.builtin === "length") {
           const argument = this.lowerExpr(expr.args[0]);
           return { text: this.dialect.listLength(argument.text), type: "i32" };
@@ -376,11 +487,68 @@ class Lowerer {
         } else if (isPrimitiveTypeName(returnType)) {
           this.builder.declare(temp, this.typeText(returnType), this.dialect.resValue(res));
         } else {
+          const variant = this.variants.get(returnType);
+          if (variant) {
+            this.builder.declare(temp, this.typeText(returnType), this.dialect.resVariantValue(res, variant));
+            return { text: temp, type: returnType };
+          }
           const record = this.records.get(returnType);
-          if (!record) throw new Error(`internal: unknown return record "${returnType}"`);
+          if (!record) throw new Error(`internal: unknown return type "${returnType}"`);
           this.builder.declare(temp, this.typeText(returnType), this.dialect.resRecordValue(res, record));
         }
         return { text: temp, type: returnType };
+      }
+      case "MatchExpr": {
+        const variant = this.variants.get(expr.variantName ?? "");
+        if (!variant) throw new Error(`internal: unknown match variant "${expr.variantName}"`);
+        // The scrutinee is evaluated once into a local value; no arm mutates it.
+        const scrutinee = this.lowerExpr(expr.scrutinee);
+        const subject = this.builder.temp("t");
+        this.builder.declare(subject, this.typeText(variant.name), scrutinee.text);
+        const resultType = expr.resolvedType ?? "i32";
+        const result = this.builder.temp("t");
+        this.builder.declare(result, this.typeText(resultType), this.defaultFor(resultType));
+
+        const arms = expr.arms;
+        let openedBlocks = 0;
+        arms.forEach((arm, index) => {
+          const last = index === arms.length - 1;
+          const pattern = arm.pattern;
+          if (pattern.kind === "WildcardPattern") {
+            if (index === 0) {
+              // A lone wildcard needs no test at all.
+              const body = this.lowerExpr(arm.body);
+              this.builder.assign(result, body.text);
+              return;
+            }
+            this.builder.elseOpen();
+            openedBlocks += 1;
+          } else if (index === 0) {
+            this.builder.ifOpen(`${this.dialect.variantTag(subject, variant)} == ${pattern.tag}`);
+            openedBlocks += 1;
+          } else if (last) {
+            // Checked exhaustiveness makes the final alternative an unconditional else.
+            this.builder.elseOpen();
+            openedBlocks += 1;
+          } else {
+            this.builder.elseIfOpen(`${this.dialect.variantTag(subject, variant)} == ${pattern.tag}`);
+            openedBlocks += 1;
+          }
+          if (pattern.kind === "VariantPattern") {
+            pattern.bindings.forEach((binding, payloadIndex) => {
+              this.builder.declare(
+                binding.targetName!,
+                this.typeText(binding.resolvedType ?? "i32"),
+                this.dialect.variantPayload(subject, variant, payloadIndex),
+              );
+            });
+          }
+          const body = this.lowerExpr(arm.body);
+          this.builder.assign(result, body.text);
+        });
+        // Only close the whole if/else chain once.
+        if (openedBlocks > 0) this.builder.closeBlock();
+        return { text: result, type: resultType };
       }
     }
   }
@@ -388,11 +556,14 @@ class Lowerer {
   private comparison(op: string, left: Lowered, right: Lowered): string {
     if (op === "==" || op === "!=") {
       const record = this.records.get(left.type);
+      const variant = this.variants.get(left.type);
       const equality = isListTypeName(left.type)
         ? this.dialect.listEquals(left.text, right.text, listElementTypeName(left.type) ?? "i32")
         : record
           ? this.recordEquality(left.text, right.text, record)
-          : this.dialect.valueEquals(left.text, right.text, left.type);
+          : variant
+            ? this.dialect.variantEquals(left.text, right.text, variant)
+            : this.dialect.valueEquals(left.text, right.text, left.type);
       return op === "==" ? equality : `!(${equality})`;
     }
     return `${left.text} ${op} ${right.text}`;
@@ -421,9 +592,10 @@ export function emitFunctionBody(
   fn: FunctionDecl,
   dialect: Dialect,
   records: RecordMap,
+  variants: VariantMap,
 ): string {
   const builder = new CodeBuilder(dialect);
-  new Lowerer(builder, dialect, records).lowerBlock(fn.body);
+  new Lowerer(builder, dialect, records, variants).lowerBlock(fn.body);
   // The checker guarantees every path returns. Keep a fallback only for
   // defensive code generation of unchecked input; Java rejects unreachable code.
   if (!blockDefinitelyReturns(fn.body)) {

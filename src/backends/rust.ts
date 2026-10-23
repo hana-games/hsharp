@@ -4,12 +4,14 @@ import { INDEX_FAILURE_CODE } from "../contracts/outcome";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
 import {
   collectRecords,
+  collectVariants,
   emitFunctionBody,
   functionBySignature,
   quoteString,
   targetType,
   type Dialect,
   type RecordMap,
+  type VariantMap,
 } from "./codegen";
 
 export function emitRust(
@@ -21,6 +23,7 @@ export function emitRust(
   const entry = program.functions.find((fn) => fn.name === entryName);
   if (!entry) throw new Error(`entry function "${entryName}" was not found`);
   const records = collectRecords(program);
+  const variants = collectVariants(program);
 
   const dialect: Dialect = {
     target: "rust",
@@ -31,6 +34,7 @@ export function emitRust(
     declareRes: (name, init) => [`let ${name}: Res = ${init};`],
     assign: (name, expr) => [`${name} = ${expr};`],
     ifOpen: (cond) => `if ${cond} {`,
+    elseIfOpen: (cond) => `} else if ${cond} {`,
     elseOpen: () => `} else {`,
     closeBlock: () => `}`,
     returnStmt: (expr) => `return ${expr};`,
@@ -40,11 +44,15 @@ export function emitRust(
     resOkRecord: (record, expr) => `Res::ok_record(Payload::${record.targetName}(${expr}))`,
     resRecordValue: (expr, record) =>
       `match ${expr}.payload { Payload::${record.targetName}(value) => value, _ => return Res::fail(2, 0) }`,
+    resOkVariant: (variant, expr) => `Res::ok_record(Payload::${variant.targetName}(${expr}))`,
+    resVariantValue: (expr, variant) =>
+      `match ${expr}.payload { Payload::${variant.targetName}(value) => value, _ => return Res::fail(2, 0) }`,
     resOkString: (expr) => `Res::ok_string(${expr})`,
     resStringValue: (expr) =>
       `match ${expr}.payload { Payload::String(value) => value, _ => return Res::fail(2, 0) }`,
     stringLiteral: (value) => `String::from(${quoteString(value)})`,
     stringValue: (expr) => `${expr}.clone()`,
+    emptyString: () => `String::new()`,
     valueEquals: (left, right) => `${left} == ${right}`,
     resFail: (code, node) => `Res::fail(${code}, ${node})`,
     checked: (op, args, node) => `${op}(${[...args, String(node)].join(", ")})`,
@@ -58,8 +66,17 @@ export function emitRust(
     fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}`,
     fieldEquals: (left, right, record, index) =>
       `${left}.${record.fields[index].targetName} == ${right}.${record.fields[index].targetName}`,
+    constructVariant: (variant, alternative, values) => {
+      const fields = ["tag", ...Array.from({ length: variant.maxArity }, (_unused, index) => `p${index + 1}`)];
+      const assigned = [String(alternative.tag), ...values, ...Array(Math.max(0, variant.maxArity - values.length)).fill("0")];
+      return `${variant.targetName} { ${fields.map((field, index) => `${field}: ${assigned[index]}`).join(", ")} }`;
+    },
+    variantTag: (expr) => `${expr}.tag`,
+    variantPayload: (expr, _variant, index) => `${expr}.p${index + 1}`,
+    variantEquals: (left, right) => `${left} == ${right}`,
     listType: (element) => `Vec<${element}>`,
     listLiteral: (values) => `vec![${values.join(", ")}]`,
+    emptyList: () => `vec![]`,
     listValue: (expr) => `${expr}.clone()`,
     listLength: (expr) => `(${expr}.len() as i32)`,
     listIndex: (list, index, node) => `index(&${list}, ${index}, ${node})`,
@@ -69,14 +86,16 @@ export function emitRust(
       `match ${expr}.payload { Payload::List(value) => value, _ => return Res::fail(2, 0) }`,
   };
 
-  const recordDeclarations = renderRecords(records, dialect);
+  const recordDeclarations = renderRecords(records, dialect, variants);
+  const variantDeclarations = renderVariants(variants, dialect);
   const payloadVariants = [
     "    String(String),",
     "    List(Vec<i32>),",
     ...[...records.values()].map((record) => `    ${record.targetName}(${record.targetName}),`),
+    ...[...variants.values()].map((variant) => `    ${variant.targetName}(${variant.targetName}),`),
   ].join("\n");
   const functions = program.functions
-    .map((signature) => renderFunction(program, signature, dialect, records))
+    .map((signature) => renderFunction(program, signature, dialect, records, variants))
     .join("\n\n");
 
   const main = renderMain(entry);
@@ -158,6 +177,8 @@ fn index(list: &Vec<i32>, index: i32, node: i32) -> Res {
 
 ${recordDeclarations}
 
+${variantDeclarations}
+
 ${functions}
 
 ${main}
@@ -188,12 +209,25 @@ path = "src/main.rs"
   };
 }
 
-function renderRecords(records: RecordMap, dialect: Dialect): string {
+function renderRecords(records: RecordMap, dialect: Dialect, variants: VariantMap): string {
   return [...records.values()]
     .map((record) => {
       const lines = [`#[derive(Clone, Copy, PartialEq, Eq)]`, `struct ${record.targetName} {`];
       for (const field of record.fields) {
-        lines.push(`    ${field.targetName}: ${targetType(field.type, records, dialect.intType, dialect.stringType, dialect.listType)},`);
+        lines.push(`    ${field.targetName}: ${targetType(field.type, records, dialect.intType, dialect.stringType, dialect.listType, variants)},`);
+      }
+      lines.push("}");
+      return lines.join("\n");
+    })
+    .join("\n\n");
+}
+
+function renderVariants(variants: VariantMap, dialect: Dialect): string {
+  return [...variants.values()]
+    .map((variant) => {
+      const lines = [`#[derive(Clone, Copy, PartialEq, Eq)]`, `struct ${variant.targetName} {`, `    tag: ${dialect.intType},`];
+      for (let index = 0; index < variant.maxArity; index++) {
+        lines.push(`    p${index + 1}: ${dialect.intType},`);
       }
       lines.push("}");
       return lines.join("\n");
@@ -206,12 +240,13 @@ function renderFunction(
   signature: FunctionSignature,
   dialect: Dialect,
   records: RecordMap,
+  variants: VariantMap,
 ): string {
   const fn = functionBySignature(program, signature);
   const parameters = fn.params
-    .map((param) => `${param.targetName}: ${targetType(param.type.name, records, dialect.intType, dialect.stringType, dialect.listType)}`)
+    .map((param) => `${param.targetName}: ${targetType(param.type.name, records, dialect.intType, dialect.stringType, dialect.listType, variants)}`)
     .join(", ");
-  const body = emitFunctionBody(fn, dialect, records);
+  const body = emitFunctionBody(fn, dialect, records, variants);
   return `fn ${signature.targetName}(${parameters}) -> Res {\n${indent(body, 4)}\n}`;
 }
 

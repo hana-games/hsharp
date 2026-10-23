@@ -10,7 +10,11 @@ import type {
   IntLiteral,
   LetStmt,
   ListLiteral,
+  MatchArm,
+  MatchExpr,
   Param,
+  Pattern,
+  PatternBinding,
   Program,
   RecordDecl,
   RecordField,
@@ -20,6 +24,10 @@ import type {
   Stmt,
   TypeRef,
   UnaryOp,
+  VariantAlternative,
+  VariantDecl,
+  VariantPattern,
+  WildcardPattern,
 } from "../contracts/ast";
 import type { Diagnostic, SourceSpan } from "../contracts/diagnostics";
 import { error } from "../contracts/diagnostics";
@@ -92,10 +100,13 @@ class Parser {
   parseProgram(): Program {
     const start = this.current().span.start;
     const records: RecordDecl[] = [];
+    const variants: VariantDecl[] = [];
     const functions: FunctionDecl[] = [];
     while (!this.atEnd()) {
       if (this.current().kind === "identifier" && this.current().text === "record") {
         records.push(this.parseRecord());
+      } else if (this.isVariantDeclarationStart()) {
+        variants.push(this.parseVariant());
       } else {
         functions.push(this.parseFunction());
       }
@@ -106,8 +117,59 @@ class Parser {
       id: this.nextId++,
       span: { file: this.file, start, end },
       records,
+      variants,
       functions,
       sourceText: this.text,
+    };
+  }
+
+  /** `variant` is contextual: only a following name and `{` start a declaration. */
+  private isVariantDeclarationStart(): boolean {
+    const token = this.current();
+    return (
+      token.kind === "identifier" &&
+      token.text === "variant" &&
+      this.peek(1).kind === "identifier" &&
+      isPunct(this.peek(2), "{")
+    );
+  }
+
+  private parseVariant(): VariantDecl {
+    const variantToken = this.expectIdentifier("variant name");
+    const nameToken = this.expectIdentifier("variant name");
+    this.expectPunct("{");
+    const alternatives: VariantAlternative[] = [];
+    while (!isPunct(this.current(), "}")) {
+      if (this.atEnd()) throw this.fail("E_SYNTAX", "unclosed variant; expected \"}\"", this.current());
+      const alternativeName = this.expectIdentifier("alternative name");
+      const payload: TypeRef[] = [];
+      if (this.matchPunct("(")) {
+        if (!isPunct(this.current(), ")")) {
+          do {
+            payload.push(this.parseType());
+          } while (this.matchPunct(","));
+        }
+        this.expectPunct(")");
+      }
+      const end = payload.length > 0 ? payload[payload.length - 1].span.end : alternativeName.span.end;
+      alternatives.push({
+        kind: "VariantAlternative",
+        id: this.nextId++,
+        span: { file: this.file, start: alternativeName.span.start, end },
+        name: alternativeName.text,
+        nameSpan: alternativeName.span,
+        payload,
+      });
+      if (!this.matchPunct(",")) break;
+    }
+    const close = this.expectPunct("}");
+    return {
+      kind: "VariantDecl",
+      id: this.nextId++,
+      span: { file: this.file, start: variantToken.span.start, end: close.span.end },
+      name: nameToken.text,
+      nameSpan: nameToken.span,
+      alternatives,
     };
   }
 
@@ -429,8 +491,115 @@ class Parser {
     return expr;
   }
 
+  /**
+   * `match` is contextual. Treat it as an expression only when a top-level `{`
+   * follows the scrutinee before any token that ends the surrounding expression,
+   * so identifiers named `match` keep working in calls, fields, and arithmetic.
+   */
+  private looksLikeMatchExpression(): boolean {
+    let depth = 0;
+    for (let offset = 1; ; offset++) {
+      const token = this.peek(offset);
+      if (token.kind === "eof") return false;
+      if (isPunct(token, "(") || isPunct(token, "[")) {
+        depth += 1;
+        continue;
+      }
+      if (isPunct(token, ")") || isPunct(token, "]")) {
+        if (depth === 0) return false;
+        depth -= 1;
+        continue;
+      }
+      if (depth > 0) continue;
+      if (isPunct(token, "{")) return true;
+      if (
+        isPunct(token, ";") ||
+        isPunct(token, ",") ||
+        isPunct(token, "}") ||
+        isPunct(token, "=") ||
+        isPunct(token, "=>")
+      ) {
+        return false;
+      }
+    }
+  }
+
+  private parseMatch(): MatchExpr {
+    const matchToken = this.advance();
+    const scrutinee = this.parseExpression();
+    this.expectPunct("{");
+    const arms: MatchArm[] = [];
+    while (!isPunct(this.current(), "}")) {
+      if (this.atEnd()) throw this.fail("E_SYNTAX", "unclosed match; expected \"}\"", this.current());
+      const pattern = this.parsePattern();
+      this.expectPunct("=>");
+      const body = this.parseExpression();
+      arms.push({
+        kind: "MatchArm",
+        id: this.nextId++,
+        span: { file: this.file, start: pattern.span.start, end: body.span.end },
+        pattern,
+        body,
+      });
+      if (!this.matchPunct(",")) break;
+    }
+    const close = this.expectPunct("}");
+    return {
+      kind: "MatchExpr",
+      id: this.nextId++,
+      span: { file: this.file, start: matchToken.span.start, end: close.span.end },
+      scrutinee,
+      arms,
+    };
+  }
+
+  private parsePattern(): Pattern {
+    const token = this.current();
+    if (token.kind !== "identifier") {
+      throw this.fail("E_SYNTAX", `expected a variant pattern or "_" but found ${describe(token)}`, token);
+    }
+    this.advance();
+    if (token.text === "_") {
+      const wildcard: WildcardPattern = {
+        kind: "WildcardPattern",
+        id: this.nextId++,
+        span: token.span,
+      };
+      return wildcard;
+    }
+    const bindings: PatternBinding[] = [];
+    if (this.matchPunct("(")) {
+      if (!isPunct(this.current(), ")")) {
+        do {
+          const bindingName = this.expectIdentifier("pattern binding");
+          bindings.push({
+            kind: "PatternBinding",
+            id: this.nextId++,
+            span: bindingName.span,
+            name: bindingName.text,
+            nameSpan: bindingName.span,
+          });
+        } while (this.matchPunct(","));
+      }
+      this.expectPunct(")");
+    }
+    const end = bindings.length > 0 ? bindings[bindings.length - 1].span.end : token.span.end;
+    const pattern: VariantPattern = {
+      kind: "VariantPattern",
+      id: this.nextId++,
+      span: { file: this.file, start: token.span.start, end },
+      alternativeName: token.text,
+      alternativeNameSpan: token.span,
+      bindings,
+    };
+    return pattern;
+  }
+
   private parsePrimary(): Expr {
     const token = this.current();
+    if (token.kind === "identifier" && token.text === "match" && this.looksLikeMatchExpression()) {
+      return this.parseMatch();
+    }
     if (token.kind === "integer") {
       const parsed = Number(token.text);
       if (!Number.isSafeInteger(parsed) || parsed > SPECIAL_I32_MIN_MAGNITUDE) {

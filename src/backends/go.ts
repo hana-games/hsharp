@@ -4,12 +4,14 @@ import { INDEX_FAILURE_CODE } from "../contracts/outcome";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
 import {
   collectRecords,
+  collectVariants,
   emitFunctionBody,
   functionBySignature,
   quoteString,
   targetType,
   type Dialect,
   type RecordMap,
+  type VariantMap,
 } from "./codegen";
 
 export function emitGo(
@@ -21,6 +23,7 @@ export function emitGo(
   const entry = program.functions.find((fn) => fn.name === entryName);
   if (!entry) throw new Error(`entry function "${entryName}" was not found`);
   const records = collectRecords(program);
+  const variants = collectVariants(program);
 
   const dialect: Dialect = {
     target: "go",
@@ -31,6 +34,7 @@ export function emitGo(
     declareRes: (name, init) => [`var ${name} Res = ${init}`, `_ = ${name}`],
     assign: (name, expr) => [`${name} = ${expr}`],
     ifOpen: (cond) => `if ${cond} {`,
+    elseIfOpen: (cond) => `} else if ${cond} {`,
     elseOpen: () => `} else {`,
     closeBlock: () => `}`,
     returnStmt: (expr) => `return ${expr}`,
@@ -39,10 +43,13 @@ export function emitGo(
     resOk: (expr) => `ok(${expr})`,
     resOkRecord: (_record, expr) => `okRecord(${expr})`,
     resRecordValue: (expr, record) => `${expr}.payload.(${record.targetName})`,
+    resOkVariant: (_variant, expr) => `okRecord(${expr})`,
+    resVariantValue: (expr, variant) => `${expr}.payload.(${variant.targetName})`,
     resOkString: (expr) => `okString(${expr})`,
     resStringValue: (expr) => `${expr}.payload.(string)`,
     stringLiteral: quoteString,
     stringValue: (expr) => expr,
+    emptyString: () => `""`,
     valueEquals: (left, right) => `${left} == ${right}`,
     resFail: (code, node) => `fail(${code}, ${node})`,
     checked: (op, args, node) => `${op}(${[...args, String(node)].join(", ")})`,
@@ -56,8 +63,25 @@ export function emitGo(
     fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}`,
     fieldEquals: (left, right, record, index) =>
       `${left}.${record.fields[index].targetName} == ${right}.${record.fields[index].targetName}`,
+    constructVariant: (variant, alternative, values) => {
+      const fields = ["tag", ...Array.from({ length: variant.maxArity }, (_unused, index) => `p${index + 1}`)];
+      const assigned = [String(alternative.tag), ...values, ...Array(Math.max(0, variant.maxArity - values.length)).fill("0")];
+      return `${variant.targetName}{${fields
+        .map((field, index) => `${field}: ${assigned[index]}`)
+        .join(", ")}}`;
+    },
+    variantTag: (expr) => `${expr}.tag`,
+    variantPayload: (expr, _variant, index) => `${expr}.p${index + 1}`,
+    variantEquals: (left, right, variant) =>
+      variant.maxArity === 0
+        ? `${left}.tag == ${right}.tag`
+        : `(${left}.tag == ${right}.tag && ${Array.from(
+            { length: variant.maxArity },
+            (_unused, index) => `${left}.p${index + 1} == ${right}.p${index + 1}`,
+          ).join(" && ")})`,
     listType: (element) => `[]${element}`,
     listLiteral: (values) => `[]int32{${values.join(", ")}}`,
+    emptyList: () => `[]int32{}`,
     listValue: (expr) => expr,
     listLength: (expr) => `int32(len(${expr}))`,
     listIndex: (list, index, node) => `index(${list}, ${index}, ${node})`,
@@ -66,9 +90,10 @@ export function emitGo(
     resListValue: (expr) => `${expr}.payload.([]int32)`,
   };
 
-  const recordDeclarations = renderRecords(records, dialect);
+  const recordDeclarations = renderRecords(records, dialect, variants);
+  const variantDeclarations = renderVariants(variants, dialect);
   const functions = program.functions
-    .map((signature) => renderFunction(program, signature, dialect, records))
+    .map((signature) => renderFunction(program, signature, dialect, records, variants))
     .join("\n\n");
 
   const main = renderMain(entry);
@@ -159,6 +184,8 @@ func listEquals(left []int32, right []int32) bool {
 
 ${recordDeclarations}
 
+${variantDeclarations}
+
 ${functions}
 
 ${main}
@@ -181,12 +208,25 @@ go 1.22
   };
 }
 
-function renderRecords(records: RecordMap, dialect: Dialect): string {
+function renderRecords(records: RecordMap, dialect: Dialect, variants: VariantMap): string {
   return [...records.values()]
     .map((record) => {
       const lines = [`type ${record.targetName} struct {`];
       for (const field of record.fields) {
-        lines.push(`\t${field.targetName} ${targetType(field.type, records, dialect.intType, dialect.stringType, dialect.listType)}`);
+        lines.push(`\t${field.targetName} ${targetType(field.type, records, dialect.intType, dialect.stringType, dialect.listType, variants)}`);
+      }
+      lines.push("}");
+      return lines.join("\n");
+    })
+    .join("\n\n");
+}
+
+function renderVariants(variants: VariantMap, dialect: Dialect): string {
+  return [...variants.values()]
+    .map((variant) => {
+      const lines = [`type ${variant.targetName} struct {`, `\ttag ${dialect.intType}`];
+      for (let index = 0; index < variant.maxArity; index++) {
+        lines.push(`\tp${index + 1} ${dialect.intType}`);
       }
       lines.push("}");
       return lines.join("\n");
@@ -199,12 +239,13 @@ function renderFunction(
   signature: FunctionSignature,
   dialect: Dialect,
   records: RecordMap,
+  variants: VariantMap,
 ): string {
   const fn = functionBySignature(program, signature);
   const parameters = fn.params
-    .map((param) => `${param.targetName} ${targetType(param.type.name, records, dialect.intType, dialect.stringType, dialect.listType)}`)
+    .map((param) => `${param.targetName} ${targetType(param.type.name, records, dialect.intType, dialect.stringType, dialect.listType, variants)}`)
     .join(", ");
-  const body = emitFunctionBody(fn, dialect, records);
+  const body = emitFunctionBody(fn, dialect, records, variants);
   return `func ${signature.targetName}(${parameters}) Res {\n${indent(body, 1)}\n}`;
 }
 

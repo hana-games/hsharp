@@ -12,9 +12,34 @@ export interface NodeBase {
 export interface Program extends NodeBase {
   kind: "Program";
   records: RecordDecl[];
+  variants: VariantDecl[];
   functions: FunctionDecl[];
   /** Identifier spelling per node id is available through the source spans; the AST is not printed. */
   sourceText: string;
+}
+
+export interface VariantDecl extends NodeBase {
+  kind: "VariantDecl";
+  name: string;
+  nameSpan: SourceSpan;
+  alternatives: VariantAlternative[];
+  /** Filled by the semantic checker. */
+  symbolId?: string;
+  targetName?: string;
+}
+
+export interface VariantAlternative extends NodeBase {
+  kind: "VariantAlternative";
+  name: string;
+  nameSpan: SourceSpan;
+  /** Positional payload types in declaration order; empty for a nullary alternative. */
+  payload: TypeRef[];
+  /** Filled by the semantic checker. */
+  symbolId?: string;
+  targetName?: string;
+  tag?: number;
+  /** Filled by the semantic checker: canonical payload type names. */
+  payloadTypes?: TypeName[];
 }
 
 export interface RecordDecl extends NodeBase {
@@ -108,7 +133,8 @@ export type Expr =
   | RecordLiteral
   | FieldAccess
   | ListLiteral
-  | IndexExpr;
+  | IndexExpr
+  | MatchExpr;
 
 export interface IntLiteral extends NodeBase {
   kind: "IntLiteral";
@@ -178,6 +204,17 @@ export interface CallExpr extends NodeBase {
   calleeReturnType?: TypeName;
   /** Set when the call resolves to a compiler built-in such as `length`. */
   builtin?: "length";
+  /** Filled by the semantic checker when the callee is a variant alternative. */
+  variantConstructor?: VariantConstructorAnnotation;
+}
+
+export interface VariantConstructorAnnotation {
+  variantName: string;
+  alternativeName: string;
+  variantTargetName: string;
+  alternativeTargetName: string;
+  tag: number;
+  payloadTypes: TypeName[];
 }
 
 export interface ListLiteral extends NodeBase {
@@ -194,6 +231,49 @@ export interface IndexExpr extends NodeBase {
   index: Expr;
   /** Filled by the semantic checker: element type of the indexed list. */
   resolvedType?: TypeName;
+}
+
+export interface MatchExpr extends NodeBase {
+  kind: "MatchExpr";
+  scrutinee: Expr;
+  arms: MatchArm[];
+  /** Filled by the semantic checker: the common type of every arm body. */
+  resolvedType?: TypeName;
+  /** Filled by the semantic checker: nominal variant type of the scrutinee. */
+  variantName?: string;
+}
+
+export interface MatchArm extends NodeBase {
+  kind: "MatchArm";
+  pattern: Pattern;
+  body: Expr;
+}
+
+export type Pattern = VariantPattern | WildcardPattern;
+
+export interface VariantPattern extends NodeBase {
+  kind: "VariantPattern";
+  alternativeName: string;
+  alternativeNameSpan: SourceSpan;
+  /** Positional bindings in payload order. */
+  bindings: PatternBinding[];
+  /** Filled by the semantic checker. */
+  alternativeTargetName?: string;
+  tag?: number;
+}
+
+export interface PatternBinding extends NodeBase {
+  kind: "PatternBinding";
+  name: string;
+  nameSpan: SourceSpan;
+  /** Payload type at this position; filled by the semantic checker. */
+  resolvedType?: TypeName;
+  symbolId?: string;
+  targetName?: string;
+}
+
+export interface WildcardPattern extends NodeBase {
+  kind: "WildcardPattern";
 }
 
 export type UnaryOp = "-" | "!";
@@ -238,6 +318,14 @@ function normalizeProgram(program: Program): unknown {
       kind: "RecordDecl",
       name: record.name,
       fields: record.fields.map((field) => ({ name: field.name, type: field.type.name })),
+    })),
+    variants: program.variants.map((variant) => ({
+      kind: "VariantDecl",
+      name: variant.name,
+      alternatives: variant.alternatives.map((alternative) => ({
+        name: alternative.name,
+        payload: alternative.payload.map((type) => type.name),
+      })),
     })),
     functions: program.functions.map((fn) => ({
       kind: "FunctionDecl",
@@ -308,6 +396,22 @@ function normalizeExpr(expr: Expr): unknown {
       return { kind: "ListLiteral", elements: expr.elements.map(normalizeExpr) };
     case "IndexExpr":
       return { kind: "IndexExpr", target: normalizeExpr(expr.target), index: normalizeExpr(expr.index) };
+    case "MatchExpr":
+      return {
+        kind: "MatchExpr",
+        scrutinee: normalizeExpr(expr.scrutinee),
+        arms: expr.arms.map((arm) => ({
+          pattern:
+            arm.pattern.kind === "WildcardPattern"
+              ? { kind: "WildcardPattern" }
+              : {
+                  kind: "VariantPattern",
+                  alternative: arm.pattern.alternativeName,
+                  bindings: arm.pattern.bindings.map((binding) => binding.name),
+                },
+          body: normalizeExpr(arm.body),
+        })),
+      };
   }
 }
 
@@ -337,6 +441,10 @@ export function walkExpr(expr: Expr, visit: (node: Expr) => void): void {
     case "IndexExpr":
       walkExpr(expr.target, visit);
       walkExpr(expr.index, visit);
+      break;
+    case "MatchExpr":
+      walkExpr(expr.scrutinee, visit);
+      for (const arm of expr.arms) walkExpr(arm.body, visit);
       break;
     default:
       break;

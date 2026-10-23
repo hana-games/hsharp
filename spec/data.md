@@ -1,14 +1,16 @@
 # h# 0.3 — Data and memory semantics
 
-Status: **partially implemented (0.3 record, string, and list slices)**. A data feature is advertised only after it has a
+Status: **partially implemented (0.3 record, string, list, and variant slices)**. A data feature is advertised only after it has a
 conformance corpus entry and executes on every advertised target. The current slice covers immutable
 records with `i32`/`bool` fields, nested non-recursive records, record literals, field access, records
 as locals and internal parameters, record returns from internal functions, structural equality,
 update-as-new-value, strings with literals, escapes, equality, locals, internal parameters, and
-internal returns, and `list<i32>`/`list<bool>` with non-empty literals, indexing, `length`, locals,
-internal parameters, internal returns, and structural equality. Variants, `Option`, `Result`, string
-length/indexing, empty list literals, list mutation/concatenation, and record fields of string or list
-type remain specification-only.
+internal returns, `list<i32>`/`list<bool>` with non-empty literals, indexing, `length`, locals,
+internal parameters, internal returns, and structural equality, and nominal variants with scalar
+payloads, constructors, exhaustive `match`, wildcard arms, locals, internal parameters, internal
+returns, and structural equality. `Option`, `Result`, string length/indexing, empty list literals,
+list mutation/concatenation, record fields of string/list/variant type, and lists of variants remain
+specification-only.
 
 This document defines the portable data model for phase 0.3. It is normative for profiles,
 generated code, the reference interpreter, and the conformance suite.
@@ -143,9 +145,23 @@ variant Shape {
 - `none` is a nullary constructor and requires an expected `Option<T>` type.
 - A variant value carries its alternative and payload only; no target exception or null is exposed.
 
+**Implemented slice (0.3):** top-level `variant Name { alternative(i32, bool, ...), nullary }`
+declarations with unique names. Alternative names are nominal and unique within a variant; a bare
+call such as `circle(3)` resolves to a constructor when the callee names exactly one alternative and
+is not also a function name. Variants are immutable values usable as locals, internal parameters, and
+internal returns, and support structural `==`/`!=`. Variant names and alternative names do not appear
+in generated identifiers.
+
+**Deliberately rejected in this slice:** payload types other than `i32`/`bool`
+(`E_VARIANT_PAYLOAD_UNSUPPORTED`), variants in record fields (`E_VARIANT_FIELD_UNSUPPORTED`), lists
+of variants (`E_VARIANT_IN_LIST`), variant parameters or returns on entry functions
+(`E_VARIANT_ENTRY_PARAMETER_UNSUPPORTED`, `E_VARIANT_ENTRY_RETURN_UNSUPPORTED`), ambiguous
+constructor/function calls (`E_AMBIGUOUS_CONSTRUCTOR`), duplicate variants, alternatives, and match
+arms, and empty variant declarations. `Option` and `Result` remain specification-only.
+
 ## Pattern matching
 
-Minimal `match` is introduced only for variants and records:
+Minimal `match` is introduced for variants:
 
 ```text
 match shape {
@@ -159,6 +175,12 @@ match shape {
 - No guards, nested patterns, or binding modes in 0.3.
 - Matching is ordered only for diagnostics; exhaustive alternatives are disjoint.
 - Record destructuring is deferred; field access plus equality is sufficient for the first slice.
+
+**Implemented slice (0.3):** `match` expressions over variants, alternatives matched by name,
+positional payload bindings, and an optional final `_` arm. The scrutinee is evaluated once and only
+the selected arm runs. Non-exhaustive matches without `_` (`E_NON_EXHAUSTIVE_MATCH`), a non-final `_`
+(`E_WILDCARD_NOT_FINAL`), unknown alternatives, duplicate arms, pattern arity mismatches, and
+non-variant scrutinees are rejected. Guards, nested patterns, and binding modes are not implemented.
 
 ## Equality and copying
 
@@ -188,7 +210,9 @@ require a tagged representation in every backend.
 ### Rust (proving target)
 
 - Records become `#[derive(Clone, PartialEq, Eq)]` structs.
-- Variants become enums with payloads.
+- Variants become generated `#[derive(Clone, Copy, PartialEq, Eq)]` tagged structs carried through
+  the runtime `Payload` enum. The generated shape is private to the target; source semantics are
+  nominal.
 - Lists become `Vec<T>`.
 - Strings become `String` with scalar-value helpers.
 - Values are moved by default; `Clone` is used only when source semantics require another binding.
@@ -241,10 +265,11 @@ Initial corpus must cover:
 - `Option`, `Result`, and equality;
 - zero-copy observation tests where a backend shares immutable storage.
 
-The committed 0.3 corpus currently covers the record slice and a focused list example
-(`examples/list.hs`): scalar records, field access, internal record parameters, structural equality,
-and list literals/length/indexing/equality. The other bullets remain acceptance work for future
-slices.
+The committed 0.3 corpus currently covers the record slice, a focused list example
+(`examples/list.hs`), and a focused variant example (`examples/variants.hs`): scalar records, field
+access, internal record parameters, structural equality, list literals/length/indexing/equality,
+variant constructors, internal variant parameters and returns, exhaustive matching, and structural
+variant equality. The other bullets remain acceptance work for future slices.
 
 ## Migration
 

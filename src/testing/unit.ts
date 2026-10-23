@@ -679,6 +679,255 @@ test("list code generation uses target list types and hides source identifiers",
   }
 });
 
+test("variants construct, pass, return, match, and compare structurally", () => {
+  const source = readFileSync(resolve("examples", "variants.hs"), "utf8");
+  assert.deepEqual(resultOf(source), { status: "ok", type: "bool", value: true });
+
+  const equality = resultOf(`variant Box {
+    value(i32),
+    empty,
+}
+fn wrap(x: i32) -> Box {
+    return value(x);
+}
+fn main() -> bool {
+    let a: Box = wrap(7);
+    let b: Box = value(8);
+    let c: Box = wrap(7);
+    let none: Box = empty();
+    return a == c && a != b && none != a && none == empty();
+}
+`);
+  assert.deepEqual(equality, { status: "ok", type: "bool", value: true });
+});
+
+test("match evaluates only the selected arm", () => {
+  const source = `variant Choice {
+    yes(i32),
+    no,
+}
+fn main() -> bool {
+    let choice: Choice = yes(5);
+    let first: i32 = match choice {
+        yes(value) => value,
+        no => 2147483647 + 1,
+    };
+    let second: i32 = match choice {
+        yes(value) => value,
+        no => 2147483647 + 1,
+    };
+    return first == second && first == 5 && choice == yes(5);
+}
+`;
+  assert.deepEqual(resultOf(source), { status: "ok", type: "bool", value: true });
+});
+
+test("non-exhaustive and malformed matches are rejected", () => {
+  const nonExhaustive = analyze(
+    `variant Shape { circle(i32), rectangle(i32, i32), empty }
+fn main() -> i32 {
+    let shape: Shape = circle(2);
+    return match shape { circle(r) => r, rectangle(w, h) => w * h };
+}
+`,
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(
+    nonExhaustive.diagnostics.some((diagnostic) => diagnostic.code === "E_NON_EXHAUSTIVE_MATCH"),
+    nonExhaustive.diagnostics.map((diagnostic) => diagnostic.code).join(", "),
+  );
+
+  const wildcardNotFinal = analyze(
+    `variant Shape { circle(i32), empty }
+fn main() -> i32 {
+    let shape: Shape = empty();
+    return match shape { _ => 1, circle(r) => r };
+}
+`,
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(wildcardNotFinal.diagnostics.some((diagnostic) => diagnostic.code === "E_WILDCARD_NOT_FINAL"));
+
+  const unknown = analyze(
+    `variant Shape { circle(i32) }
+fn main() -> i32 {
+    let shape: Shape = circle(2);
+    return match shape { square(r) => r };
+}
+`,
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(unknown.diagnostics.some((diagnostic) => diagnostic.code === "E_UNKNOWN_ALTERNATIVE"));
+
+  const duplicate = analyze(
+    `variant Shape { circle(i32), empty }
+fn main() -> i32 {
+    let shape: Shape = empty();
+    return match shape { circle(r) => r, circle(r) => r + 1, empty() => 0 };
+}
+`,
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(duplicate.diagnostics.some((diagnostic) => diagnostic.code === "E_DUPLICATE_MATCH_ARM"));
+
+  const arity = analyze(
+    `variant Shape { circle(i32), empty }
+fn main() -> i32 {
+    let shape: Shape = empty();
+    return match shape { circle(r, q) => r, empty() => 0 };
+}
+`,
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(arity.diagnostics.some((diagnostic) => diagnostic.code === "E_PATTERN_ARITY"));
+
+  const armType = analyze(
+    `variant Shape { circle(i32), empty }
+fn main() -> i32 {
+    let shape: Shape = empty();
+    return match shape { circle(r) => true, empty() => 0 };
+}
+`,
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(armType.diagnostics.some((diagnostic) => diagnostic.code === "E_MATCH_ARM_TYPE"));
+
+  const nonVariant = analyze(
+    "fn main() -> i32 { return match 1 { _ => 2 }; }\n",
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(nonVariant.diagnostics.some((diagnostic) => diagnostic.code === "E_MATCH_ON_NON_VARIANT"));
+});
+
+test("ambiguous constructors and constructor diagnostics are reported", () => {
+  const ambiguous = analyze(
+    `variant Shape { make(i32) }
+fn make(x: i32) -> i32 { return x; }
+fn main() -> i32 { let shape: Shape = make(1); return 1; }
+`,
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(ambiguous.diagnostics.some((diagnostic) => diagnostic.code === "E_AMBIGUOUS_CONSTRUCTOR"));
+
+  const arity = analyze(
+    `variant Shape { circle(i32) }
+fn main() -> i32 { let shape: Shape = circle(1, 2); return 1; }
+`,
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(arity.diagnostics.some((diagnostic) => diagnostic.code === "E_ARITY"));
+
+  const argumentType = analyze(
+    `variant Shape { circle(i32) }
+fn main() -> i32 { let shape: Shape = circle(true); return 1; }
+`,
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(argumentType.diagnostics.some((diagnostic) => diagnostic.code === "E_ARGUMENT_TYPE"));
+});
+
+test("variant payloads, record fields, lists, and entry boundaries are rejected clearly", () => {
+  const payload = analyze(
+    "variant Bad { wrap(string) }\nfn main() -> i32 { return 1; }\n",
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(payload.diagnostics.some((diagnostic) => diagnostic.code === "E_VARIANT_PAYLOAD_UNSUPPORTED"));
+
+  const recordField = analyze(
+    "variant Shape { empty }\nrecord Wrapper { shape: Shape }\nfn main() -> i32 { return 1; }\n",
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(recordField.diagnostics.some((diagnostic) => diagnostic.code === "E_VARIANT_FIELD_UNSUPPORTED"));
+
+  const listElement = analyze(
+    "variant Shape { empty }\nfn main() -> bool { let shapes: list<Shape> = [empty()]; return true; }\n",
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(listElement.diagnostics.some((diagnostic) => diagnostic.code === "E_VARIANT_IN_LIST"));
+
+  const entryParam = analyze(
+    "variant Shape { empty }\nfn main(shape: Shape) -> i32 { return 1; }\n",
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(entryParam.diagnostics.some((diagnostic) => diagnostic.code === "E_VARIANT_ENTRY_PARAMETER_UNSUPPORTED"));
+
+  const entryReturn = analyze(
+    "variant Shape { empty }\nfn main() -> Shape { return empty(); }\n",
+    "<variants>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(entryReturn.diagnostics.some((diagnostic) => diagnostic.code === "E_VARIANT_ENTRY_RETURN_UNSUPPORTED"));
+});
+
+test("variant code generation uses tagged target types and hides source names", () => {
+  const source = readFileSync(resolve("examples", "variants.hs"), "utf8");
+  const loaded = analyze(source, "<variants>", STANDARD_PROFILE);
+  assert.ok(loaded.typed, loaded.diagnostics.map((diagnostic) => diagnostic.message).join("; "));
+  const { emit } = require("../backends") as typeof import("../backends");
+  for (const target of ["csharp", "rust", "go", "java"] as const) {
+    const project = emit(loaded.typed!, target, "main");
+    const text = project.files.map((file) => file.content).join("\n");
+    assert.match(text, /V1/, `${target} should generate a variant type`);
+    assert.match(text, /\.tag ==/, `${target} should lower match arms by tag`);
+    for (const sourceName of ["Shape", "circle", "rectangle", "empty"]) {
+      assert.ok(
+        !new RegExp(`\\b${sourceName}\\b`).test(text),
+        `${target} must not emit source variant name ${sourceName}`,
+      );
+    }
+  }
+});
+
+test("contextual match and variant words remain usable identifiers", () => {
+  const source = `fn match(x: i32) -> i32 { return x; }
+fn main() -> i32 {
+    let variant: i32 = 3;
+    let matchValue: i32 = match(2);
+    let total: i32 = matchValue + variant;
+    return total;
+}
+`;
+  const loaded = analyze(source, "<contextual>", STANDARD_PROFILE);
+  assert.ok(loaded.typed, loaded.diagnostics.map((diagnostic) => diagnostic.message).join("; "));
+  assert.deepEqual(evaluate(loaded.typed!, "main", { values: [] }), {
+    status: "ok",
+    type: "i32",
+    value: 5,
+  });
+});
+
+test("variant programs preserve the normalized AST across profiles", () => {
+  const source = readFileSync(resolve("examples", "variants.hs"), "utf8");
+  const canonical = analyze(source, "<canonical>", STANDARD_PROFILE);
+  assert.ok(canonical.program);
+  for (const profile of profiles) {
+    const { convert } = require("../frontend/convert") as typeof import("../frontend/convert");
+    const converted = convert(canonical.tokens!, STANDARD_PROFILE, profile);
+    assert.deepEqual(converted.diagnostics, [], `conversion to ${profile.id}`);
+    const parsed = analyze(converted.text, `<${profile.id}>`, profile);
+    assert.ok(parsed.program, `parse under ${profile.id}: ${parsed.diagnostics.map((d) => d.message).join("; ")}`);
+    assert.deepEqual(
+      normalizeAst(parsed.program!),
+      normalizeAst(canonical.program!),
+      `normalized AST under ${profile.id}`,
+    );
+  }
+});
+
 test("seeded property generator is deterministic and valid", () => {
   for (let seed = 1; seed <= 8; seed++) {
     const first = generateCase(seed, 2);

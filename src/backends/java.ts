@@ -5,12 +5,14 @@ import { isPrimitiveTypeName } from "../contracts/tokens";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
 import {
   collectRecords,
+  collectVariants,
   emitFunctionBody,
   functionBySignature,
   quoteString,
   targetType,
   type Dialect,
   type RecordMap,
+  type VariantMap,
 } from "./codegen";
 
 export function emitJava(
@@ -22,6 +24,7 @@ export function emitJava(
   const entry = program.functions.find((fn) => fn.name === entryName);
   if (!entry) throw new Error(`entry function "${entryName}" was not found`);
   const records = collectRecords(program);
+  const variants = collectVariants(program);
 
   const dialect: Dialect = {
     target: "java",
@@ -32,6 +35,7 @@ export function emitJava(
     declareRes: (name, init) => [`Res ${name} = ${init};`],
     assign: (name, expr) => [`${name} = ${expr};`],
     ifOpen: (cond) => `if (${cond}) {`,
+    elseIfOpen: (cond) => `} else if (${cond}) {`,
     elseOpen: () => `} else {`,
     closeBlock: () => `}`,
     returnStmt: (expr) => `return ${expr};`,
@@ -40,10 +44,13 @@ export function emitJava(
     resOk: (expr) => `Res.ok(${expr})`,
     resOkRecord: (_record, expr) => `Res.okRecord(${expr})`,
     resRecordValue: (expr, record) => `((${record.targetName}) ${expr}.payload)`,
+    resOkVariant: (_variant, expr) => `Res.okRecord(${expr})`,
+    resVariantValue: (expr, variant) => `((${variant.targetName}) ${expr}.payload)`,
     resOkString: (expr) => `Res.okRecord(${expr})`,
     resStringValue: (expr) => `((String) ${expr}.payload)`,
     stringLiteral: quoteString,
     stringValue: (expr) => expr,
+    emptyString: () => `""`,
     valueEquals: (left, right, type) =>
       type === "string" ? `${left}.equals(${right})` : `${left} == ${right}`,
     resFail: (code, node) => `Res.fail(${code}, ${node})`,
@@ -59,8 +66,24 @@ export function emitJava(
         ? `${leftField} == ${rightField}`
         : `${leftField}.equals(${rightField})`;
     },
+    constructVariant: (variant, alternative, values) =>
+      `new ${variant.targetName}(${[
+        String(alternative.tag),
+        ...values,
+        ...Array(Math.max(0, variant.maxArity - values.length)).fill("0"),
+      ].join(", ")})`,
+    variantTag: (expr) => `${expr}.tag`,
+    variantPayload: (expr, _variant, index) => `${expr}.p${index + 1}`,
+    variantEquals: (left, right, variant) =>
+      variant.maxArity === 0
+        ? `${left}.tag == ${right}.tag`
+        : `(${left}.tag == ${right}.tag && ${Array.from(
+            { length: variant.maxArity },
+            (_unused, index) => `${left}.p${index + 1} == ${right}.p${index + 1}`,
+          ).join(" && ")})`,
     listType: (element) => `${element}[]`,
     listLiteral: (values) => `new int[] { ${values.join(", ")} }`,
+    emptyList: () => `new int[] {}`,
     listValue: (expr) => expr,
     listLength: (expr) => `${expr}.length`,
     listIndex: (list, index, node) => `index(${list}, ${index}, ${node})`,
@@ -69,9 +92,10 @@ export function emitJava(
     resListValue: (expr) => `((int[]) ${expr}.payload)`,
   };
 
-  const recordDeclarations = renderRecords(records, dialect);
+  const recordDeclarations = renderRecords(records, dialect, variants);
+  const variantDeclarations = renderVariants(variants, dialect);
   const functions = program.functions
-    .map((signature) => renderFunction(program, signature, dialect, records))
+    .map((signature) => renderFunction(program, signature, dialect, records, variants))
     .join("\n\n");
 
   const main = renderMain(entry);
@@ -106,6 +130,8 @@ public final class HsProgram {
     }
 
 ${recordDeclarations}
+
+${variantDeclarations}
 
     private static Res add(int a, int b, int node) {
         long r = (long) a + (long) b;
@@ -158,13 +184,31 @@ ${main}
   };
 }
 
-function renderRecords(records: RecordMap, dialect: Dialect): string {
+function renderRecords(records: RecordMap, dialect: Dialect, variants: VariantMap): string {
   return [...records.values()]
     .map((record) => {
       const components = record.fields
-        .map((field) => `${targetType(field.type, records, dialect.intType, dialect.stringType, dialect.listType)} ${field.targetName}`)
+        .map((field) => `${targetType(field.type, records, dialect.intType, dialect.stringType, dialect.listType, variants)} ${field.targetName}`)
         .join(", ");
       return `    private record ${record.targetName}(${components}) {}`;
+    })
+    .join("\n\n");
+}
+
+function renderVariants(variants: VariantMap, dialect: Dialect): string {
+  return [...variants.values()]
+    .map((variant) => {
+      const fields = ["tag", ...Array.from({ length: variant.maxArity }, (_unused, index) => `p${index + 1}`)];
+      const lines = [
+        `    private static final class ${variant.targetName} {`,
+        ...fields.map((field) => `        final ${dialect.intType} ${field};`),
+        "",
+        `        ${variant.targetName}(${fields.map((field) => `${dialect.intType} ${field}`).join(", ")}) {`,
+        ...fields.map((field) => `            this.${field} = ${field};`),
+        "        }",
+        "    }",
+      ];
+      return lines.join("\n");
     })
     .join("\n\n");
 }
@@ -174,12 +218,13 @@ function renderFunction(
   signature: FunctionSignature,
   dialect: Dialect,
   records: RecordMap,
+  variants: VariantMap,
 ): string {
   const fn = functionBySignature(program, signature);
   const parameters = fn.params
-    .map((param) => `${targetType(param.type.name, records, dialect.intType, dialect.stringType, dialect.listType)} ${param.targetName}`)
+    .map((param) => `${targetType(param.type.name, records, dialect.intType, dialect.stringType, dialect.listType, variants)} ${param.targetName}`)
     .join(", ");
-  const body = emitFunctionBody(fn, dialect, records);
+  const body = emitFunctionBody(fn, dialect, records, variants);
   return `    private static Res ${signature.targetName}(${parameters}) {\n${indent(body, 8)}\n    }`;
 }
 

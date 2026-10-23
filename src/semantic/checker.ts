@@ -1,4 +1,16 @@
-import type { Block, Expr, FunctionDecl, Program, RecordDecl, RecordField, Stmt } from "../contracts/ast";
+import type {
+  Block,
+  Expr,
+  FunctionDecl,
+  MatchExpr,
+  Program,
+  RecordDecl,
+  RecordField,
+  Stmt,
+  TypeRef,
+  VariantAlternative,
+  VariantDecl,
+} from "../contracts/ast";
 import type { Diagnostic } from "../contracts/diagnostics";
 import { error } from "../contracts/diagnostics";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
@@ -21,6 +33,16 @@ interface Symbol {
 interface RecordSymbol {
   decl: RecordDecl;
   fields: Map<string, RecordField>;
+}
+
+interface VariantSymbol {
+  decl: VariantDecl;
+  alternatives: Map<string, VariantAlternative>;
+}
+
+interface AlternativeSymbol {
+  variant: VariantDecl;
+  alternative: VariantAlternative;
 }
 
 class Scope {
@@ -56,6 +78,9 @@ class Checker {
   private readonly functions = new Map<string, FunctionDecl>();
   private readonly signatures = new Map<string, FunctionSignature>();
   private readonly records = new Map<string, RecordSymbol>();
+  private readonly variants = new Map<string, VariantSymbol>();
+  /** Bare alternative names are the constructor namespace; duplicates stay ambiguous. */
+  private readonly alternatives = new Map<string, AlternativeSymbol[]>();
   private readonly callGraph = new Map<string, Set<string>>();
   private localCounter = 0;
 
@@ -63,7 +88,9 @@ class Checker {
 
   run(): CheckResult {
     this.registerFunctions();
+    this.registerVariantDeclarations();
     this.registerRecords();
+    this.validateVariantPayloads();
     for (const fn of this.functions.values()) {
       this.checkFunction(fn);
     }
@@ -104,6 +131,97 @@ class Checker {
     });
   }
 
+  private registerVariantDeclarations(): void {
+    this.program.variants.forEach((variant, index) => {
+      if (this.variants.has(variant.name)) {
+        this.diagnostics.push(
+          error(
+            "E_DUPLICATE_VARIANT",
+            `variant "${variant.name}" is declared more than once`,
+            variant.nameSpan,
+          ),
+        );
+        return;
+      }
+      variant.symbolId = `variant:${index + 1}`;
+      variant.targetName = `V${index + 1}`;
+      const alternatives = new Map<string, VariantAlternative>();
+      if (variant.alternatives.length === 0) {
+        this.diagnostics.push(
+          error(
+            "E_EMPTY_VARIANT",
+            `variant "${variant.name}" must declare at least one alternative`,
+            variant.nameSpan,
+          ),
+        );
+      }
+      variant.alternatives.forEach((alternative, alternativeIndex) => {
+        alternative.symbolId = `variant:${index + 1}:alternative:${alternativeIndex + 1}`;
+        alternative.targetName = `a${alternativeIndex + 1}`;
+        alternative.tag = alternativeIndex;
+        if (alternatives.has(alternative.name)) {
+          this.diagnostics.push(
+            error(
+              "E_DUPLICATE_ALTERNATIVE",
+              `alternative "${alternative.name}" is declared more than once in variant "${variant.name}"`,
+              alternative.nameSpan,
+            ),
+          );
+          return;
+        }
+        alternatives.set(alternative.name, alternative);
+        const candidates = this.alternatives.get(alternative.name) ?? [];
+        candidates.push({ variant, alternative });
+        this.alternatives.set(alternative.name, candidates);
+      });
+      this.variants.set(variant.name, { decl: variant, alternatives });
+    });
+  }
+
+  private validateVariantPayloads(): void {
+    for (const variant of this.variants.values()) {
+      for (const alternative of variant.alternatives.values()) {
+        alternative.payloadTypes = alternative.payload.map((payload) => this.resolvePayloadType(payload, alternative));
+      }
+    }
+  }
+
+  private resolvePayloadType(payload: TypeRef, alternative: VariantAlternative): TypeName {
+    const canonical = this.canonicalTypeRef(payload);
+    if (canonical === "i32" || canonical === "bool") return canonical;
+    if (payload.elementType || isListTypeName(canonical) || canonical === "string") {
+      this.diagnostics.push(
+        error(
+          "E_VARIANT_PAYLOAD_UNSUPPORTED",
+          `payload type "${canonical}" of alternative "${alternative.name}" is not supported in this slice`,
+          payload.span,
+          "variant payloads are scalar: only i32 and bool",
+        ),
+      );
+      return "i32";
+    }
+    if (this.variants.has(canonical) || this.records.has(canonical)) {
+      this.diagnostics.push(
+        error(
+          "E_VARIANT_PAYLOAD_UNSUPPORTED",
+          `payload type "${canonical}" of alternative "${alternative.name}" is not supported in this slice`,
+          payload.span,
+          "variant payloads are scalar: only i32 and bool",
+        ),
+      );
+      return "i32";
+    }
+    this.diagnostics.push(
+      error("E_UNKNOWN_TYPE", `unknown payload type "${canonical}"`, payload.span),
+    );
+    return "i32";
+  }
+
+  private canonicalTypeRef(type: TypeRef): TypeName {
+    if (type.elementType) return listTypeName(this.canonicalTypeRef(type.elementType));
+    return type.name;
+  }
+
   private registerRecords(): void {
     this.program.records.forEach((record, index) => {
       if (this.records.has(record.name)) {
@@ -115,6 +233,16 @@ class Checker {
           ),
         );
         return;
+      }
+      if (this.variants.has(record.name)) {
+        this.diagnostics.push(
+          error(
+            "E_DUPLICATE_TYPE",
+            `type "${record.name}" is declared as both a record and a variant`,
+            record.nameSpan,
+            "record and variant names share one nominal type namespace",
+          ),
+        );
       }
       record.symbolId = `record:${index + 1}`;
       record.targetName = `R${index + 1}`;
@@ -161,6 +289,17 @@ class Checker {
               `record field "${field.name}" cannot use a list in this slice`,
               field.type.span,
               "list values are supported only as locals, internal parameters, and internal returns",
+            ),
+          );
+          continue;
+        }
+        if (this.variants.has(field.type.name)) {
+          this.diagnostics.push(
+            error(
+              "E_VARIANT_FIELD_UNSUPPORTED",
+              `record field "${field.name}" cannot use variant "${field.type.name}" in this slice`,
+              field.type.span,
+              "variant values are supported only as locals, internal parameters, and internal returns",
             ),
           );
           continue;
@@ -224,13 +363,27 @@ class Checker {
       }
       seenParams.add(param.name);
       const paramType = this.resolveType(param.type);
-      if (autoEntry && (this.records.has(paramType) || paramType === "string" || isListTypeName(paramType))) {
+      if (
+        autoEntry &&
+        (this.records.has(paramType) ||
+          this.variants.has(paramType) ||
+          paramType === "string" ||
+          isListTypeName(paramType))
+      ) {
         const code = paramType === "string"
           ? "E_STRING_ENTRY_PARAMETER_UNSUPPORTED"
           : isListTypeName(paramType)
             ? "E_LIST_ENTRY_PARAMETER_UNSUPPORTED"
-            : "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED";
-        const kind = paramType === "string" ? "string" : isListTypeName(paramType) ? "list" : "record";
+            : this.variants.has(paramType)
+              ? "E_VARIANT_ENTRY_PARAMETER_UNSUPPORTED"
+              : "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED";
+        const kind = paramType === "string"
+          ? "string"
+          : isListTypeName(paramType)
+            ? "list"
+            : this.variants.has(paramType)
+              ? "variant"
+              : "record";
         this.diagnostics.push(
           error(
             code,
@@ -248,13 +401,27 @@ class Checker {
     }
 
     const returnType = this.resolveType(fn.returnType);
-    if (autoEntry && (this.records.has(returnType) || returnType === "string" || isListTypeName(returnType))) {
+    if (
+      autoEntry &&
+      (this.records.has(returnType) ||
+        this.variants.has(returnType) ||
+        returnType === "string" ||
+        isListTypeName(returnType))
+    ) {
       const code = returnType === "string"
         ? "E_STRING_ENTRY_RETURN_UNSUPPORTED"
         : isListTypeName(returnType)
           ? "E_LIST_ENTRY_RETURN_UNSUPPORTED"
-          : "E_RECORD_ENTRY_RETURN_UNSUPPORTED";
-      const kind = returnType === "string" ? "string" : isListTypeName(returnType) ? "list" : "record";
+          : this.variants.has(returnType)
+            ? "E_VARIANT_ENTRY_RETURN_UNSUPPORTED"
+            : "E_RECORD_ENTRY_RETURN_UNSUPPORTED";
+      const kind = returnType === "string"
+        ? "string"
+        : isListTypeName(returnType)
+          ? "list"
+          : this.variants.has(returnType)
+            ? "variant"
+            : "record";
       this.diagnostics.push(
         error(
           code,
@@ -285,8 +452,10 @@ class Checker {
       if (element !== "i32" && element !== "bool") {
         this.diagnostics.push(
           error(
-            "E_LIST_ELEMENT_UNSUPPORTED",
-            `list element type "${element}" is not supported in this slice`,
+            this.variants.has(element) ? "E_VARIANT_IN_LIST" : "E_LIST_ELEMENT_UNSUPPORTED",
+            this.variants.has(element)
+              ? `list element type "${element}" cannot be a variant in this slice`
+              : `list element type "${element}" is not supported in this slice`,
             type.elementType.span,
             "only list<i32> and list<bool> are implemented",
           ),
@@ -311,13 +480,15 @@ class Checker {
       }
       return type.name;
     }
-    if (isPrimitiveTypeName(type.name) || this.records.has(type.name)) return type.name;
+    if (isPrimitiveTypeName(type.name) || this.records.has(type.name) || this.variants.has(type.name)) {
+      return type.name;
+    }
     this.diagnostics.push(
       error(
         "E_UNKNOWN_TYPE",
         `unknown type "${type.name}"`,
         type.span,
-        "types are i32, bool, string, list<i32>, list<bool>, or a declared record name",
+        "types are i32, bool, string, list<i32>, list<bool>, or a declared record or variant name",
       ),
     );
     return "i32";
@@ -441,8 +612,10 @@ class Checker {
         if (!isListElementType(first)) {
           this.diagnostics.push(
             error(
-              "E_LIST_ELEMENT_UNSUPPORTED",
-              `list literal element type ${first} is not supported in this slice`,
+              this.variants.has(first) ? "E_VARIANT_IN_LIST" : "E_LIST_ELEMENT_UNSUPPORTED",
+              this.variants.has(first)
+                ? `list literal element type ${first} cannot be a variant in this slice`
+                : `list literal element type ${first} is not supported in this slice`,
               expr.elements[0].span,
               "only list<i32> and list<bool> are implemented",
             ),
@@ -583,7 +756,16 @@ class Checker {
         const targetType = this.checkExpr(expr.target, scope);
         const record = this.records.get(targetType);
         if (!record) {
-          if (isPrimitiveTypeName(targetType) || isListTypeName(targetType)) {
+          if (this.variants.has(targetType)) {
+            this.diagnostics.push(
+              error(
+                "E_FIELD_ACCESS_ON_VARIANT",
+                `cannot access field "${expr.field}" on variant "${targetType}"`,
+                expr.fieldSpan,
+                "select an alternative with match instead of accessing a field",
+              ),
+            );
+          } else if (isPrimitiveTypeName(targetType) || isListTypeName(targetType)) {
             this.diagnostics.push(
               error(
                 "E_FIELD_ACCESS_ON_SCALAR",
@@ -637,6 +819,22 @@ class Checker {
           return "i32";
         }
         const signature = this.signatures.get(expr.callee);
+        const alternativeCandidates = this.alternatives.get(expr.callee) ?? [];
+        if ((signature ? 1 : 0) + alternativeCandidates.length > 1) {
+          this.diagnostics.push(
+            error(
+              "E_AMBIGUOUS_CONSTRUCTOR",
+              `call "${expr.callee}" is ambiguous; the name resolves to more than one function or variant alternative`,
+              expr.calleeSpan,
+              "rename the function or one of the alternatives so each call name resolves uniquely",
+            ),
+          );
+          for (const arg of expr.args) this.checkExpr(arg, scope);
+          return signature?.returnType ?? alternativeCandidates[0].variant.name;
+        }
+        if (!signature && alternativeCandidates.length === 1) {
+          return this.checkConstructorCall(expr, alternativeCandidates[0], scope);
+        }
         if (!signature) {
           this.diagnostics.push(
             error("E_UNKNOWN_FUNCTION", `unknown function "${expr.callee}"`, expr.calleeSpan),
@@ -672,6 +870,8 @@ class Checker {
         });
         return signature.returnType;
       }
+      case "MatchExpr":
+        return this.checkMatch(expr, scope);
       case "UnaryExpr": {
         const operandType = this.checkExpr(expr.operand, scope);
         if (expr.op === "-") {
@@ -743,6 +943,167 @@ class Checker {
         }
       }
     }
+  }
+
+  private checkConstructorCall(
+    expr: Extract<Expr, { kind: "CallExpr" }>,
+    candidate: AlternativeSymbol,
+    scope: Scope,
+  ): TypeName {
+    const { variant, alternative } = candidate;
+    expr.variantConstructor = {
+      variantName: variant.name,
+      alternativeName: alternative.name,
+      variantTargetName: variant.targetName!,
+      alternativeTargetName: alternative.targetName!,
+      tag: alternative.tag!,
+      payloadTypes: alternative.payloadTypes ?? [],
+    };
+    const payloadTypes = alternative.payloadTypes ?? [];
+    if (expr.args.length !== payloadTypes.length) {
+      this.diagnostics.push(
+        error(
+          "E_ARITY",
+          `alternative "${alternative.name}" expects ${payloadTypes.length} argument(s), received ${expr.args.length}`,
+          expr.span,
+        ),
+      );
+    }
+    expr.args.forEach((arg, index) => {
+      const argType = this.checkExpr(arg, scope);
+      const expected = payloadTypes[index];
+      if (expected && argType !== expected) {
+        this.diagnostics.push(
+          error(
+            "E_ARGUMENT_TYPE",
+            `argument ${index + 1} of alternative "${alternative.name}" has type ${argType}, expected ${expected}`,
+            arg.span,
+          ),
+        );
+      }
+    });
+    return variant.name;
+  }
+
+  private checkMatch(expr: MatchExpr, scope: Scope): TypeName {
+    const scrutineeType = this.checkExpr(expr.scrutinee, scope);
+    const variant = this.variants.get(scrutineeType);
+    if (!variant) {
+      this.diagnostics.push(
+        error(
+          "E_MATCH_ON_NON_VARIANT",
+          `match requires a variant scrutinee, found ${scrutineeType}`,
+          expr.scrutinee.span,
+        ),
+      );
+      for (const arm of expr.arms) this.checkExpr(arm.body, new Scope(scope));
+      expr.resolvedType = "i32";
+      return "i32";
+    }
+    expr.variantName = scrutineeType;
+    let armType: TypeName | undefined;
+    let sawWildcard = false;
+    const matched = new Set<string>();
+
+    const unify = (bodyType: TypeName, span: import("../contracts/diagnostics").SourceSpan): void => {
+      if (armType === undefined) {
+        armType = bodyType;
+        return;
+      }
+      if (bodyType !== armType) {
+        this.diagnostics.push(
+          error(
+            "E_MATCH_ARM_TYPE",
+            `match arm has type ${bodyType} but another arm has type ${armType}`,
+            span,
+            "every match arm must produce the same type",
+          ),
+        );
+      }
+    };
+
+    expr.arms.forEach((arm, index) => {
+      const pattern = arm.pattern;
+      if (pattern.kind === "WildcardPattern") {
+        sawWildcard = true;
+        if (index !== expr.arms.length - 1) {
+          this.diagnostics.push(
+            error(
+              "E_WILDCARD_NOT_FINAL",
+              'wildcard arm "_" must be the final match arm',
+              pattern.span,
+            ),
+          );
+        }
+        unify(this.checkExpr(arm.body, new Scope(scope)), arm.body.span);
+        return;
+      }
+
+      const alternative = variant.alternatives.get(pattern.alternativeName);
+      if (!alternative) {
+        this.diagnostics.push(
+          error(
+            "E_UNKNOWN_ALTERNATIVE",
+            `variant "${scrutineeType}" has no alternative "${pattern.alternativeName}"`,
+            pattern.alternativeNameSpan,
+            `alternatives: ${[...variant.alternatives.keys()].join(", ")}`,
+          ),
+        );
+        unify(this.checkExpr(arm.body, new Scope(scope)), arm.body.span);
+        return;
+      }
+      if (matched.has(alternative.name)) {
+        this.diagnostics.push(
+          error(
+            "E_DUPLICATE_MATCH_ARM",
+            `alternative "${alternative.name}" is matched more than once`,
+            pattern.alternativeNameSpan,
+          ),
+        );
+      }
+      matched.add(alternative.name);
+      pattern.tag = alternative.tag;
+      pattern.alternativeTargetName = alternative.targetName;
+
+      const payloadTypes = alternative.payloadTypes ?? [];
+      if (pattern.bindings.length !== payloadTypes.length) {
+        this.diagnostics.push(
+          error(
+            "E_PATTERN_ARITY",
+            `alternative "${alternative.name}" has ${payloadTypes.length} payload value(s) but the pattern binds ${pattern.bindings.length}`,
+            pattern.span,
+          ),
+        );
+      }
+      const armScope = new Scope(scope);
+      pattern.bindings.forEach((binding, bindingIndex) => {
+        const bindingType = payloadTypes[bindingIndex] ?? "i32";
+        binding.resolvedType = bindingType;
+        const symbol = this.declareLocal(armScope, binding.name, bindingType, binding.nameSpan, "local");
+        if (symbol) {
+          binding.symbolId = symbol.symbolId;
+          binding.targetName = symbol.targetName;
+        }
+      });
+      unify(this.checkExpr(arm.body, armScope), arm.body.span);
+    });
+
+    if (!sawWildcard) {
+      const missing = [...variant.alternatives.keys()].filter((name) => !matched.has(name));
+      if (missing.length > 0) {
+        this.diagnostics.push(
+          error(
+            "E_NON_EXHAUSTIVE_MATCH",
+            `match on "${scrutineeType}" is not exhaustive; missing ${missing.join(", ")}`,
+            expr.span,
+            'cover every alternative or add a final "_" arm',
+          ),
+        );
+      }
+    }
+
+    expr.resolvedType = armType ?? "i32";
+    return expr.resolvedType;
   }
 
   /** Set while checking a function body so call sites can be attributed. */
