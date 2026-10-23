@@ -53,15 +53,15 @@ The POC intentionally covers a small language core. The following limits are kno
 
 ## Verification
 
-- The committed corpus is small (29 positive cases, 27 negative program/profile cases, 19 unit tests, one bridge protocol test). It covers the specified rules and boundaries but is not a proof of correctness.
-- Fuzzing was performed during review but is not part of the committed test command. A reproducible generator with recorded seeds is a next step.
+- The committed corpus is small (29 positive cases, 27 negative program/profile cases, 22 unit tests, one bridge protocol test). It covers the specified rules and boundaries but is not a proof of correctness.
+- Seeded property tests, automatic line reduction, a separate benchmark corpus, and manual Ubuntu CI are part of the 0.2 command. Windows/macOS CI is explicitly deferred.
 - Target artifacts are compiled once per program/entry and executed per profile; independent compilation per profile is unnecessary because generated code is profile-independent.
 - Semantics of concurrency, shared memory, ecosystem interoperability, and large applications are completely out of scope.
 
 ## Prioritized next work
 
-1. **Reproducible property testing.** Generate well-typed programs with recorded seeds, compare the reference interpreter and all targets, reduce failures to minimal cases.
-2. **Data and memory semantics.** Immutable records, strings, lists, variants, `Option`, and `Result`, with ownership/copying rules specified before implementation. Evaluate Rust ownership early.
+1. **Data and memory semantics.** The normative specification is in [`spec/data.md`](../spec/data.md). Implement the tag-capable value model and immutable records first, then strings, lists, variants, `Option`, and `Result`. Evaluate Rust ownership early.
+2. **Re-enable CI hardening.** Validate the manual Ubuntu workflow, then restore automatic runs and the deferred Windows/macOS matrix.
 3. **Loops and controlled recursion.** Add specified termination/overflow behavior and update call-graph checks.
 4. **Syntax families and a printer.** Explicit-block and indentation families require a concrete syntax tree that preserves comments reliably.
 5. **Editor integration.** LSP diagnostics, navigation, completion, and renaming; handle invalid drafts and cursor positions.

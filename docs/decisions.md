@@ -71,3 +71,18 @@ The language is **h#**. Because `#` begins a comment in many shells and is awkwa
 ## D15. UTF-8 BOM handling
 
 A leading BOM is ignored when reading source and profile files. It is an editor artifact on Windows and must not turn into a syntax error or a different fingerprint.
+
+## D16. Data values require a tagged result payload
+
+The 0.1/0.2 runtime deliberately stores every generated value as `i32`, with booleans normalized to
+`0`/`1`. That is sufficient for the scalar core but not for strings, lists, records, variants,
+`Option`, or `Result`.
+
+Phase 0.3 therefore changes the generated result record to carry a typed payload instead of only an
+integer. The reference interpreter uses a tagged value union; each backend uses a private tagged
+representation or monomorphized result type. The source language still exposes one typed contract.
+Target representations remain private to generated projects, and no target exception, null, or
+mutable alias may become observable.
+
+This is a value-model change, not a keyword-profile change. The specification in
+[`spec/data.md`](../spec/data.md) is normative and must precede backend work.

@@ -8,7 +8,7 @@ It is dependency-driven, not calendar-driven. A phase starts when its prerequisi
 
 - **0.1 POC — complete and verified.**
 - **0.2 Verification hardening — complete for the current Ubuntu-only scope.**
-- **0.3 Data and memory semantics — next.**
+- **0.3 Data and memory semantics — in progress (specification).**
 
 - Core: `i32`, `bool`, functions, calls, immutable locals, `if`/`else`, returns, checked arithmetic, short-circuit Boolean operators, acyclic call graphs.
 - Profiles: keyword-only, declarative, validated, token-aware conversion with comment preservation.
@@ -88,6 +88,9 @@ Dependencies: none beyond 0.1.
 ## Phase 0.3 — Data and memory semantics
 
 **Goal:** add the first useful data types without importing target-specific behavior.
+
+Specification: [`spec/data.md`](spec/data.md) is the normative draft for strings, lists, records,
+variants, `Option`, `Result`, structural equality, copying, ownership, and the new runtime failures.
 
 Scope:
 
@@ -260,11 +263,12 @@ Dependencies: all prior phases for the features they extend.
 
 ## Immediate next actions
 
-1. Write the data semantics specification (records, strings, lists, variants, `Option`, `Result`).
-2. Prototype Rust ownership for immutable records and lists.
-3. Draft the CST/printer design before adding syntax families.
-4. Re-enable automatic Ubuntu CI after the manual workflow is validated.
-5. Revisit Windows/macOS CI when the cross-platform hardening pass starts.
+1. Replace the scalar-only `Res` payload with a tag-capable value model in contracts and the reference interpreter.
+2. Implement immutable records as the first data feature: parser, checker, reference interpreter, four backends, and conformance cases.
+3. Prototype Rust ownership for immutable records and lists.
+4. Draft the CST/printer design before adding syntax families.
+5. Re-enable automatic Ubuntu CI after the manual workflow is validated.
+6. Revisit Windows/macOS CI when the cross-platform hardening pass starts.
 
 ## Non-goals for now
 
