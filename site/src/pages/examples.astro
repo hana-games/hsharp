@@ -9,23 +9,7 @@ import { siteData } from "../data/data";
   description="Real h# programs from the conformance corpus, with standard and personal notation, expected outcomes, and four verified targets."
   active="/examples"
 >
-  <section class="band-paper-2" style="padding: clamp(3.5rem, 7vw, 6rem) 0 2rem;">
-    <div class="container">
-      <h1 class="h1">Real programs.<br /><span class="italic">Real expectations.</span></h1>
-      <p class="lede" style="margin-top:1.2rem;">
-        Nothing here is a mock-up. Each example is a program used by the conformance suite, with its
-        expected value or error code. Switch between standard notation and a personal profile; open
-        the detail to inspect the source and outcome.
-      </p>
-      <div class="row" style="margin-top:1.2rem;">
-        <span class="chip chip-lime">{siteData.meta.stats.cases} positive cases</span>
-        <span class="chip">{siteData.meta.stats.targets} targets</span>
-        <span class="chip">{siteData.meta.stats.executions} executions</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="section-tight">
+  <section class="section-tight" style="padding-top:2.4rem;">
     <div class="container">
       <ExampleGallery client:load examples={siteData.examples} />
     </div>
