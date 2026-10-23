@@ -312,7 +312,7 @@ test("profile alias is reserved even when it is a canonical word", () => {
 test("generated target names are deterministic and avoid source names", () => {
   const { emit } = require("../backends") as typeof import("../backends");
   const loaded = analyze(
-    "fn int(class: i32) -> i32 { let string: i32 = class + 1; return string; }\n",
+    "fn int(class: i32) -> i32 { let func: i32 = class + 1; return func; }\n",
     "<unit>",
     STANDARD_PROFILE,
   );
@@ -425,6 +425,54 @@ fn main() -> i32 { return 1; }
   assert.ok(loaded.diagnostics.some((diagnostic) => diagnostic.code === "E_RECURSIVE_RECORD"));
 });
 
+test("strings support literals, escapes, equality, and internal returns", () => {
+  const result = resultOf(`fn choose(flag: bool) -> string {
+    if flag {
+        return "yes";
+    }
+    return "no";
+}
+fn main() -> bool {
+    let a: string = "héllo\\nworld";
+    let b: string = a;
+    return a == b && a != "other" && choose(true) == "yes" && choose(false) == "no";
+}
+`);
+  assert.deepEqual(result, { status: "ok", type: "bool", value: true });
+});
+
+test("string entry parameters and string entry returns are rejected", () => {
+  const param = analyze(
+    "fn main(value: string) -> i32 { return 1; }\n",
+    "<strings>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(param.diagnostics.some((d) => d.code === "E_STRING_ENTRY_PARAMETER_UNSUPPORTED"));
+
+  const returned = analyze(
+    'fn main() -> string { return "ok"; }\n',
+    "<strings>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(returned.diagnostics.some((d) => d.code === "E_STRING_ENTRY_RETURN_UNSUPPORTED"));
+});
+
+test("string record fields and invalid escapes are rejected in this slice", () => {
+  const field = analyze(
+    'record Bad { name: string }\nfn main() -> i32 { return 1; }\n',
+    "<strings>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(field.diagnostics.some((d) => d.code === "E_STRING_FIELD_UNSUPPORTED"));
+
+  const escape = analyze(
+    'fn main() -> bool { return "\\q" == "q"; }\n',
+    "<strings>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(escape.diagnostics.some((d) => d.code === "E_STRING_ESCAPE"));
+});
+
 test("internal functions can return records while entry outcomes stay scalar", () => {
   const returned = resultOf(
     "record Point { x: i32 }\nfn make() -> Point { return Point { x: 1 }; }\nfn main() -> bool { let p: Point = make(); return p.x == 1; }\n",
@@ -484,9 +532,9 @@ test("record target names and field names avoid source keyword collisions", () =
 }
 
 fn main() -> bool {
-    let string: Class = Class { type: true, class: 3, struct: 4 };
+    let func: Class = Class { type: true, class: 3, struct: 4 };
     let other: Class = Class { struct: 4, class: 3, type: true };
-    return string == other && string.class + string.struct == 7 && string.type;
+    return func == other && func.class + func.struct == 7 && func.type;
 }
 `;
   const loaded = analyze(source, "<unit>", STANDARD_PROFILE);

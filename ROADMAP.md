@@ -99,13 +99,14 @@ Delivered slice:
 - record declarations, literals, field access, and structural equality;
 - records as locals and internal function parameters;
 - record returns from internal functions, using a generated result payload;
+- strings with literals, escapes, equality, locals, internal parameters, and internal returns;
 - update-as-new-value (`Point { ...p, x: 3 }`);
 - collision-safe generated record/field names;
 - reference interpreter and all four backends;
 - positive record conformance case, unit coverage for nested/update, and negative record diagnostics;
 - recursive records, record returns, and record entry parameters are explicitly rejected.
 
-Not yet delivered: strings, lists, variants, `Option`, and `Result`.
+Not yet delivered: string length/indexing, lists, variants, `Option`, and `Result`.
 
 Scope:
 
@@ -278,9 +279,9 @@ Dependencies: all prior phases for the features they extend.
 
 ## Immediate next actions
 
-1. Extend the tagged payload beyond records so strings, lists, variants, `Option`, and `Result` can share the same result path.
-2. Prototype Rust ownership for immutable records and lists.
-3. Add strings, then lists, then variants and `Option`/`Result`.
+1. Add string length/indexing policy and string record fields.
+2. Extend the tagged payload to lists, variants, `Option`, and `Result`.
+3. Prototype Rust ownership for immutable records and lists.
 4. Draft the CST/printer design before adding syntax families.
 5. Re-enable automatic Ubuntu CI after the manual workflow is validated.
 6. Revisit Windows/macOS CI when the cross-platform hardening pass starts.

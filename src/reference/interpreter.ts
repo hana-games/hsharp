@@ -147,6 +147,8 @@ class Interpreter {
         return { type: "i32", value: expr.value };
       case "BoolLiteral":
         return { type: "bool", value: expr.value };
+      case "StringLiteral":
+        return { type: "string", value: expr.value };
       case "VarRef": {
         const value = env.get(expr.symbolId!);
         if (!value) throw new EvaluationError(`internal: unbound local "${expr.name}"`);

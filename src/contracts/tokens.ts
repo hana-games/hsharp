@@ -23,14 +23,14 @@ export const CANONICAL_KEYWORDS: Readonly<Record<KeywordRole, string>> = {
 };
 
 /** Primitive types spelled directly in source. Record names are also types. */
-export const TYPE_NAMES = ["i32", "bool"] as const;
+export const TYPE_NAMES = ["i32", "bool", "string"] as const;
 export type PrimitiveTypeName = (typeof TYPE_NAMES)[number];
 
 /** A resolved type: a primitive or a declared record name. */
 export type TypeName = string;
 
 export function isPrimitiveTypeName(name: string): name is PrimitiveTypeName {
-  return name === "i32" || name === "bool";
+  return name === "i32" || name === "bool" || name === "string";
 }
 
 export type TokenKind =
@@ -38,6 +38,7 @@ export type TokenKind =
   | "type"
   | "identifier"
   | "integer"
+  | "string"
   | "punct"
   | "reserved"
   | "whitespace"

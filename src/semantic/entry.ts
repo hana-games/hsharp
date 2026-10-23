@@ -1,7 +1,6 @@
 import type { Diagnostic } from "../contracts/diagnostics";
 import { error } from "../contracts/diagnostics";
 import type { TypedProgram } from "../contracts/outcome";
-import { isPrimitiveTypeName } from "../contracts/tokens";
 
 export function chooseEntry(typed: TypedProgram, requested?: string): { entry?: string; diagnostic?: Diagnostic } {
   if (requested) {
@@ -35,22 +34,22 @@ export function chooseEntry(typed: TypedProgram, requested?: string): { entry?: 
 }
 
 function scalarEntry(signature: TypedProgram["functions"][number]): { diagnostic?: Diagnostic } | undefined {
-  const recordParam = signature.params.find((param) => !isPrimitiveTypeName(param.type));
-  if (recordParam) {
+  const nonScalarParam = signature.params.find((param) => param.type !== "i32" && param.type !== "bool");
+  if (nonScalarParam) {
     return {
       diagnostic: error(
-        "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
-        `entry function "${signature.name}" cannot take record parameter "${recordParam.name}"`,
+        nonScalarParam.type === "string" ? "E_STRING_ENTRY_PARAMETER_UNSUPPORTED" : "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
+        `entry function "${signature.name}" cannot take ${nonScalarParam.type === "string" ? "string" : "record"} parameter "${nonScalarParam.name}"`,
         undefined,
         "entry values come from scalar command-line arguments",
       ),
     };
   }
-  if (!isPrimitiveTypeName(signature.returnType)) {
+  if (signature.returnType !== "i32" && signature.returnType !== "bool") {
     return {
       diagnostic: error(
-        "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
-        `entry function "${signature.name}" cannot return record "${signature.returnType}"`,
+        signature.returnType === "string" ? "E_STRING_ENTRY_RETURN_UNSUPPORTED" : "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
+        `entry function "${signature.name}" cannot return ${signature.returnType === "string" ? "string" : "record"} "${signature.returnType}"`,
         undefined,
         "entry outcomes are scalar",
       ),

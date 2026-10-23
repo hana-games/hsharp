@@ -5,6 +5,7 @@ import {
   collectRecords,
   emitFunctionBody,
   functionBySignature,
+  quoteString,
   targetType,
   type Dialect,
   type RecordMap,
@@ -23,6 +24,7 @@ export function emitCsharp(
   const dialect: Dialect = {
     target: "csharp",
     intType: "int",
+    stringType: "string",
     intMinLiteral: "int.MinValue",
     declare: (name, type, init) => [`${type} ${name} = ${init};`],
     declareRes: (name, init) => [`Res ${name} = ${init};`],
@@ -36,6 +38,11 @@ export function emitCsharp(
     resOk: (expr) => `Res.Ok(${expr})`,
     resOkRecord: (_record, expr) => `Res.OkRecord(${expr})`,
     resRecordValue: (expr, record) => `((${record.targetName})${expr}.payload)`,
+    resOkString: (expr) => `Res.OkRecord(${expr})`,
+    resStringValue: (expr) => `((string)${expr}.payload)`,
+    stringLiteral: quoteString,
+    stringValue: (expr) => expr,
+    valueEquals: (left, right) => `${left} == ${right}`,
     resFail: (code, node) => `Res.Fail(${code}, ${node})`,
     checked: (op, args, node) => `${capitalize(op)}(${[...args, String(node)].join(", ")})`,
     call: (fn, args) => `${fn}(${args.join(", ")})`,
@@ -144,7 +151,7 @@ function renderRecords(records: RecordMap, dialect: Dialect): string {
   return [...records.values()]
     .map((record) => {
       const components = record.fields
-        .map((field) => `${targetType(field.type, records, dialect.intType)} ${field.targetName}`)
+        .map((field) => `${targetType(field.type, records, dialect.intType, dialect.stringType)} ${field.targetName}`)
         .join(", ");
       return `    private readonly record struct ${record.targetName}(${components});`;
     })
@@ -159,7 +166,7 @@ function renderFunction(
 ): string {
   const fn = functionBySignature(program, signature);
   const parameters = fn.params
-    .map((param) => `${targetType(param.type.name, records, dialect.intType)} ${param.targetName}`)
+    .map((param) => `${targetType(param.type.name, records, dialect.intType, dialect.stringType)} ${param.targetName}`)
     .join(", ");
   const body = emitFunctionBody(fn, dialect, records);
   return `    private static Res ${signature.targetName}(${parameters})\n    {\n${indent(body, 8)}\n    }`;

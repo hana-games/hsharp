@@ -98,6 +98,7 @@ export interface ReturnStmt extends NodeBase {
 export type Expr =
   | IntLiteral
   | BoolLiteral
+  | StringLiteral
   | VarRef
   | CallExpr
   | UnaryExpr
@@ -113,6 +114,12 @@ export interface IntLiteral extends NodeBase {
 export interface BoolLiteral extends NodeBase {
   kind: "BoolLiteral";
   value: boolean;
+}
+
+export interface StringLiteral extends NodeBase {
+  kind: "StringLiteral";
+  /** Decoded Unicode scalar sequence. */
+  value: string;
 }
 
 export interface VarRef extends NodeBase {
@@ -251,6 +258,8 @@ function normalizeExpr(expr: Expr): unknown {
       return { kind: "IntLiteral", value: expr.value };
     case "BoolLiteral":
       return { kind: "BoolLiteral", value: expr.value };
+    case "StringLiteral":
+      return { kind: "StringLiteral", value: expr.value };
     case "VarRef":
       return { kind: "VarRef", name: expr.name };
     case "CallExpr":

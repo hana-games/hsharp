@@ -111,7 +111,7 @@ export function lex(text: string, profile: Profile, file: string): LexResult {
       if (role !== undefined) {
         push("keyword", start, i, { role });
       } else if (typeNames.has(word)) {
-        push("type", start, i, { typeName: word as "i32" | "bool" });
+        push("type", start, i, { typeName: word as "i32" | "bool" | "string" });
       } else if (canonical.has(word)) {
         push("reserved", start, i);
         diagnostics.push(
@@ -136,11 +136,36 @@ export function lex(text: string, profile: Profile, file: string): LexResult {
       continue;
     }
 
-    if (char === '"' || char === "'") {
+    if (char === '"') {
+      const start = i;
+      i += 1;
+      let closed = false;
+      while (i < text.length) {
+        if (text[i] === "\\") {
+          i += 2;
+          continue;
+        }
+        if (text[i] === '"') {
+          i += 1;
+          closed = true;
+          break;
+        }
+        i += 1;
+      }
+      if (!closed) {
+        diagnostics.push(
+          error("E_STRING_UNTERMINATED", "unterminated string literal", locator.span(file, start, i)),
+        );
+      }
+      push("string", start, i);
+      continue;
+    }
+
+    if (char === "'") {
       const start = i;
       i += 1;
       diagnostics.push(
-        error("E_UNSUPPORTED_LITERAL", "string literals are not part of the POC core", locator.span(file, start, i)),
+        error("E_UNSUPPORTED_LITERAL", "single-quoted literals are not part of the POC core", locator.span(file, start, i)),
       );
       push("invalid", start, i);
       continue;

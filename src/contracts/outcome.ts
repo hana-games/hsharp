@@ -16,7 +16,7 @@ export interface TypedProgram {
   entryCandidates: FunctionSignature[];
 }
 
-export type ScalarValue = number | boolean;
+export type ScalarValue = number | boolean | string;
 
 export interface RecordValue {
   kind: "record";

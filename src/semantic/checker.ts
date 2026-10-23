@@ -138,6 +138,16 @@ class Checker {
     for (const record of this.program.records) {
       const recordEdges: string[] = [];
       for (const field of record.fields) {
+        if (field.type.name === "string") {
+          this.diagnostics.push(
+            error(
+              "E_STRING_FIELD_UNSUPPORTED",
+              `record field "${field.name}" cannot use string in this slice`,
+              field.type.span,
+            ),
+          );
+          continue;
+        }
         if (isPrimitiveTypeName(field.type.name)) continue;
         if (this.records.has(field.type.name)) {
           recordEdges.push(field.type.name);
@@ -197,13 +207,13 @@ class Checker {
       }
       seenParams.add(param.name);
       const paramType = this.resolveType(param.type);
-      if (autoEntry && this.records.has(paramType)) {
+      if (autoEntry && (this.records.has(paramType) || paramType === "string")) {
         this.diagnostics.push(
           error(
-            "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
-            `entry function "${fn.name}" cannot take record parameter "${param.name}"`,
+            paramType === "string" ? "E_STRING_ENTRY_PARAMETER_UNSUPPORTED" : "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
+            `entry function "${fn.name}" cannot take ${paramType === "string" ? "string" : "record"} parameter "${param.name}"`,
             param.type.span,
-            "entry values come from scalar command-line arguments; pass scalar parameters and build the record inside the program",
+            "entry values come from scalar command-line arguments; pass scalar parameters and build the value inside the program",
           ),
         );
       }
@@ -215,13 +225,13 @@ class Checker {
     }
 
     const returnType = this.resolveType(fn.returnType);
-    if (autoEntry && this.records.has(returnType)) {
+    if (autoEntry && (this.records.has(returnType) || returnType === "string")) {
       this.diagnostics.push(
         error(
-          "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
-          `entry function "${fn.name}" cannot return record "${returnType}"`,
+          returnType === "string" ? "E_STRING_ENTRY_RETURN_UNSUPPORTED" : "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
+          `entry function "${fn.name}" cannot return ${returnType === "string" ? "string" : "record"} "${returnType}"`,
           fn.returnType.span,
-          "entry outcomes are scalar; return a scalar and use internal functions to build records",
+          "entry outcomes are scalar; return i32 or bool and compare data inside the program",
         ),
       );
     }
@@ -351,6 +361,8 @@ class Checker {
         return "i32";
       case "BoolLiteral":
         return "bool";
+      case "StringLiteral":
+        return "string";
       case "VarRef": {
         const symbol = scope.lookup(expr.name);
         if (!symbol) {

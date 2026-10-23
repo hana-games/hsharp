@@ -3,9 +3,10 @@
 Status: **partially implemented (0.3 record slice)**. A data feature is advertised only after it has a
 conformance corpus entry and executes on every advertised target. The current slice covers immutable
 records with `i32`/`bool` fields, nested non-recursive records, record literals, field access, records
-as locals and internal parameters, record returns from internal functions, structural equality, and
-update-as-new-value. Strings, lists, variants, `Option`, `Result`, and record entry parameters remain
-specification-only.
+as locals and internal parameters, record returns from internal functions, structural equality,
+update-as-new-value, and strings with literals, escapes, equality, locals, internal parameters, and
+internal returns. Lists, variants, `Option`, `Result`, string length/indexing, and record entry
+parameters remain specification-only.
 
 This document defines the portable data model for phase 0.3. It is normative for profiles,
 generated code, the reference interpreter, and the conformance suite.
@@ -56,6 +57,11 @@ A `string` is an immutable sequence of Unicode scalar values.
 - Backends may store UTF-8, UTF-16, or another internal encoding, but every observable operation
   must expose the scalar-value model.
 - No implicit conversion exists between `string` and `list<i32>` or any numeric type.
+
+**Implemented slice (0.3):** double-quoted literals with the listed escapes, equality, locals,
+internal parameters, and internal returns. Entry functions cannot take or return strings because the
+CLI argument/outcome boundary is still scalar. `length`, indexing, concatenation, and string fields in
+records remain unimplemented.
 
 ## Lists
 

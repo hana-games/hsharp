@@ -6,6 +6,7 @@ import {
   collectRecords,
   emitFunctionBody,
   functionBySignature,
+  quoteString,
   targetType,
   type Dialect,
   type RecordMap,
@@ -24,6 +25,7 @@ export function emitJava(
   const dialect: Dialect = {
     target: "java",
     intType: "int",
+    stringType: "String",
     intMinLiteral: "Integer.MIN_VALUE",
     declare: (name, type, init) => [`${type} ${name} = ${init};`],
     declareRes: (name, init) => [`Res ${name} = ${init};`],
@@ -37,6 +39,12 @@ export function emitJava(
     resOk: (expr) => `Res.ok(${expr})`,
     resOkRecord: (_record, expr) => `Res.okRecord(${expr})`,
     resRecordValue: (expr, record) => `((${record.targetName}) ${expr}.payload)`,
+    resOkString: (expr) => `Res.okRecord(${expr})`,
+    resStringValue: (expr) => `((String) ${expr}.payload)`,
+    stringLiteral: quoteString,
+    stringValue: (expr) => expr,
+    valueEquals: (left, right, type) =>
+      type === "string" ? `${left}.equals(${right})` : `${left} == ${right}`,
     resFail: (code, node) => `Res.fail(${code}, ${node})`,
     checked: (op, args, node) => `${op}(${[...args, String(node)].join(", ")})`,
     call: (fn, args) => `${fn}(${args.join(", ")})`,
@@ -46,7 +54,7 @@ export function emitJava(
       const field = record.fields[index];
       const leftField = `${left}.${field.targetName}()`;
       const rightField = `${right}.${field.targetName}()`;
-      return isPrimitiveTypeName(field.type)
+      return isPrimitiveTypeName(field.type) && field.type !== "string"
         ? `${leftField} == ${rightField}`
         : `${leftField}.equals(${rightField})`;
     },
@@ -132,7 +140,7 @@ function renderRecords(records: RecordMap, dialect: Dialect): string {
   return [...records.values()]
     .map((record) => {
       const components = record.fields
-        .map((field) => `${targetType(field.type, records, dialect.intType)} ${field.targetName}`)
+        .map((field) => `${targetType(field.type, records, dialect.intType, dialect.stringType)} ${field.targetName}`)
         .join(", ");
       return `    private record ${record.targetName}(${components}) {}`;
     })
@@ -147,7 +155,7 @@ function renderFunction(
 ): string {
   const fn = functionBySignature(program, signature);
   const parameters = fn.params
-    .map((param) => `${targetType(param.type.name, records, dialect.intType)} ${param.targetName}`)
+    .map((param) => `${targetType(param.type.name, records, dialect.intType, dialect.stringType)} ${param.targetName}`)
     .join(", ");
   const body = emitFunctionBody(fn, dialect, records);
   return `    private static Res ${signature.targetName}(${parameters}) {\n${indent(body, 8)}\n    }`;

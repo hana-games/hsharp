@@ -440,6 +440,16 @@ class Parser {
       };
     }
 
+    if (token.kind === "string") {
+      this.advance();
+      return {
+        kind: "StringLiteral",
+        id: this.nextId++,
+        span: token.span,
+        value: this.decodeString(token),
+      };
+    }
+
     if (token.kind === "identifier") {
       this.advance();
       if (isPunct(this.current(), "(")) {
@@ -519,6 +529,55 @@ class Parser {
       fields,
       base,
     };
+  }
+
+  private decodeString(token: Token): string {
+    const raw = token.text.slice(1, -1);
+    let value = "";
+    for (let index = 0; index < raw.length; index++) {
+      const char = raw[index];
+      if (char !== "\\") {
+        value += char;
+        continue;
+      }
+      const escaped = raw[++index];
+      switch (escaped) {
+        case "\\":
+          value += "\\";
+          break;
+        case '"':
+          value += '"';
+          break;
+        case "n":
+          value += "\n";
+          break;
+        case "r":
+          value += "\r";
+          break;
+        case "t":
+          value += "\t";
+          break;
+        case "u": {
+          if (raw[index + 1] !== "{") throw this.fail("E_STRING_ESCAPE", "expected \\u{...} escape", token);
+          const close = raw.indexOf("}", index + 2);
+          if (close < 0) throw this.fail("E_STRING_ESCAPE", "unclosed \\u{...} escape", token);
+          const hex = raw.slice(index + 2, close);
+          if (!/^[0-9a-fA-F]{1,6}$/.test(hex)) {
+            throw this.fail("E_STRING_ESCAPE", "invalid Unicode escape", token);
+          }
+          const codePoint = Number.parseInt(hex, 16);
+          if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+            throw this.fail("E_STRING_SURROGATE", "invalid Unicode scalar value", token);
+          }
+          value += String.fromCodePoint(codePoint);
+          index = close;
+          break;
+        }
+        default:
+          throw this.fail("E_STRING_ESCAPE", `unknown string escape "\\${escaped ?? ""}"`, token);
+      }
+    }
+    return value;
   }
 
   private parseCall(calleeToken: Token): CallExpr {

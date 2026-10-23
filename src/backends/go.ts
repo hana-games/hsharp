@@ -5,6 +5,7 @@ import {
   collectRecords,
   emitFunctionBody,
   functionBySignature,
+  quoteString,
   targetType,
   type Dialect,
   type RecordMap,
@@ -23,6 +24,7 @@ export function emitGo(
   const dialect: Dialect = {
     target: "go",
     intType: "int32",
+    stringType: "string",
     intMinLiteral: "int32(-2147483648)",
     declare: (name, type, init) => [`var ${name} ${type} = ${init}`, `_ = ${name}`],
     declareRes: (name, init) => [`var ${name} Res = ${init}`, `_ = ${name}`],
@@ -36,6 +38,11 @@ export function emitGo(
     resOk: (expr) => `ok(${expr})`,
     resOkRecord: (_record, expr) => `okRecord(${expr})`,
     resRecordValue: (expr, record) => `${expr}.payload.(${record.targetName})`,
+    resOkString: (expr) => `okString(${expr})`,
+    resStringValue: (expr) => `${expr}.payload.(string)`,
+    stringLiteral: quoteString,
+    stringValue: (expr) => expr,
+    valueEquals: (left, right) => `${left} == ${right}`,
     resFail: (code, node) => `fail(${code}, ${node})`,
     checked: (op, args, node) => `${op}(${[...args, String(node)].join(", ")})`,
     call: (fn, args) => `${fn}(${args.join(", ")})`,
@@ -80,6 +87,10 @@ func ok(value int32) Res {
 
 func okRecord(payload any) Res {
 	return Res{ok: true, value: 0, payload: payload, code: 0, node: 0}
+}
+
+func okString(value string) Res {
+	return Res{ok: true, value: 0, payload: value, code: 0, node: 0}
 }
 
 func fail(code int, node int) Res {
@@ -147,7 +158,7 @@ function renderRecords(records: RecordMap, dialect: Dialect): string {
     .map((record) => {
       const lines = [`type ${record.targetName} struct {`];
       for (const field of record.fields) {
-        lines.push(`\t${field.targetName} ${targetType(field.type, records, dialect.intType)}`);
+        lines.push(`\t${field.targetName} ${targetType(field.type, records, dialect.intType, dialect.stringType)}`);
       }
       lines.push("}");
       return lines.join("\n");
@@ -163,7 +174,7 @@ function renderFunction(
 ): string {
   const fn = functionBySignature(program, signature);
   const parameters = fn.params
-    .map((param) => `${param.targetName} ${targetType(param.type.name, records, dialect.intType)}`)
+    .map((param) => `${param.targetName} ${targetType(param.type.name, records, dialect.intType, dialect.stringType)}`)
     .join(", ");
   const body = emitFunctionBody(fn, dialect, records);
   return `func ${signature.targetName}(${parameters}) Res {\n${indent(body, 1)}\n}`;

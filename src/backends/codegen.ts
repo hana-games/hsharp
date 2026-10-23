@@ -38,15 +38,26 @@ export function collectRecords(program: TypedProgram): RecordMap {
 }
 
 /** Target type spelling: primitives share the integer representation. */
-export function targetType(type: TypeName, records: RecordMap, intType: string): string {
+export function targetType(type: TypeName, records: RecordMap, intType: string, stringType: string): string {
+  if (type === "string") return stringType;
   if (isPrimitiveTypeName(type)) return intType;
   return records.get(type)?.targetName ?? intType;
+}
+
+export function quoteString(value: string): string {
+  return `"${value
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r")
+    .replace(/\t/g, "\\t")}"`;
 }
 
 export interface Dialect {
   target: TargetId;
   /** Integer type used for values and Boolean storage (0/1). */
   intType: string;
+  stringType: string;
   intMinLiteral: string;
   declare(name: string, type: string, init: string): string[];
   declareRes(name: string, init: string): string[];
@@ -60,6 +71,11 @@ export interface Dialect {
   resOk(expr: string): string;
   resOkRecord(record: RecordInfo, expr: string): string;
   resRecordValue(expr: string, record: RecordInfo): string;
+  resOkString(expr: string): string;
+  resStringValue(expr: string): string;
+  stringLiteral(value: string): string;
+  stringValue(expr: string): string;
+  valueEquals(left: string, right: string, type: TypeName): string;
   resFail(code: number, node: number): string;
   checked(op: CheckedOp, args: string[], node: number): string;
   call(fn: string, args: string[]): string;
@@ -157,7 +173,9 @@ class Lowerer {
       }
       case "ReturnStmt": {
         const value = this.lowerExpr(stmt.value);
-        if (isPrimitiveTypeName(value.type)) {
+        if (value.type === "string") {
+          this.builder.line(this.dialect.returnStmt(this.dialect.resOkString(value.text)));
+        } else if (isPrimitiveTypeName(value.type)) {
           this.builder.line(this.dialect.returnStmt(this.dialect.resOk(value.text)));
         } else {
           const record = this.records.get(value.type);
@@ -170,7 +188,7 @@ class Lowerer {
   }
 
   private typeText(type: TypeName): string {
-    return targetType(type, this.records, this.dialect.intType);
+    return targetType(type, this.records, this.dialect.intType, this.dialect.stringType);
   }
 
   private lowerExpr(expr: Expr): Lowered {
@@ -182,8 +200,15 @@ class Lowerer {
         };
       case "BoolLiteral":
         return { text: expr.value ? "1" : "0", type: "bool" };
-      case "VarRef":
-        return { text: expr.targetName!, type: expr.resolvedType ?? "i32" };
+      case "StringLiteral":
+        return { text: this.dialect.stringLiteral(expr.value), type: "string" };
+      case "VarRef": {
+        const type = expr.resolvedType ?? "i32";
+        return {
+          text: type === "string" ? this.dialect.stringValue(expr.targetName!) : expr.targetName!,
+          type,
+        };
+      }
       case "RecordLiteral": {
         const record = this.records.get(expr.recordName);
         if (!record) throw new Error(`internal: unknown record "${expr.recordName}"`);
@@ -285,7 +310,9 @@ class Lowerer {
         this.builder.line(this.dialect.returnStmt(res));
         this.builder.closeBlock();
         const temp = this.builder.temp("t");
-        if (isPrimitiveTypeName(returnType)) {
+        if (returnType === "string") {
+          this.builder.declare(temp, this.typeText(returnType), this.dialect.resStringValue(res));
+        } else if (isPrimitiveTypeName(returnType)) {
           this.builder.declare(temp, this.typeText(returnType), this.dialect.resValue(res));
         } else {
           const record = this.records.get(returnType);
@@ -302,7 +329,7 @@ class Lowerer {
       const record = this.records.get(left.type);
       const equality = record
         ? this.recordEquality(left.text, right.text, record)
-        : `${left.text} == ${right.text}`;
+        : this.dialect.valueEquals(left.text, right.text, left.type);
       return op === "==" ? equality : `!(${equality})`;
     }
     return `${left.text} ${op} ${right.text}`;
