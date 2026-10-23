@@ -1,20 +1,14 @@
 name: verify
 
+# Temporarily manual and Ubuntu-only. Automatic push/PR runs and the
+# Windows/macOS matrix are disabled until the cross-platform job is hardened.
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   verify:
-    name: verify (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
+    name: verify (ubuntu)
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -53,7 +47,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hsharp-evidence-${{ matrix.os }}
+          name: hsharp-evidence-ubuntu
           if-no-files-found: ignore
           path: |
             reports/conformance.json

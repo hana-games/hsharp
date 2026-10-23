@@ -32,9 +32,9 @@ Known limits are listed in [`docs/limitations.md`](docs/limitations.md). The ori
 - Divergences are reduced automatically by deleting source lines while the failure remains reproducible.
 - Property reports are written to `reports/property.json` and `reports/property.md`.
 - Personal-notation diagnostic mapping now has a golden line/column test.
-- Cross-platform CI workflow added for Windows, Linux, and macOS with .NET, Rust, Go, Java, and report artifacts.
+- Manual Ubuntu-only CI workflow scaffolded with .NET, Rust, Go, Java, and report artifacts. Automatic push/PR runs and the Windows/macOS matrix are temporarily disabled.
 
-Still open for 0.2: a separate benchmark corpus, a verified clean-checkout CI run on all three operating systems, and committed cross-platform evidence.
+Still open for 0.2: a separate benchmark corpus, re-enabling automatic and cross-platform CI, and committed cross-platform evidence.
 
 ## Guiding principles
 
