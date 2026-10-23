@@ -94,6 +94,19 @@ const phases = [
     ],
   },
   {
+    phase: "0.8",
+    title: "Machine interface",
+    status: "Research",
+    summary: "Expose one semantic contract to editors, agents, and automated tools.",
+    points: [
+      "Versioned AST, diagnostics, and outcome schemas",
+      "One tool protocol for analyze, check, export, and import",
+      "Machine-readable specification and conformance corpus",
+      "Tool-generated edits validated by the same checker",
+      "No target-grammar model required",
+    ],
+  },
+  {
     phase: "1.0",
     title: "Stable core and performance",
     status: "Long-term",
@@ -141,10 +154,29 @@ const phases = [
         </p>
       </div>
 
+      <div class="roadmap-ai-note reveal">
+        <div>
+          <h3>Different languages are for people. One contract is for tools.</h3>
+          <p>
+            Syntax diversity is a human interface choice. A model or an agent pays for every grammar
+            it must learn. h# keeps one checked semantic surface while each person keeps the notation
+            they prefer.
+          </p>
+        </div>
+        <div class="roadmap-ai-flow" aria-hidden="true">
+          <span>human notation</span>
+          <b>→</b>
+          <strong>typed AST</strong>
+          <b>→</b>
+          <span>native targets</span>
+          <small>One checked surface for tools; native projects for execution.</small>
+        </div>
+      </div>
+
       <div class="roadmap-list">
         {
           phases.map((item) => (
-            <div class="roadmap-item">
+            <div class="roadmap-item" data-status={item.status.toLowerCase().replace(/\s+/g, "-")}>
               <div class="roadmap-phase">
                 {item.phase}
                 <div class:list={["roadmap-status", { done: item.done }]}>{item.status}</div>
@@ -181,6 +213,8 @@ const phases = [
         <div class="card"><h3 class="h3">Not every library</h3><p class="small" style="margin-top:0.5rem;">Portable core and ecosystem access are separate contracts. Target-specific extensions stay explicit.</p></div>
         <div class="card"><h3 class="h3">Not four independent implementations</h3><p class="small" style="margin-top:0.5rem;">A feature is portable only when the same semantics and expected outcomes hold on all targets.</p></div>
         <div class="card"><h3 class="h3">Not performance-first</h3><p class="small" style="margin-top:0.5rem;">Correctness and conformance come first. Optimization starts with measurement and must preserve behavior.</p></div>
+        <div class="card"><h3 class="h3">Not an AI-only language</h3><p class="small" style="margin-top:0.5rem;">Humans keep their notation. The machine interface follows from the semantic core; it does not replace human syntax.</p></div>
+        <div class="card"><h3 class="h3">Not a replacement for native ecosystems</h3><p class="small" style="margin-top:0.5rem;">Generated projects still run on their target toolchains. h# is the shared contract before translation, not another runtime.</p></div>
       </div>
     </div>
   </section>

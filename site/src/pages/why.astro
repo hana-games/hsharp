@@ -350,6 +350,49 @@ const driftStatus: Record<string, string> = {
     </div>
   </section>
 
+  <section class="section band-dark">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2 class="h2">One core for people.<br /><em class="italic lime">One contract for machines.</em></h2>
+        </div>
+        <p class="lede">
+          Different languages are useful to humans. They are expensive for tools. A model or an agent
+          should not need to learn every target grammar before it can reason about one program.
+        </p>
+      </div>
+
+      <div class="machine-grid">
+        <div class="machine-card">
+          <span class="machine-tag">Human interface</span>
+          <h3>Notation is a choice</h3>
+          <p>Profiles let each person keep a familiar vocabulary without changing the program.</p>
+        </div>
+        <div class="machine-card">
+          <span class="machine-tag">Machine interface</span>
+          <h3>One checked surface</h3>
+          <p>
+            A typed AST, stable diagnostics, and one outcome protocol give tools a single contract to
+            read and edit.
+          </p>
+        </div>
+        <div class="machine-card">
+          <span class="machine-tag">Execution</span>
+          <h3>Targets stay native</h3>
+          <p>
+            C#, Rust, Go, and Java remain real build targets. The shared contract sits before
+            translation, not instead of it.
+          </p>
+        </div>
+      </div>
+
+      <p class="machine-note">
+        The POC does not ship an AI product. The architecture simply removes the need to model every
+        surface syntax before a tool can act on the program.
+      </p>
+    </div>
+  </section>
+
   <section class="section band-paper-2">
     <div class="container">
       <div class="section-head">
