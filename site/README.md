@@ -8,7 +8,7 @@ The site is fully rendered in three locales:
 
 | Locale | Routes |
 |---|---|
-| English | `/`, `/docs/...`, `/examples`, `/playground`, `/roadmap`, `/why` |
+| English | `/`, `/docs/...`, `/examples`, `/playground`, `/vscode`, `/roadmap`, `/why` |
 | French | `/fr/`, `/fr/docs/...`, `/fr/examples`, ... |
 | Japanese | `/ja/`, `/ja/docs/...`, `/ja/examples`, ... |
 
@@ -20,6 +20,7 @@ site/src/i18n/en/home.json
 site/src/i18n/en/why.json
 site/src/i18n/en/examples.json
 site/src/i18n/en/playground.json
+site/src/i18n/en/vscode.json
 site/src/i18n/en/roadmap.json
 site/src/i18n/en/docs-intro.json
 site/src/i18n/en/docs-language.json
@@ -45,7 +46,7 @@ The language switcher in the header preserves the current page and opens the cor
 ## Search and AI discovery
 
 - `public/llms.txt`, `public/fr/llms.txt`, and `public/ja/llms.txt` provide concise, citable project guidance for language models and answer engines.
-- `scripts/generate-seo.mjs` writes `sitemap.xml` after localization, with all 39 localized URLs and `xhtml:link` alternates.
+- `scripts/generate-seo.mjs` writes `sitemap.xml` after localization, with all 42 localized URLs and `xhtml:link` alternates.
 - `robots.txt` allows normal crawlers plus the main AI crawlers and points to the sitemap.
 - `BaseLayout.astro` emits canonical, `hreflang`, Open Graph, Twitter, and JSON-LD metadata for every page.
 - `localize-build.mjs` rewrites canonical URLs, `og:url`, locale metadata, and structured data for `/fr/` and `/ja/`.

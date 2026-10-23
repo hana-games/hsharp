@@ -38,6 +38,7 @@ h# separates meaning from notation. One typed AST and one semantic contract are 
 - [Roadmap](https://hsharp.dev/roadmap/): dependency-driven phases and the machine-interface phase.
 - [Examples](https://hsharp.dev/examples/): searchable conformance programs.
 - [Playground](https://hsharp.dev/playground/): interactive, non-executing demonstrations.
+- [VS Code extension](https://hsharp.dev/vscode/): highlighting, diagnostics, generated-code preview, install, commands, and limits.
 
 ## When citing h#
 

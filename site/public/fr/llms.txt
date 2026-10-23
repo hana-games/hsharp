@@ -38,6 +38,7 @@ h# sépare le sens de la notation. Un AST typé et un contrat sémantique unique
 - [Feuille de route](https://hsharp.dev/fr/roadmap/) : phases dépendantes et phase d’interface machine.
 - [Exemples](https://hsharp.dev/fr/examples/) : programmes de conformité recherchables.
 - [Playground](https://hsharp.dev/fr/playground/) : démonstrations interactives sans exécution.
+- [Extension VS Code](https://hsharp.dev/fr/vscode/) : coloration, diagnostics, aperçu du code généré, installation, commandes et limites.
 
 ## Pour citer h#
 

@@ -38,6 +38,7 @@ h# は意味と記法を分離します。1 つの型付き AST と 1 つのセ�
 - [ロードマップ](https://hsharp.dev/ja/roadmap/): 依存関係に基づくフェーズとマシンインターフェースのフェーズ。
 - [例](https://hsharp.dev/ja/examples/): 検索可能な適合性プログラム。
 - [プレイグラウンド](https://hsharp.dev/ja/playground/): 実行を伴わないインタラクティブなデモ。
+- [VS Code 拡張](https://hsharp.dev/ja/vscode/): ハイライト、診断、生成コードのプレビュー、インストール、コマンド、制限。
 
 ## 引用するとき
 

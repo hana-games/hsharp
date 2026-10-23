@@ -2,6 +2,7 @@
   "A universal semantic core, personal syntax, and verified native output for C#, Rust, Go, and Java.": "C#、Rust、Go、Java 向けの検証済みネイティブ出力、個人記法、普遍的なセマンティックコア。",
   "Interactive h# demos: compose a syntax profile, inspect generated targets, explore overflow and short-circuit behavior, simulate export/import, and filter conformance results.": "インタラクティブな h# デモ。構文プロファイルの作成、生成ターゲットの確認、オーバーフローと短絡評価の探索、エクスポート/インポートのシミュレーション、適合性結果の絞り込み。",
   "Portability as a checked engineering property: one semantic core, a bounded portable feature set, personal notation, and four independently verified outputs.": "検証されたエンジニアリング特性としてのポータビリティ。1 つのセマンティックコア、境界のあるポータブル機能セット、個人記法、独立検証された 4 つの出力。",
+  "Profile-aware highlighting, live diagnostics, and a real-time generated-code preview for C#, Rust, Go, and Java inside Visual Studio Code.": "C#、Rust、Go、Java 向けのプロファイル対応ハイライト、ライブ診断、リアルタイム生成コードプレビューを Visual Studio Code で提供します。",
   "Real h# programs from the conformance corpus, with standard and personal notation, expected outcomes, and four verified targets.": "標準記法と個人記法、期待される結果、4 つの検証済みターゲットを備えた、適合性コーパス由来の実際の h# プログラム。",
   "The dependency-driven h# roadmap: from the verified POC to data semantics, control flow, modules, syntax families, concurrency, and a stable core.": "依存関係に基づく h# ロードマップ。検証済み POC からデータセマンティクス、制御フロー、モジュール、構文ファミリー、並行性、安定コアまで。",
   "This page does not exist in the h# site.": "このページは h# サイトに存在しません。"

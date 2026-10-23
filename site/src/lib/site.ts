@@ -138,6 +138,7 @@ export const nav = [
   { href: "/why", label: "Why h#" },
   { href: "/examples", label: "Examples" },
   { href: "/playground", label: "Playground" },
+  { href: "/vscode", label: "VS Code" },
   { href: "/docs", label: "Docs" },
   { href: "/roadmap", label: "Roadmap" },
 ];
