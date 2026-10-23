@@ -44,9 +44,11 @@ export function emitRust(
             .map((field, index) => `${field.targetName}: ${values[index]}`)
             .join(", ")} }`,
     fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}`,
+    fieldEquals: (left, right, record, index) =>
+      `${left}.${record.fields[index].targetName} == ${right}.${record.fields[index].targetName}`,
   };
 
-  const recordDeclarations = renderRecords(records);
+  const recordDeclarations = renderRecords(records, dialect);
   const functions = program.functions
     .map((signature) => renderFunction(program, signature, dialect, records))
     .join("\n\n");
@@ -136,11 +138,13 @@ path = "src/main.rs"
   };
 }
 
-function renderRecords(records: RecordMap): string {
+function renderRecords(records: RecordMap, dialect: Dialect): string {
   return [...records.values()]
     .map((record) => {
       const lines = [`#[derive(Clone, Copy, PartialEq, Eq)]`, `struct ${record.targetName} {`];
-      for (const field of record.fields) lines.push(`    ${field.targetName}: i32,`);
+      for (const field of record.fields) {
+        lines.push(`    ${field.targetName}: ${targetType(field.type, records, dialect.intType)},`);
+      }
       lines.push("}");
       return lines.join("\n");
     })

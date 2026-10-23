@@ -1,5 +1,6 @@
 import type { GeneratedProject } from "../contracts/interfaces";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
+import { isPrimitiveTypeName } from "../contracts/tokens";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
 import {
   collectRecords,
@@ -39,9 +40,17 @@ export function emitJava(
     call: (fn, args) => `${fn}(${args.join(", ")})`,
     recordLiteral: (record, values) => `new ${record.targetName}(${values.join(", ")})`,
     fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}()`,
+    fieldEquals: (left, right, record, index) => {
+      const field = record.fields[index];
+      const leftField = `${left}.${field.targetName}()`;
+      const rightField = `${right}.${field.targetName}()`;
+      return isPrimitiveTypeName(field.type)
+        ? `${leftField} == ${rightField}`
+        : `${leftField}.equals(${rightField})`;
+    },
   };
 
-  const recordDeclarations = renderRecords(records);
+  const recordDeclarations = renderRecords(records, dialect);
   const functions = program.functions
     .map((signature) => renderFunction(program, signature, dialect, records))
     .join("\n\n");
@@ -111,10 +120,12 @@ ${main}
   };
 }
 
-function renderRecords(records: RecordMap): string {
+function renderRecords(records: RecordMap, dialect: Dialect): string {
   return [...records.values()]
     .map((record) => {
-      const components = record.fields.map((field) => `int ${field.targetName}`).join(", ");
+      const components = record.fields
+        .map((field) => `${targetType(field.type, records, dialect.intType)} ${field.targetName}`)
+        .join(", ");
       return `    private record ${record.targetName}(${components}) {}`;
     })
     .join("\n\n");

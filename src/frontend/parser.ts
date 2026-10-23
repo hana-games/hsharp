@@ -485,17 +485,17 @@ class Parser {
 
   private parseRecordLiteral(nameToken: Token): RecordLiteral {
     this.expectPunct("{");
+    let base: Expr | undefined;
     const fields: RecordFieldInitializer[] = [];
+    if (isPunct(this.current(), ".")) {
+      this.expectPunct(".");
+      this.expectPunct(".");
+      this.expectPunct(".");
+      base = this.parseExpression();
+      this.matchPunct(",");
+    }
     while (!isPunct(this.current(), "}")) {
       if (this.atEnd()) throw this.fail("E_SYNTAX", "unclosed record literal; expected \"}\"", this.current());
-      if (isPunct(this.current(), ".")) {
-        throw this.fail(
-          "E_RECORD_UPDATE_UNSUPPORTED",
-          "record update syntax is not supported in this slice",
-          this.current(),
-          "construct a new record literal and name every field",
-        );
-      }
       const fieldName = this.expectIdentifier("field name");
       this.expectPunct(":");
       const value = this.parseExpression();
@@ -517,6 +517,7 @@ class Parser {
       recordName: nameToken.text,
       recordNameSpan: nameToken.span,
       fields,
+      base,
     };
   }
 

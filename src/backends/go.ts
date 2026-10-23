@@ -44,9 +44,11 @@ export function emitGo(
             .map((field, index) => `${field.targetName}: ${values[index]}`)
             .join(", ")}}`,
     fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}`,
+    fieldEquals: (left, right, record, index) =>
+      `${left}.${record.fields[index].targetName} == ${right}.${record.fields[index].targetName}`,
   };
 
-  const recordDeclarations = renderRecords(records);
+  const recordDeclarations = renderRecords(records, dialect);
   const functions = program.functions
     .map((signature) => renderFunction(program, signature, dialect, records))
     .join("\n\n");
@@ -133,11 +135,13 @@ go 1.22
   };
 }
 
-function renderRecords(records: RecordMap): string {
+function renderRecords(records: RecordMap, dialect: Dialect): string {
   return [...records.values()]
     .map((record) => {
       const lines = [`type ${record.targetName} struct {`];
-      for (const field of record.fields) lines.push(`\t${field.targetName} int32`);
+      for (const field of record.fields) {
+        lines.push(`\t${field.targetName} ${targetType(field.type, records, dialect.intType)}`);
+      }
       lines.push("}");
       return lines.join("\n");
     })

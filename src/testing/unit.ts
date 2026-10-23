@@ -361,6 +361,70 @@ fn main() -> bool {
   assert.deepEqual(resultOf(source), { status: "ok", type: "bool", value: true });
 });
 
+test("nested records evaluate and compare structurally", () => {
+  const result = resultOf(`record Point {
+    x: i32,
+    y: i32,
+}
+record Segment {
+    a: Point,
+    b: Point,
+}
+fn main() -> bool {
+    let p: Point = Point { x: 1, y: 2 };
+    let q: Point = Point { x: 3, y: 4 };
+    let s: Segment = Segment { a: p, b: q };
+    return s.a == p && s.b.y == 4 && s.a.x + s.b.y == 5;
+}
+`);
+  assert.deepEqual(result, { status: "ok", type: "bool", value: true });
+});
+
+test("record update creates a new value without mutating the base", () => {
+  const result = resultOf(`record Point {
+    x: i32,
+    y: i32,
+}
+fn main() -> bool {
+    let p: Point = Point { x: 1, y: 2 };
+    let q: Point = Point { ...p, x: 3 };
+    let same: Point = Point { ...p };
+    return p.x == 1 && q.x == 3 && q.y == 2 && same == p && q != p;
+}
+`);
+  assert.deepEqual(result, { status: "ok", type: "bool", value: true });
+});
+
+test("record update rejects a base of the wrong type", () => {
+  const loaded = analyze(
+    `record Point { x: i32 }
+record Other { x: i32 }
+fn main() -> i32 {
+    let p: Point = Point { x: 1 };
+    let o: Other = Other { x: 2 };
+    let bad: Point = Point { ...o, x: 3 };
+    return 1;
+}
+`,
+    "<update>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(loaded.diagnostics.some((diagnostic) => diagnostic.code === "E_FIELD_TYPE"));
+});
+
+test("recursive record types are rejected", () => {
+  const loaded = analyze(
+    `record Loop {
+    next: Loop,
+}
+fn main() -> i32 { return 1; }
+`,
+    "<nested>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(loaded.diagnostics.some((diagnostic) => diagnostic.code === "E_RECURSIVE_RECORD"));
+});
+
 test("record-returning functions and record entry parameters are rejected", () => {
   const returned = analyze(
     "record Point { x: i32 }\nfn make() -> Point { return Point { x: 1 }; }\nfn main() -> i32 { return 0; }\n",
@@ -404,7 +468,7 @@ test("record diagnostics cover unknown records, fields, and missing fields", () 
     "<unit>",
     STANDARD_PROFILE,
   );
-  assert.ok(update.diagnostics.some((d) => d.code === "E_RECORD_UPDATE_UNSUPPORTED"));
+  assert.ok(update.typed, update.diagnostics.map((d) => d.message).join("; "));
 });
 
 test("record target names and field names avoid source keyword collisions", () => {

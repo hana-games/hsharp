@@ -94,16 +94,17 @@ variants, `Option`, `Result`, structural equality, copying, ownership, and the n
 
 Delivered slice:
 
-- immutable records with scalar `i32`/`bool` fields;
+- immutable records with `i32`/`bool` fields;
+- nested non-recursive records;
 - record declarations, literals, field access, and structural equality;
 - records as locals and internal function parameters;
+- update-as-new-value (`Point { ...p, x: 3 }`);
 - collision-safe generated record/field names;
 - reference interpreter and all four backends;
-- positive record conformance case and negative record diagnostics;
-- record returns, record entry parameters, nested records, and update syntax are explicitly rejected.
+- positive record conformance case, unit coverage for nested/update, and negative record diagnostics;
+- recursive records, record returns, and record entry parameters are explicitly rejected.
 
-Not yet delivered: strings, lists, variants, `Option`, `Result`, nested records, record update, and
-record-returning functions.
+Not yet delivered: strings, lists, variants, `Option`, `Result`, and record-returning functions.
 
 Scope:
 
@@ -277,7 +278,7 @@ Dependencies: all prior phases for the features they extend.
 ## Immediate next actions
 
 1. Replace the scalar-only `Res` payload with a tag-capable value model so records can be returned and stored in other data types.
-2. Add nested records, record update-as-new-value, and record-returning functions.
+2. Add record-returning functions and record entry parameters.
 3. Prototype Rust ownership for immutable records and lists.
 4. Draft the CST/printer design before adding syntax families.
 5. Re-enable automatic Ubuntu CI after the manual workflow is validated.

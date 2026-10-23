@@ -39,9 +39,11 @@ export function emitCsharp(
     call: (fn, args) => `${fn}(${args.join(", ")})`,
     recordLiteral: (record, values) => `new ${record.targetName}(${values.join(", ")})`,
     fieldAccess: (target, record, index) => `${target}.${record.fields[index].targetName}`,
+    fieldEquals: (left, right, record, index) =>
+      `${left}.${record.fields[index].targetName} == ${right}.${record.fields[index].targetName}`,
   };
 
-  const recordDeclarations = renderRecords(records);
+  const recordDeclarations = renderRecords(records, dialect);
   const methods = program.functions
     .map((signature) => renderFunction(program, signature, dialect, records))
     .join("\n\n");
@@ -133,10 +135,12 @@ ${main}
   };
 }
 
-function renderRecords(records: RecordMap): string {
+function renderRecords(records: RecordMap, dialect: Dialect): string {
   return [...records.values()]
     .map((record) => {
-      const components = record.fields.map((field) => `int ${field.targetName}`).join(", ");
+      const components = record.fields
+        .map((field) => `${targetType(field.type, records, dialect.intType)} ${field.targetName}`)
+        .join(", ");
       return `    private readonly record struct ${record.targetName}(${components});`;
     })
     .join("\n\n");

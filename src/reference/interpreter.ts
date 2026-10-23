@@ -162,10 +162,17 @@ class Interpreter {
       case "RecordLiteral": {
         const record = this.records.get(expr.recordName);
         if (!record) throw new EvaluationError(`internal: unknown record "${expr.recordName}"`);
-        const fields: HsValue[] = record.fields.map((field) => ({
+        let fields: HsValue[] = record.fields.map((field) => ({
           type: field.type.name,
           value: field.type.name === "bool" ? false : 0,
         }));
+        if (expr.base) {
+          const base = this.evalExpr(expr.base, env);
+          if (!isRecordValue(base.value) || base.value.recordName !== expr.recordName) {
+            throw new EvaluationError(`internal: record update base has the wrong type`);
+          }
+          fields = [...base.value.fields];
+        }
         for (const initializer of expr.fields) {
           const index =
             initializer.fieldIndex ??

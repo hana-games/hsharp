@@ -129,6 +129,8 @@ export interface RecordLiteral extends NodeBase {
   recordName: string;
   recordNameSpan: SourceSpan;
   fields: RecordFieldInitializer[];
+  /** Optional base for update-as-new-value: `Point { ...base, x: 3 }`. */
+  base?: Expr;
   /** Filled by the semantic checker. */
   recordTargetName?: string;
 }
@@ -266,6 +268,7 @@ function normalizeExpr(expr: Expr): unknown {
       return {
         kind: "RecordLiteral",
         recordName: expr.recordName,
+        base: expr.base ? normalizeExpr(expr.base) : null,
         fields: expr.fields.map((field) => ({ name: field.name, value: normalizeExpr(field.value) })),
       };
     case "FieldAccess":
@@ -287,6 +290,7 @@ export function walkExpr(expr: Expr, visit: (node: Expr) => void): void {
       for (const arg of expr.args) walkExpr(arg, visit);
       break;
     case "RecordLiteral":
+      if (expr.base) walkExpr(expr.base, visit);
       for (const field of expr.fields) walkExpr(field.value, visit);
       break;
     case "FieldAccess":

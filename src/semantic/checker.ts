@@ -134,18 +134,13 @@ class Checker {
 
     // Field types may name a record declared later, so validate after every
     // record name is registered.
+    const edges = new Map<string, string[]>();
     for (const record of this.program.records) {
+      const recordEdges: string[] = [];
       for (const field of record.fields) {
         if (isPrimitiveTypeName(field.type.name)) continue;
         if (this.records.has(field.type.name)) {
-          this.diagnostics.push(
-            error(
-              "E_UNSUPPORTED_FIELD_TYPE",
-              `record field "${field.name}" has record type "${field.type.name}"; nested records are not supported in this slice`,
-              field.type.span,
-              "use only i32 and bool fields",
-            ),
-          );
+          recordEdges.push(field.type.name);
         } else {
           this.diagnostics.push(
             error(
@@ -156,7 +151,37 @@ class Checker {
           );
         }
       }
+      edges.set(record.name, recordEdges);
     }
+
+    // Recursive records require indirection/ownership semantics that are not
+    // specified yet. Reject every cycle, including self-recursion.
+    const state = new Map<string, "visiting" | "done">();
+    const stack: string[] = [];
+    const visit = (name: string): void => {
+      if (state.get(name) === "done") return;
+      if (state.get(name) === "visiting") {
+        const start = stack.indexOf(name);
+        const cycle = [...stack.slice(start), name].join(" -> ");
+        const record = this.records.get(name);
+        if (record) {
+          this.diagnostics.push(
+            error(
+              "E_RECURSIVE_RECORD",
+              `record cycle is not supported: ${cycle}`,
+              record.decl.nameSpan,
+            ),
+          );
+        }
+        return;
+      }
+      state.set(name, "visiting");
+      stack.push(name);
+      for (const next of edges.get(name) ?? []) visit(next);
+      stack.pop();
+      state.set(name, "done");
+    };
+    for (const name of edges.keys()) visit(name);
   }
 
   private checkFunction(fn: FunctionDecl): void {
@@ -347,6 +372,18 @@ class Checker {
           return "i32";
         }
         expr.recordTargetName = record.decl.targetName;
+        if (expr.base) {
+          const baseType = this.checkExpr(expr.base, scope);
+          if (baseType !== expr.recordName) {
+            this.diagnostics.push(
+              error(
+                "E_FIELD_TYPE",
+                `record update base has type ${baseType}, expected ${expr.recordName}`,
+                expr.base.span,
+              ),
+            );
+          }
+        }
         const provided = new Set<string>();
         for (const initializer of expr.fields) {
           if (provided.has(initializer.name)) {
@@ -385,7 +422,7 @@ class Checker {
           }
         }
         for (const field of record.decl.fields) {
-          if (!provided.has(field.name)) {
+          if (!expr.base && !provided.has(field.name)) {
             this.diagnostics.push(
               error(
                 "E_MISSING_FIELD",

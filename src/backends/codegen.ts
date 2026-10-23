@@ -63,6 +63,7 @@ export interface Dialect {
   call(fn: string, args: string[]): string;
   recordLiteral(record: RecordInfo, values: string[]): string;
   fieldAccess(target: string, record: RecordInfo, index: number): string;
+  fieldEquals(left: string, right: string, record: RecordInfo, index: number): string;
 }
 
 interface Lowered {
@@ -181,7 +182,10 @@ class Lowerer {
       case "RecordLiteral": {
         const record = this.records.get(expr.recordName);
         if (!record) throw new Error(`internal: unknown record "${expr.recordName}"`);
-        const values = record.fields.map(() => "0");
+        const base = expr.base ? this.lowerExpr(expr.base) : undefined;
+        const values = record.fields.map((_field, index) =>
+          base ? this.dialect.fieldAccess(base.text, record, index) : "0",
+        );
         for (const initializer of expr.fields) {
           const index = initializer.fieldIndex ?? -1;
           const value = this.lowerExpr(initializer.value);
@@ -299,10 +303,7 @@ class Lowerer {
   private recordEquality(left: string, right: string, record: RecordInfo): string {
     if (record.fields.length === 0) return "1 == 1";
     return record.fields
-      .map(
-        (_field, index) =>
-          `${this.dialect.fieldAccess(left, record, index)} == ${this.dialect.fieldAccess(right, record, index)}`,
-      )
+      .map((_field, index) => this.dialect.fieldEquals(left, right, record, index))
       .join(" && ");
   }
 
