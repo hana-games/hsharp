@@ -256,6 +256,23 @@ class Parser {
         elementType,
       };
     }
+    if (
+      token.kind === "identifier" &&
+      (token.text === "Option" || token.text === "Result") &&
+      isPunct(this.peek(1), "<")
+    ) {
+      this.advance();
+      this.advance();
+      const typeArgument = this.parseType();
+      const close = this.expectPunct(">");
+      return {
+        kind: "TypeRef",
+        id: this.nextId++,
+        span: { file: this.file, start: token.span.start, end: close.span.end },
+        name: `${token.text}<${typeArgument.name}>`,
+        typeArgument,
+      };
+    }
     if (token.kind === "type" && token.typeName !== undefined) {
       this.advance();
       return { kind: "TypeRef", id: this.nextId++, span: token.span, name: token.typeName };

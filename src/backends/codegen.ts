@@ -38,6 +38,8 @@ export interface VariantInfo {
   alternatives: VariantAlternativeInfo[];
   /** Largest payload arity, used to size the generated tagged value. */
   maxArity: number;
+  /** Set for compiler-generated Option/Result tagged types. */
+  builtin?: { kind: "option" | "result"; typeArgument: TypeName };
 }
 
 export type VariantMap = Map<string, VariantInfo>;
@@ -76,6 +78,21 @@ export function collectVariants(program: TypedProgram): VariantMap {
       targetName: variant.targetName,
       alternatives,
       maxArity: alternatives.reduce((max, alternative) => Math.max(max, alternative.payload.length), 0),
+    });
+  }
+  for (const builtin of program.builtinVariants ?? []) {
+    const alternatives = builtin.alternatives.map((alternative) => ({
+      name: alternative.name,
+      targetName: alternative.targetName,
+      tag: alternative.tag,
+      payload: alternative.payloadTypes,
+    }));
+    variants.set(builtin.typeName, {
+      name: builtin.typeName,
+      targetName: builtin.targetName,
+      alternatives,
+      maxArity: alternatives.reduce((max, alternative) => Math.max(max, alternative.payload.length), 0),
+      builtin: { kind: builtin.kind, typeArgument: builtin.typeArgument },
     });
   }
   return variants;
@@ -145,7 +162,9 @@ export interface Dialect {
   /** Tagged value constructor for one variant alternative, padded to max arity. */
   constructVariant(variant: VariantInfo, alternative: VariantAlternativeInfo, values: string[]): string;
   variantTag(expr: string, variant: VariantInfo): string;
-  variantPayload(expr: string, variant: VariantInfo, index: number): string;
+  /** Read a variant value, cloning where ownership requires it. */
+  variantValue(expr: string, variant: VariantInfo): string;
+  variantPayload(expr: string, variant: VariantInfo, alternative: VariantAlternativeInfo, index: number): string;
   variantEquals(left: string, right: string, variant: VariantInfo): string;
   /** Target spelling of a list of the given element type. */
   listType(elementType: string): string;
@@ -327,13 +346,16 @@ class Lowerer {
         return { text: this.dialect.stringLiteral(expr.value), type: "string" };
       case "VarRef": {
         const type = expr.resolvedType ?? "i32";
+        const variant = this.variants.get(type);
         return {
           text:
             type === "string"
               ? this.dialect.stringValue(expr.targetName!)
               : isListTypeName(type)
                 ? this.dialect.listValue(expr.targetName!)
-                : expr.targetName!,
+                : variant
+                  ? this.dialect.variantValue(expr.targetName!, variant)
+                  : expr.targetName!,
           type,
         };
       }
@@ -535,11 +557,13 @@ class Lowerer {
             openedBlocks += 1;
           }
           if (pattern.kind === "VariantPattern") {
+            const alternative =
+              variant.alternatives.find((candidate) => candidate.tag === pattern.tag) ?? variant.alternatives[0];
             pattern.bindings.forEach((binding, payloadIndex) => {
               this.builder.declare(
                 binding.targetName!,
                 this.typeText(binding.resolvedType ?? "i32"),
-                this.dialect.variantPayload(subject, variant, payloadIndex),
+                this.dialect.variantPayload(subject, variant, alternative, payloadIndex),
               );
             });
           }

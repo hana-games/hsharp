@@ -67,12 +67,22 @@ export function emitRust(
     fieldEquals: (left, right, record, index) =>
       `${left}.${record.fields[index].targetName} == ${right}.${record.fields[index].targetName}`,
     constructVariant: (variant, alternative, values) => {
+      if (variant.builtin?.kind === "result") {
+        const isErr = alternative.payload[0] === "string";
+        return `${variant.targetName} { tag: ${alternative.tag}, p1: ${isErr ? "0" : values[0] ?? "0"}, s1: ${
+          isErr ? values[0] ?? "String::new()" : "String::new()"
+        } }`;
+      }
       const fields = ["tag", ...Array.from({ length: variant.maxArity }, (_unused, index) => `p${index + 1}`)];
       const assigned = [String(alternative.tag), ...values, ...Array(Math.max(0, variant.maxArity - values.length)).fill("0")];
       return `${variant.targetName} { ${fields.map((field, index) => `${field}: ${assigned[index]}`).join(", ")} }`;
     },
     variantTag: (expr) => `${expr}.tag`,
-    variantPayload: (expr, _variant, index) => `${expr}.p${index + 1}`,
+    variantValue: (expr, variant) => (variant.builtin?.kind === "result" ? `${expr}.clone()` : expr),
+    variantPayload: (expr, variant, alternative, index) =>
+      variant.builtin?.kind === "result" && alternative.payload[0] === "string"
+        ? `${expr}.s1`
+        : `${expr}.p${index + 1}`,
     variantEquals: (left, right) => `${left} == ${right}`,
     listType: (element) => `Vec<${element}>`,
     listLiteral: (values) => `vec![${values.join(", ")}]`,
@@ -225,6 +235,16 @@ function renderRecords(records: RecordMap, dialect: Dialect, variants: VariantMa
 function renderVariants(variants: VariantMap, dialect: Dialect): string {
   return [...variants.values()]
     .map((variant) => {
+      if (variant.builtin?.kind === "result") {
+        return [
+          `#[derive(Clone, PartialEq, Eq)]`,
+          `struct ${variant.targetName} {`,
+          `    tag: ${dialect.intType},`,
+          `    p1: ${dialect.intType},`,
+          `    s1: ${dialect.stringType},`,
+          `}`,
+        ].join("\n");
+      }
       const lines = [`#[derive(Clone, Copy, PartialEq, Eq)]`, `struct ${variant.targetName} {`, `    tag: ${dialect.intType},`];
       for (let index = 0; index < variant.maxArity; index++) {
         lines.push(`    p${index + 1}: ${dialect.intType},`);

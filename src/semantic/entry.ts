@@ -1,7 +1,7 @@
 import type { Diagnostic } from "../contracts/diagnostics";
 import { error } from "../contracts/diagnostics";
 import type { TypedProgram } from "../contracts/outcome";
-import { isListTypeName } from "../contracts/tokens";
+import { isBuiltinOptionResultTypeName, isListTypeName, isOptionTypeName } from "../contracts/tokens";
 
 export function chooseEntry(typed: TypedProgram, requested?: string): { entry?: string; diagnostic?: Diagnostic } {
   const variantNames = new Set(typed.ast.variants.map((variant) => variant.name));
@@ -41,18 +41,10 @@ function scalarEntry(
 ): { diagnostic?: Diagnostic } | undefined {
   const nonScalarParam = signature.params.find((param) => param.type !== "i32" && param.type !== "bool");
   if (nonScalarParam) {
-    const list = isListTypeName(nonScalarParam.type);
-    const variant = variants.has(nonScalarParam.type);
-    const kind = nonScalarParam.type === "string" ? "string" : list ? "list" : variant ? "variant" : "record";
+    const kind = boundaryKind(nonScalarParam.type, variants);
     return {
       diagnostic: error(
-        nonScalarParam.type === "string"
-          ? "E_STRING_ENTRY_PARAMETER_UNSUPPORTED"
-          : list
-            ? "E_LIST_ENTRY_PARAMETER_UNSUPPORTED"
-            : variant
-              ? "E_VARIANT_ENTRY_PARAMETER_UNSUPPORTED"
-              : "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED",
+        entryBoundaryCode(kind, "PARAMETER"),
         `entry function "${signature.name}" cannot take ${kind} parameter "${nonScalarParam.name}"`,
         undefined,
         "entry values come from scalar command-line arguments",
@@ -60,18 +52,10 @@ function scalarEntry(
     };
   }
   if (signature.returnType !== "i32" && signature.returnType !== "bool") {
-    const list = isListTypeName(signature.returnType);
-    const variant = variants.has(signature.returnType);
-    const kind = signature.returnType === "string" ? "string" : list ? "list" : variant ? "variant" : "record";
+    const kind = boundaryKind(signature.returnType, variants);
     return {
       diagnostic: error(
-        signature.returnType === "string"
-          ? "E_STRING_ENTRY_RETURN_UNSUPPORTED"
-          : list
-            ? "E_LIST_ENTRY_RETURN_UNSUPPORTED"
-            : variant
-              ? "E_VARIANT_ENTRY_RETURN_UNSUPPORTED"
-              : "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
+        entryBoundaryCode(kind, "RETURN"),
         `entry function "${signature.name}" cannot return ${kind} "${signature.returnType}"`,
         undefined,
         "entry outcomes are scalar",
@@ -79,4 +63,17 @@ function scalarEntry(
     };
   }
   return undefined;
+}
+
+function boundaryKind(type: string, variants: Set<string>): string {
+  if (type === "string") return "string";
+  if (isListTypeName(type)) return "list";
+  if (isOptionTypeName(type)) return "option";
+  if (isBuiltinOptionResultTypeName(type)) return "result";
+  if (variants.has(type)) return "variant";
+  return "record";
+}
+
+function entryBoundaryCode(kind: string, boundary: "PARAMETER" | "RETURN"): string {
+  return `E_${kind.toUpperCase()}_ENTRY_${boundary}_UNSUPPORTED`;
 }

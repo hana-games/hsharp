@@ -68,6 +68,8 @@ export interface TypeRef extends NodeBase {
   name: TypeName;
   /** Present for `list<T>`; the element type reference. */
   elementType?: TypeRef;
+  /** Present for built-in `Option<T>` and `Result<T>`; the type argument. */
+  typeArgument?: TypeRef;
 }
 
 export interface Param extends NodeBase {

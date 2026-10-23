@@ -928,6 +928,206 @@ test("variant programs preserve the normalized AST across profiles", () => {
   }
 });
 
+test("Option and Result construct, match, pass, return, and compare structurally", () => {
+  const source = readFileSync(resolve("examples", "option-result.hs"), "utf8");
+  assert.deepEqual(resultOf(source), { status: "ok", type: "bool", value: true });
+
+  const equality = resultOf(`fn main() -> bool {
+    let a: Option<bool> = some(true);
+    let b: Option<bool> = some(true);
+    let c: Option<bool> = none();
+    let d: Result<bool> = ok(true);
+    let e: Result<bool> = ok(true);
+    let f: Result<bool> = err("no");
+    let g: Result<bool> = err("no");
+    return a == b && a != c && c == none() && d == e && d != f && f == g;
+}
+`);
+  assert.deepEqual(equality, { status: "ok", type: "bool", value: true });
+});
+
+test("Option and Result matches run only the selected arm", () => {
+  const result = resultOf(`fn main() -> bool {
+    let present: Option<i32> = some(5);
+    let absent: Option<i32> = none();
+    let good: Result<i32> = ok(7);
+    let bad: Result<i32> = err("no");
+    let picked: i32 = match present {
+        some(x) => x,
+        none() => 2147483647 + 1,
+    };
+    let fallback: i32 = match absent {
+        some(x) => x,
+        none() => 9,
+    };
+    let kept: bool = match good {
+        ok(x) => x == 7,
+        err(message) => 2147483647 + 1 == 0,
+    };
+    let rejected: bool = match bad {
+        ok(x) => x == 0,
+        err(message) => message == "no",
+    };
+    return picked == 5 && fallback == 9 && kept && rejected;
+}
+`);
+  assert.deepEqual(result, { status: "ok", type: "bool", value: true });
+});
+
+test("Option and Result matches must be exhaustive and wildcard-last", () => {
+  const nonExhaustiveOption = analyze(
+    `fn main() -> bool {
+    let value: Option<i32> = some(1);
+    return match value { some(x) => x == 1 };
+}
+`,
+    "<option>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(
+    nonExhaustiveOption.diagnostics.some((d) => d.code === "E_NON_EXHAUSTIVE_MATCH"),
+    nonExhaustiveOption.diagnostics.map((d) => d.code).join(", "),
+  );
+
+  const nonExhaustiveResult = analyze(
+    `fn main() -> bool {
+    let value: Result<i32> = ok(1);
+    return match value { ok(x) => x == 1 };
+}
+`,
+    "<result>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(nonExhaustiveResult.diagnostics.some((d) => d.code === "E_NON_EXHAUSTIVE_MATCH"));
+
+  const wildcardNotFinal = analyze(
+    `fn main() -> bool {
+    let value: Option<i32> = none();
+    return match value { _ => true, some(x) => x == 1, none() => false };
+}
+`,
+    "<option>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(wildcardNotFinal.diagnostics.some((d) => d.code === "E_WILDCARD_NOT_FINAL"));
+});
+
+test("none and err require a matching expected type in context", () => {
+  const missingNone = analyze(
+    "fn main() -> bool { return none() == none(); }\n",
+    "<option>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(missingNone.diagnostics.some((d) => d.code === "E_MISSING_EXPECTED_TYPE"));
+
+  const missingErr = analyze(
+    'fn main() -> bool { return err("x") == err("x"); }\n',
+    "<result>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(missingErr.diagnostics.some((d) => d.code === "E_MISSING_EXPECTED_TYPE"));
+
+  const wrongNone = analyze(
+    "fn main() -> bool { let value: i32 = none(); return value == 0; }\n",
+    "<option>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(wrongNone.diagnostics.some((d) => d.code === "E_CONSTRUCTOR_EXPECTED_TYPE"));
+
+  const wrongErr = analyze(
+    'fn main() -> bool { let value: Option<i32> = err("x"); return value == none(); }\n',
+    "<result>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(wrongErr.diagnostics.some((d) => d.code === "E_CONSTRUCTOR_EXPECTED_TYPE"));
+});
+
+test("Option and Result constructor payload types are checked", () => {
+  const somePayload = analyze(
+    "fn main() -> bool { let value: Option<i32> = some(true); return value == none(); }\n",
+    "<option>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(somePayload.diagnostics.some((d) => d.code === "E_CONSTRUCTOR_PAYLOAD_TYPE"));
+
+  const errPayload = analyze(
+    'fn main() -> bool { let value: Result<i32> = err(1); return value == ok(1); }\n',
+    "<result>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(errPayload.diagnostics.some((d) => d.code === "E_CONSTRUCTOR_PAYLOAD_TYPE"));
+
+  const nested = analyze(
+    "fn main() -> bool { let value: Option<i32> = some(none()); return value == none(); }\n",
+    "<option>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(nested.diagnostics.some((d) => d.code === "E_NESTED_OPTION_RESULT"));
+});
+
+test("Option and Result entry values and containers are rejected in this slice", () => {
+  const entryParam = analyze(
+    "fn main(value: Option<i32>) -> i32 { return 1; }\n",
+    "<option>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(entryParam.diagnostics.some((d) => d.code === "E_OPTION_ENTRY_PARAMETER_UNSUPPORTED"));
+
+  const entryReturn = analyze(
+    "fn main() -> Result<bool> { return ok(true); }\n",
+    "<result>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(entryReturn.diagnostics.some((d) => d.code === "E_RESULT_ENTRY_RETURN_UNSUPPORTED"));
+
+  const recordField = analyze(
+    "record Bad { value: Option<i32> }\nfn main() -> i32 { return 1; }\n",
+    "<option>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(recordField.diagnostics.some((d) => d.code === "E_OPTION_FIELD_UNSUPPORTED"));
+
+  const resultField = analyze(
+    "record Bad { value: Result<bool> }\nfn main() -> i32 { return 1; }\n",
+    "<result>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(resultField.diagnostics.some((d) => d.code === "E_RESULT_FIELD_UNSUPPORTED"));
+
+  const optionList = analyze(
+    "fn main() -> bool { let values: list<Option<i32>> = [some(1)]; return true; }\n",
+    "<option>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(optionList.diagnostics.some((d) => d.code === "E_OPTION_IN_LIST"));
+
+  const resultList = analyze(
+    'fn main() -> bool { let values: list<Result<i32>> = [ok(1)]; return true; }\n',
+    "<result>",
+    STANDARD_PROFILE,
+  );
+  assert.ok(resultList.diagnostics.some((d) => d.code === "E_RESULT_IN_LIST"));
+});
+
+test("Option and Result code generation hides source constructor names", () => {
+  const source = readFileSync(resolve("examples", "option-result.hs"), "utf8");
+  const loaded = analyze(source, "<option-result>", STANDARD_PROFILE);
+  assert.ok(loaded.typed, loaded.diagnostics.map((d) => d.message).join("; "));
+  assert.ok(loaded.typed!.builtinVariants.length >= 2);
+  const { emit } = require("../backends") as typeof import("../backends");
+  for (const target of ["csharp", "rust", "go", "java"] as const) {
+    const project = emit(loaded.typed!, target, "main");
+    const text = project.files.map((file) => file.content).join("\n");
+    assert.match(text, /X1/, `${target} should generate a built-in tagged type`);
+    for (const sourceName of ["some", "none", "Option", "Result"]) {
+      assert.ok(
+        !new RegExp(`\\b${sourceName}\\b`).test(text),
+        `${target} must not emit source name ${sourceName}`,
+      );
+    }
+  }
+});
+
 test("seeded property generator is deterministic and valid", () => {
   for (let seed = 1; seed <= 8; seed++) {
     const first = generateCase(seed, 2);

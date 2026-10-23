@@ -66,21 +66,37 @@ export function emitJava(
         ? `${leftField} == ${rightField}`
         : `${leftField}.equals(${rightField})`;
     },
-    constructVariant: (variant, alternative, values) =>
-      `new ${variant.targetName}(${[
+    constructVariant: (variant, alternative, values) => {
+      if (variant.builtin?.kind === "result") {
+        const isErr = alternative.payload[0] === "string";
+        return `new ${variant.targetName}(${alternative.tag}, ${isErr ? "0" : values[0] ?? "0"}, ${
+          isErr ? values[0] ?? '""' : '""'
+        })`;
+      }
+      return `new ${variant.targetName}(${[
         String(alternative.tag),
         ...values,
         ...Array(Math.max(0, variant.maxArity - values.length)).fill("0"),
-      ].join(", ")})`,
+      ].join(", ")})`;
+    },
     variantTag: (expr) => `${expr}.tag`,
-    variantPayload: (expr, _variant, index) => `${expr}.p${index + 1}`,
-    variantEquals: (left, right, variant) =>
-      variant.maxArity === 0
+    variantValue: (expr) => expr,
+    variantPayload: (expr, variant, alternative, index) =>
+      variant.builtin?.kind === "result" && alternative.payload[0] === "string"
+        ? `${expr}.s1`
+        : `${expr}.p${index + 1}`,
+    variantEquals: (left, right, variant) => {
+      if (variant.builtin?.kind === "result") {
+        const okTag = variant.alternatives.find((alternative) => alternative.name === "ok")?.tag ?? 0;
+        return `(${left}.tag == ${right}.tag && (${left}.tag == ${okTag} ? ${left}.p1 == ${right}.p1 : ${left}.s1.equals(${right}.s1)))`;
+      }
+      return variant.maxArity === 0
         ? `${left}.tag == ${right}.tag`
         : `(${left}.tag == ${right}.tag && ${Array.from(
             { length: variant.maxArity },
             (_unused, index) => `${left}.p${index + 1} == ${right}.p${index + 1}`,
-          ).join(" && ")})`,
+          ).join(" && ")})`;
+    },
     listType: (element) => `${element}[]`,
     listLiteral: (values) => `new int[] { ${values.join(", ")} }`,
     emptyList: () => `new int[] {}`,
@@ -198,6 +214,20 @@ function renderRecords(records: RecordMap, dialect: Dialect, variants: VariantMa
 function renderVariants(variants: VariantMap, dialect: Dialect): string {
   return [...variants.values()]
     .map((variant) => {
+      if (variant.builtin?.kind === "result") {
+        const fields = ["tag", "p1", "s1"];
+        const types = [dialect.intType, dialect.intType, dialect.stringType];
+        const lines = [
+          `    private static final class ${variant.targetName} {`,
+          ...fields.map((field, index) => `        final ${types[index]} ${field};`),
+          "",
+          `        ${variant.targetName}(${fields.map((field, index) => `${types[index]} ${field}`).join(", ")}) {`,
+          ...fields.map((field) => `            this.${field} = ${field};`),
+          "        }",
+          "    }",
+        ];
+        return lines.join("\n");
+      }
       const fields = ["tag", ...Array.from({ length: variant.maxArity }, (_unused, index) => `p${index + 1}`)];
       const lines = [
         `    private static final class ${variant.targetName} {`,

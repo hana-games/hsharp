@@ -48,6 +48,35 @@ export function listElementTypeName(name: string): TypeName | undefined {
   return name.slice("list<".length, -1);
 }
 
+/** Canonical spelling of the built-in option type, e.g. `Option<i32>`. */
+export function optionTypeName(argumentType: TypeName): string {
+  return `Option<${argumentType}>`;
+}
+
+/** Canonical spelling of the built-in result type, e.g. `Result<i32>`. */
+export function resultTypeName(argumentType: TypeName): string {
+  return `Result<${argumentType}>`;
+}
+
+export function isOptionTypeName(name: string): boolean {
+  return name.startsWith("Option<") && name.endsWith(">");
+}
+
+export function isResultTypeName(name: string): boolean {
+  return name.startsWith("Result<") && name.endsWith(">");
+}
+
+export function isBuiltinOptionResultTypeName(name: string): boolean {
+  return isOptionTypeName(name) || isResultTypeName(name);
+}
+
+/** Type argument of a canonical `Option<T>` or `Result<T>` name. */
+export function builtinTypeArgumentName(name: string): TypeName | undefined {
+  if (isOptionTypeName(name)) return name.slice("Option<".length, -1);
+  if (isResultTypeName(name)) return name.slice("Result<".length, -1);
+  return undefined;
+}
+
 export type TokenKind =
   | "keyword"
   | "type"

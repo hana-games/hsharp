@@ -1,6 +1,6 @@
 # h# 0.3 — Data and memory semantics
 
-Status: **partially implemented (0.3 record, string, list, and variant slices)**. A data feature is advertised only after it has a
+Status: **partially implemented (0.3 record, string, list, variant, and focused Option/Result slices)**. A data feature is advertised only after it has a
 conformance corpus entry and executes on every advertised target. The current slice covers immutable
 records with `i32`/`bool` fields, nested non-recursive records, record literals, field access, records
 as locals and internal parameters, record returns from internal functions, structural equality,
@@ -8,9 +8,12 @@ update-as-new-value, strings with literals, escapes, equality, locals, internal 
 internal returns, `list<i32>`/`list<bool>` with non-empty literals, indexing, `length`, locals,
 internal parameters, internal returns, and structural equality, and nominal variants with scalar
 payloads, constructors, exhaustive `match`, wildcard arms, locals, internal parameters, internal
-returns, and structural equality. `Option`, `Result`, string length/indexing, empty list literals,
-list mutation/concatenation, record fields of string/list/variant type, and lists of variants remain
-specification-only.
+returns, and structural equality. A focused `Option<T>`/`Result<T>` slice (T is `i32` or `bool`)
+adds `some`/`none`/`ok`/`err`, exhaustive `match`, structural equality, locals, internal parameters,
+and internal returns; it is covered by `examples/option-result.hs` and unit tests but is not yet a
+conformance corpus entry. String length/indexing, empty list literals, list mutation/concatenation,
+record fields of string/list/variant type, lists of variants, and Option/Result in records, lists,
+variants, or entry signatures remain specification-only.
 
 This document defines the portable data model for phase 0.3. It is normative for profiles,
 generated code, the reference interpreter, and the conformance suite.
@@ -152,12 +155,29 @@ is not also a function name. Variants are immutable values usable as locals, int
 internal returns, and support structural `==`/`!=`. Variant names and alternative names do not appear
 in generated identifiers.
 
+**Implemented focused slice (0.3):** built-in `Option<T>` and `Result<T>` for `T` in `{i32, bool}`.
+`some(value)` and `ok(value)` infer `T` from the payload; `none()` and `err("message")` require an
+expected `Option<T>` or `Result<T>` from a let annotation, return type, function or constructor
+argument, equality operand, or match arm result. Values lower to compiler-generated private tagged
+types (`X1`, `X2`, ...) and use exhaustive `match` with `some(x)`, `none()`, `ok(x)`, and
+`err(message)` patterns. Values are immutable, structural for `==`/`!=`, and usable as locals,
+internal parameters, and internal returns. The `Result` error payload preserves its string value.
+The constructor names `some`, `none`, `ok`, and `err` are reserved for these built-ins in this slice.
+Missing or wrong expected types produce `E_MISSING_EXPECTED_TYPE` or `E_CONSTRUCTOR_EXPECTED_TYPE`;
+nested Option/Result values produce `E_NESTED_OPTION_RESULT`. Entry functions cannot take or return
+these types. A `none()` or `err()` used directly as a match scrutinee still needs an expected type
+from an enclosing context; pattern-only inference is not implemented.
+
 **Deliberately rejected in this slice:** payload types other than `i32`/`bool`
 (`E_VARIANT_PAYLOAD_UNSUPPORTED`), variants in record fields (`E_VARIANT_FIELD_UNSUPPORTED`), lists
 of variants (`E_VARIANT_IN_LIST`), variant parameters or returns on entry functions
 (`E_VARIANT_ENTRY_PARAMETER_UNSUPPORTED`, `E_VARIANT_ENTRY_RETURN_UNSUPPORTED`), ambiguous
 constructor/function calls (`E_AMBIGUOUS_CONSTRUCTOR`), duplicate variants, alternatives, and match
-arms, and empty variant declarations. `Option` and `Result` remain specification-only.
+arms, and empty variant declarations. Option/Result are rejected in record fields
+(`E_OPTION_FIELD_UNSUPPORTED`, `E_RESULT_FIELD_UNSUPPORTED`), list element positions
+(`E_OPTION_IN_LIST`, `E_RESULT_IN_LIST`), variant payloads, entry parameters, and entry returns
+(`E_OPTION_ENTRY_*`, `E_RESULT_ENTRY_*`). Unwrap/expect helpers, nested Option/Result, and
+user-defined generics are not implemented.
 
 ## Pattern matching
 
@@ -269,7 +289,9 @@ The committed 0.3 corpus currently covers the record slice, a focused list examp
 (`examples/list.hs`), and a focused variant example (`examples/variants.hs`): scalar records, field
 access, internal record parameters, structural equality, list literals/length/indexing/equality,
 variant constructors, internal variant parameters and returns, exhaustive matching, and structural
-variant equality. The other bullets remain acceptance work for future slices.
+variant equality. `examples/option-result.hs` and its unit tests cover the focused Option/Result
+slice on all four backends, but it is not yet a conformance corpus case. The other bullets remain
+acceptance work for future slices.
 
 ## Migration
 

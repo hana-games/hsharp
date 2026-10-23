@@ -64,6 +64,12 @@ export function emitGo(
     fieldEquals: (left, right, record, index) =>
       `${left}.${record.fields[index].targetName} == ${right}.${record.fields[index].targetName}`,
     constructVariant: (variant, alternative, values) => {
+      if (variant.builtin?.kind === "result") {
+        const isErr = alternative.payload[0] === "string";
+        return `${variant.targetName}{tag: ${alternative.tag}, p1: ${isErr ? "0" : values[0] ?? "0"}, s1: ${
+          isErr ? values[0] ?? '""' : '""'
+        }}`;
+      }
       const fields = ["tag", ...Array.from({ length: variant.maxArity }, (_unused, index) => `p${index + 1}`)];
       const assigned = [String(alternative.tag), ...values, ...Array(Math.max(0, variant.maxArity - values.length)).fill("0")];
       return `${variant.targetName}{${fields
@@ -71,14 +77,23 @@ export function emitGo(
         .join(", ")}}`;
     },
     variantTag: (expr) => `${expr}.tag`,
-    variantPayload: (expr, _variant, index) => `${expr}.p${index + 1}`,
-    variantEquals: (left, right, variant) =>
-      variant.maxArity === 0
+    variantValue: (expr) => expr,
+    variantPayload: (expr, variant, alternative, index) =>
+      variant.builtin?.kind === "result" && alternative.payload[0] === "string"
+        ? `${expr}.s1`
+        : `${expr}.p${index + 1}`,
+    variantEquals: (left, right, variant) => {
+      if (variant.builtin?.kind === "result") {
+        const okTag = variant.alternatives.find((alternative) => alternative.name === "ok")?.tag ?? 0;
+        return `(${left}.tag == ${right}.tag && ((${left}.tag == ${okTag} && ${left}.p1 == ${right}.p1) || (${left}.tag != ${okTag} && ${left}.s1 == ${right}.s1)))`;
+      }
+      return variant.maxArity === 0
         ? `${left}.tag == ${right}.tag`
         : `(${left}.tag == ${right}.tag && ${Array.from(
             { length: variant.maxArity },
             (_unused, index) => `${left}.p${index + 1} == ${right}.p${index + 1}`,
-          ).join(" && ")})`,
+          ).join(" && ")})`;
+    },
     listType: (element) => `[]${element}`,
     listLiteral: (values) => `[]int32{${values.join(", ")}}`,
     emptyList: () => `[]int32{}`,
@@ -224,6 +239,15 @@ function renderRecords(records: RecordMap, dialect: Dialect, variants: VariantMa
 function renderVariants(variants: VariantMap, dialect: Dialect): string {
   return [...variants.values()]
     .map((variant) => {
+      if (variant.builtin?.kind === "result") {
+        return [
+          `type ${variant.targetName} struct {`,
+          `\ttag ${dialect.intType}`,
+          `\tp1 ${dialect.intType}`,
+          `\ts1 ${dialect.stringType}`,
+          "}",
+        ].join("\n");
+      }
       const lines = [`type ${variant.targetName} struct {`, `\ttag ${dialect.intType}`];
       for (let index = 0; index < variant.maxArity; index++) {
         lines.push(`\tp${index + 1} ${dialect.intType}`);

@@ -9,11 +9,30 @@ export interface FunctionSignature {
   returnType: TypeName;
 }
 
+/** Checked facts about one compiler-generated built-in Option/Result variant. */
+export interface BuiltinAlternativeInfo {
+  name: string;
+  targetName: string;
+  tag: number;
+  payloadTypes: TypeName[];
+}
+
+export interface BuiltinVariantInfo {
+  /** Canonical type name such as `Option<i32>`. */
+  typeName: TypeName;
+  targetName: string;
+  kind: "option" | "result";
+  typeArgument: TypeName;
+  alternatives: BuiltinAlternativeInfo[];
+}
+
 /** The checker annotates the source AST in place; this view exposes the checked facts. */
 export interface TypedProgram {
   ast: Program;
   functions: FunctionSignature[];
   entryCandidates: FunctionSignature[];
+  /** Compiler-generated tagged types for built-in Option/Result values. */
+  builtinVariants: BuiltinVariantInfo[];
 }
 
 export type ScalarValue = number | boolean | string;

@@ -15,10 +15,16 @@ import type { Diagnostic } from "../contracts/diagnostics";
 import { error } from "../contracts/diagnostics";
 import type { FunctionSignature, TypedProgram } from "../contracts/outcome";
 import {
+  builtinTypeArgumentName,
+  isBuiltinOptionResultTypeName,
   isListTypeName,
+  isOptionTypeName,
   isPrimitiveTypeName,
+  isResultTypeName,
   listElementTypeName,
   listTypeName,
+  optionTypeName,
+  resultTypeName,
   type TypeName,
 } from "../contracts/tokens";
 
@@ -43,6 +49,23 @@ interface VariantSymbol {
 interface AlternativeSymbol {
   variant: VariantDecl;
   alternative: VariantAlternative;
+}
+
+/** Checked shape of a compiler-generated Option/Result tagged type. */
+interface BuiltinVariantSymbol {
+  typeName: TypeName;
+  targetName: string;
+  kind: "option" | "result";
+  typeArgument: TypeName;
+  alternatives: BuiltinAlternativeSymbol[];
+  byName: Map<string, BuiltinAlternativeSymbol>;
+}
+
+interface BuiltinAlternativeSymbol {
+  name: string;
+  targetName: string;
+  tag: number;
+  payloadTypes: TypeName[];
 }
 
 class Scope {
@@ -82,6 +105,9 @@ class Checker {
   /** Bare alternative names are the constructor namespace; duplicates stay ambiguous. */
   private readonly alternatives = new Map<string, AlternativeSymbol[]>();
   private readonly callGraph = new Map<string, Set<string>>();
+  /** Built-in Option/Result types are monomorphized into compiler-generated variants. */
+  private readonly builtinVariants = new Map<TypeName, BuiltinVariantSymbol>();
+  private builtinVariantCounter = 0;
   private localCounter = 0;
 
   constructor(private readonly program: Program) {}
@@ -105,6 +131,18 @@ class Checker {
         ast: this.program,
         functions,
         entryCandidates: functions,
+        builtinVariants: [...this.builtinVariants.values()].map((variant) => ({
+          typeName: variant.typeName,
+          targetName: variant.targetName,
+          kind: variant.kind,
+          typeArgument: variant.typeArgument,
+          alternatives: variant.alternatives.map((alternative) => ({
+            name: alternative.name,
+            targetName: alternative.targetName,
+            tag: alternative.tag,
+            payloadTypes: [...alternative.payloadTypes],
+          })),
+        })),
       },
     };
   }
@@ -189,7 +227,13 @@ class Checker {
   private resolvePayloadType(payload: TypeRef, alternative: VariantAlternative): TypeName {
     const canonical = this.canonicalTypeRef(payload);
     if (canonical === "i32" || canonical === "bool") return canonical;
-    if (payload.elementType || isListTypeName(canonical) || canonical === "string") {
+    if (
+      payload.elementType ||
+      payload.typeArgument ||
+      isListTypeName(canonical) ||
+      isBuiltinOptionResultTypeName(canonical) ||
+      canonical === "string"
+    ) {
       this.diagnostics.push(
         error(
           "E_VARIANT_PAYLOAD_UNSUPPORTED",
@@ -219,6 +263,10 @@ class Checker {
 
   private canonicalTypeRef(type: TypeRef): TypeName {
     if (type.elementType) return listTypeName(this.canonicalTypeRef(type.elementType));
+    if (type.typeArgument) {
+      const argument = this.canonicalTypeRef(type.typeArgument);
+      return type.name.startsWith("Result<") ? resultTypeName(argument) : optionTypeName(argument);
+    }
     return type.name;
   }
 
@@ -272,6 +320,19 @@ class Checker {
     for (const record of this.program.records) {
       const recordEdges: string[] = [];
       for (const field of record.fields) {
+        if (isOptionTypeName(field.type.name) || isResultTypeName(field.type.name)) {
+          this.diagnostics.push(
+            error(
+              isOptionTypeName(field.type.name)
+                ? "E_OPTION_FIELD_UNSUPPORTED"
+                : "E_RESULT_FIELD_UNSUPPORTED",
+              `record field "${field.name}" cannot use ${isOptionTypeName(field.type.name) ? "Option" : "Result"} in this slice`,
+              field.type.span,
+              "Option and Result values are supported only as locals, internal parameters, and internal returns",
+            ),
+          );
+          continue;
+        }
         if (field.type.name === "string") {
           this.diagnostics.push(
             error(
@@ -363,31 +424,12 @@ class Checker {
       }
       seenParams.add(param.name);
       const paramType = this.resolveType(param.type);
-      if (
-        autoEntry &&
-        (this.records.has(paramType) ||
-          this.variants.has(paramType) ||
-          paramType === "string" ||
-          isListTypeName(paramType))
-      ) {
-        const code = paramType === "string"
-          ? "E_STRING_ENTRY_PARAMETER_UNSUPPORTED"
-          : isListTypeName(paramType)
-            ? "E_LIST_ENTRY_PARAMETER_UNSUPPORTED"
-            : this.variants.has(paramType)
-              ? "E_VARIANT_ENTRY_PARAMETER_UNSUPPORTED"
-              : "E_RECORD_ENTRY_PARAMETER_UNSUPPORTED";
-        const kind = paramType === "string"
-          ? "string"
-          : isListTypeName(paramType)
-            ? "list"
-            : this.variants.has(paramType)
-              ? "variant"
-              : "record";
+      const paramKind = this.entryBoundaryKind(paramType);
+      if (autoEntry && paramKind) {
         this.diagnostics.push(
           error(
-            code,
-            `entry function "${fn.name}" cannot take ${kind} parameter "${param.name}"`,
+            entryBoundaryCode(paramKind, "PARAMETER"),
+            `entry function "${fn.name}" cannot take ${paramKind} parameter "${param.name}"`,
             param.type.span,
             "entry values come from scalar command-line arguments; pass scalar parameters and build the value inside the program",
           ),
@@ -401,31 +443,12 @@ class Checker {
     }
 
     const returnType = this.resolveType(fn.returnType);
-    if (
-      autoEntry &&
-      (this.records.has(returnType) ||
-        this.variants.has(returnType) ||
-        returnType === "string" ||
-        isListTypeName(returnType))
-    ) {
-      const code = returnType === "string"
-        ? "E_STRING_ENTRY_RETURN_UNSUPPORTED"
-        : isListTypeName(returnType)
-          ? "E_LIST_ENTRY_RETURN_UNSUPPORTED"
-          : this.variants.has(returnType)
-            ? "E_VARIANT_ENTRY_RETURN_UNSUPPORTED"
-            : "E_RECORD_ENTRY_RETURN_UNSUPPORTED";
-      const kind = returnType === "string"
-        ? "string"
-        : isListTypeName(returnType)
-          ? "list"
-          : this.variants.has(returnType)
-            ? "variant"
-            : "record";
+    const returnKind = this.entryBoundaryKind(returnType);
+    if (autoEntry && returnKind) {
       this.diagnostics.push(
         error(
-          code,
-          `entry function "${fn.name}" cannot return ${kind} "${returnType}"`,
+          entryBoundaryCode(returnKind, "RETURN"),
+          `entry function "${fn.name}" cannot return ${returnKind} "${returnType}"`,
           fn.returnType.span,
           "entry outcomes are scalar; return i32 or bool and compare data inside the program",
         ),
@@ -446,16 +469,81 @@ class Checker {
     }
   }
 
+  private entryBoundaryKind(type: TypeName): string | undefined {
+    if (type === "string") return "string";
+    if (isListTypeName(type)) return "list";
+    if (isOptionTypeName(type)) return "option";
+    if (isResultTypeName(type)) return "result";
+    if (this.variants.has(type)) return "variant";
+    if (this.records.has(type)) return "record";
+    return undefined;
+  }
+
   private resolveType(type: import("../contracts/ast").TypeRef): TypeName {
+    if (type.typeArgument) {
+      const argument = this.resolveType(type.typeArgument);
+      const isResult = type.name.startsWith("Result<");
+      if (isBuiltinOptionResultTypeName(argument)) {
+        this.diagnostics.push(
+          error(
+            "E_NESTED_OPTION_RESULT",
+            `nested ${isResult ? "Result" : "Option"} type argument "${argument}" is not supported in this slice`,
+            type.typeArgument.span,
+            "Option/Result payloads are i32 or bool only",
+          ),
+        );
+        const fallback = isResult ? resultTypeName("i32") : optionTypeName("i32");
+        this.ensureBuiltinVariant(fallback);
+        return fallback;
+      }
+      if (argument !== "i32" && argument !== "bool") {
+        this.diagnostics.push(
+          error(
+            isResult ? "E_RESULT_TYPE_ARGUMENT_UNSUPPORTED" : "E_OPTION_TYPE_ARGUMENT_UNSUPPORTED",
+            `${isResult ? "Result" : "Option"} type argument "${argument}" is not supported in this slice`,
+            type.typeArgument.span,
+            "Option/Result payloads are i32 or bool only",
+          ),
+        );
+        const fallback = isResult ? resultTypeName("i32") : optionTypeName("i32");
+        this.ensureBuiltinVariant(fallback);
+        return fallback;
+      }
+      const canonical = isResult ? resultTypeName(argument) : optionTypeName(argument);
+      this.ensureBuiltinVariant(canonical);
+      return canonical;
+    }
+    if (isBuiltinOptionResultTypeName(type.name)) {
+      // Defensive: a canonical built-in name that was not produced through typeArgument.
+      const argument = builtinTypeArgumentName(type.name) ?? "i32";
+      if (argument !== "i32" && argument !== "bool") {
+        this.diagnostics.push(
+          error(
+            isResultTypeName(type.name) ? "E_RESULT_TYPE_ARGUMENT_UNSUPPORTED" : "E_OPTION_TYPE_ARGUMENT_UNSUPPORTED",
+            `type argument "${argument}" is not supported in this slice`,
+            type.span,
+            "Option/Result payloads are i32 or bool only",
+          ),
+        );
+        const fallback = isResultTypeName(type.name) ? resultTypeName("i32") : optionTypeName("i32");
+        this.ensureBuiltinVariant(fallback);
+        return fallback;
+      }
+      this.ensureBuiltinVariant(type.name);
+      return type.name;
+    }
     if (type.elementType) {
       const element = this.resolveType(type.elementType);
       if (element !== "i32" && element !== "bool") {
+        const message = isOptionTypeName(element) || isResultTypeName(element)
+          ? `list element type "${element}" cannot be Option/Result in this slice`
+          : this.variants.has(element)
+            ? `list element type "${element}" cannot be a variant in this slice`
+            : `list element type "${element}" is not supported in this slice`;
         this.diagnostics.push(
           error(
-            this.variants.has(element) ? "E_VARIANT_IN_LIST" : "E_LIST_ELEMENT_UNSUPPORTED",
-            this.variants.has(element)
-              ? `list element type "${element}" cannot be a variant in this slice`
-              : `list element type "${element}" is not supported in this slice`,
+            listElementDiagnosticCode(element, this.variants.has(element)),
+            message,
             type.elementType.span,
             "only list<i32> and list<bool> are implemented",
           ),
@@ -488,10 +576,37 @@ class Checker {
         "E_UNKNOWN_TYPE",
         `unknown type "${type.name}"`,
         type.span,
-        "types are i32, bool, string, list<i32>, list<bool>, or a declared record or variant name",
+        "types are i32, bool, string, list<i32>, list<bool>, Option<i32>, Option<bool>, Result<i32>, Result<bool>, or a declared record or variant name",
       ),
     );
     return "i32";
+  }
+
+  private ensureBuiltinVariant(typeName: TypeName): BuiltinVariantSymbol {
+    const existing = this.builtinVariants.get(typeName);
+    if (existing) return existing;
+    const isResult = isResultTypeName(typeName);
+    const typeArgument = builtinTypeArgumentName(typeName) ?? "i32";
+    this.builtinVariantCounter += 1;
+    const alternatives: BuiltinAlternativeSymbol[] = isResult
+      ? [
+          { name: "ok", targetName: "a1", tag: 0, payloadTypes: [typeArgument] },
+          { name: "err", targetName: "a2", tag: 1, payloadTypes: ["string"] },
+        ]
+      : [
+          { name: "some", targetName: "a1", tag: 0, payloadTypes: [typeArgument] },
+          { name: "none", targetName: "a2", tag: 1, payloadTypes: [] },
+        ];
+    const variant: BuiltinVariantSymbol = {
+      typeName,
+      targetName: `X${this.builtinVariantCounter}`,
+      kind: isResult ? "result" : "option",
+      typeArgument,
+      alternatives,
+      byName: new Map(alternatives.map((alternative) => [alternative.name, alternative])),
+    };
+    this.builtinVariants.set(typeName, variant);
+    return variant;
   }
 
   private declareLocal(
@@ -538,7 +653,7 @@ class Checker {
     switch (stmt.kind) {
       case "LetStmt": {
         const declaredType = this.resolveType(stmt.type);
-        const valueType = this.checkExpr(stmt.value, scope);
+        const valueType = this.checkExpr(stmt.value, scope, declaredType);
         if (valueType !== declaredType) {
           this.diagnostics.push(
             error(
@@ -556,7 +671,7 @@ class Checker {
         return;
       }
       case "IfStmt": {
-        const conditionType = this.checkExpr(stmt.condition, scope);
+        const conditionType = this.checkExpr(stmt.condition, scope, "bool");
         if (conditionType !== "bool") {
           this.diagnostics.push(
             error(
@@ -571,7 +686,7 @@ class Checker {
         return;
       }
       case "ReturnStmt": {
-        const valueType = this.checkExpr(stmt.value, scope);
+        const valueType = this.checkExpr(stmt.value, scope, returnType);
         if (valueType !== returnType) {
           this.diagnostics.push(
             error(
@@ -586,7 +701,7 @@ class Checker {
     }
   }
 
-  private checkExpr(expr: Expr, scope: Scope): TypeName {
+  private checkExpr(expr: Expr, scope: Scope, expected?: TypeName): TypeName {
     switch (expr.kind) {
       case "IntLiteral":
         return "i32";
@@ -607,15 +722,18 @@ class Checker {
           expr.resolvedType = listTypeName("i32");
           return expr.resolvedType;
         }
-        const elementTypes = expr.elements.map((element) => this.checkExpr(element, scope));
+        const expectedElement = expected && isListTypeName(expected) ? listElementTypeName(expected) : undefined;
+        const elementTypes = expr.elements.map((element) => this.checkExpr(element, scope, expectedElement));
         const first = elementTypes[0];
         if (!isListElementType(first)) {
           this.diagnostics.push(
             error(
-              this.variants.has(first) ? "E_VARIANT_IN_LIST" : "E_LIST_ELEMENT_UNSUPPORTED",
-              this.variants.has(first)
-                ? `list literal element type ${first} cannot be a variant in this slice`
-                : `list literal element type ${first} is not supported in this slice`,
+              listElementDiagnosticCode(first, this.variants.has(first)),
+              isOptionTypeName(first) || isResultTypeName(first)
+                ? `list literal element type ${first} cannot be Option/Result in this slice`
+                : this.variants.has(first)
+                  ? `list literal element type ${first} cannot be a variant in this slice`
+                  : `list literal element type ${first} is not supported in this slice`,
               expr.elements[0].span,
               "only list<i32> and list<bool> are implemented",
             ),
@@ -639,7 +757,7 @@ class Checker {
       }
       case "IndexExpr": {
         const targetType = this.checkExpr(expr.target, scope);
-        const indexType = this.checkExpr(expr.index, scope);
+        const indexType = this.checkExpr(expr.index, scope, "i32");
         if (indexType !== "i32") {
           this.diagnostics.push(
             error(
@@ -728,7 +846,7 @@ class Checker {
           }
           initializer.fieldIndex = field.fieldIndex;
           initializer.fieldTargetName = field.targetName;
-          const valueType = this.checkExpr(initializer.value, scope);
+          const valueType = this.checkExpr(initializer.value, scope, field.type.name);
           if (valueType !== field.type.name) {
             this.diagnostics.push(
               error(
@@ -792,6 +910,9 @@ class Checker {
         return field.type.name;
       }
       case "CallExpr": {
+        if (isBuiltinConstructorName(expr.callee)) {
+          return this.checkBuiltinConstructor(expr, scope, expected);
+        }
         if (expr.callee === "length" && !this.signatures.has(expr.callee)) {
           expr.builtin = "length";
           expr.calleeReturnType = "i32";
@@ -856,8 +977,8 @@ class Checker {
           );
         }
         expr.args.forEach((arg, index) => {
-          const argType = this.checkExpr(arg, scope);
           const param = signature.params[index];
+          const argType = this.checkExpr(arg, scope, param?.type);
           if (param && argType !== param.type) {
             this.diagnostics.push(
               error(
@@ -871,9 +992,9 @@ class Checker {
         return signature.returnType;
       }
       case "MatchExpr":
-        return this.checkMatch(expr, scope);
+        return this.checkMatch(expr, scope, expected);
       case "UnaryExpr": {
-        const operandType = this.checkExpr(expr.operand, scope);
+        const operandType = this.checkExpr(expr.operand, scope, expr.op === "-" ? "i32" : "bool");
         if (expr.op === "-") {
           if (operandType !== "i32") {
             this.diagnostics.push(
@@ -892,8 +1013,37 @@ class Checker {
         return "bool";
       }
       case "BinaryExpr": {
-        const left = this.checkExpr(expr.left, scope);
-        const right = this.checkExpr(expr.right, scope);
+        if (expr.op === "&&" || expr.op === "||") {
+          const left = this.checkExpr(expr.left, scope, "bool");
+          const right = this.checkExpr(expr.right, scope, "bool");
+          if (left !== "bool" || right !== "bool") {
+            this.diagnostics.push(
+              error(
+                "E_OPERATOR_TYPE",
+                `operator "${expr.op}" requires bool operands, found ${left} and ${right}`,
+                expr.span,
+              ),
+            );
+          }
+          return "bool";
+        }
+        if (expr.op === "==" || expr.op === "!=") {
+          const left = this.checkExpr(expr.left, scope);
+          // The left operand supplies contextual typing for names such as none().
+          const right = this.checkExpr(expr.right, scope, left);
+          if (left !== right) {
+            this.diagnostics.push(
+              error(
+                "E_OPERATOR_TYPE",
+                `operator "${expr.op}" requires matching operand types, found ${left} and ${right}`,
+                expr.span,
+              ),
+            );
+          }
+          return "bool";
+        }
+        const left = this.checkExpr(expr.left, scope, "i32");
+        const right = this.checkExpr(expr.right, scope, "i32");
         switch (expr.op) {
           case "+":
           case "-":
@@ -902,47 +1052,164 @@ class Checker {
           case "<=":
           case ">":
           case ">=": {
-            const expected = expr.op === "+" || expr.op === "-" || expr.op === "*" ? "i32" : "i32";
-            if (left !== expected || right !== expected) {
+            if (left !== "i32" || right !== "i32") {
               this.diagnostics.push(
                 error(
                   "E_OPERATOR_TYPE",
-                  `operator "${expr.op}" requires ${expected} operands, found ${left} and ${right}`,
+                  `operator "${expr.op}" requires i32 operands, found ${left} and ${right}`,
                   expr.span,
                 ),
               );
             }
             return expr.op === "+" || expr.op === "-" || expr.op === "*" ? "i32" : "bool";
           }
-          case "==":
-          case "!=": {
-            if (left !== right) {
-              this.diagnostics.push(
-                error(
-                  "E_OPERATOR_TYPE",
-                  `operator "${expr.op}" requires matching operand types, found ${left} and ${right}`,
-                  expr.span,
-                ),
-              );
-            }
-            return "bool";
-          }
-          case "&&":
-          case "||": {
-            if (left !== "bool" || right !== "bool") {
-              this.diagnostics.push(
-                error(
-                  "E_OPERATOR_TYPE",
-                  `operator "${expr.op}" requires bool operands, found ${left} and ${right}`,
-                  expr.span,
-                ),
-              );
-            }
-            return "bool";
-          }
         }
       }
     }
+  }
+
+  private checkBuiltinConstructor(
+    expr: Extract<Expr, { kind: "CallExpr" }>,
+    scope: Scope,
+    expected?: TypeName,
+  ): TypeName {
+    const isOption = expr.callee === "some" || expr.callee === "none";
+    const fallback = isOption ? optionTypeName("i32") : resultTypeName("i32");
+    const expectedMatches =
+      expected !== undefined &&
+      isBuiltinOptionResultTypeName(expected) &&
+      (isOption ? isOptionTypeName(expected) : isResultTypeName(expected));
+
+    if (expected !== undefined && !expectedMatches) {
+      this.diagnostics.push(
+        error(
+          "E_CONSTRUCTOR_EXPECTED_TYPE",
+          `${expr.callee}() cannot produce ${expected}`,
+          expr.span,
+          `expected ${isOption ? "Option<i32> or Option<bool>" : "Result<i32> or Result<bool>"} in this context`,
+        ),
+      );
+    }
+
+    if (expr.callee === "none" || expr.callee === "err") {
+      const expectedArity = expr.callee === "none" ? 0 : 1;
+      if (expr.args.length !== expectedArity) {
+        this.diagnostics.push(
+          error(
+            "E_ARITY",
+            `${expr.callee}() expects ${expectedArity} argument(s), received ${expr.args.length}`,
+            expr.span,
+          ),
+        );
+      }
+      if (expr.callee === "err") {
+        expr.args.forEach((arg) => {
+          const argType = this.checkExpr(arg, scope, "string");
+          if (argType !== "string") {
+            this.diagnostics.push(
+              error(
+                "E_CONSTRUCTOR_PAYLOAD_TYPE",
+                `err payload has type ${argType}, expected string`,
+                arg.span,
+              ),
+            );
+          }
+        });
+      }
+      if (!expectedMatches) {
+        if (expected === undefined) {
+          this.diagnostics.push(
+            error(
+              "E_MISSING_EXPECTED_TYPE",
+              `${expr.callee}() requires an expected ${isOption ? "Option" : "Result"} type`,
+              expr.span,
+              `annotate the binding, parameter, return, or argument as ${isOption ? "Option<i32>" : "Result<i32>"} (or bool)`,
+            ),
+          );
+        }
+        this.annotateBuiltinConstructor(expr, fallback, expr.callee);
+        return fallback;
+      }
+      this.annotateBuiltinConstructor(expr, expected!, expr.callee);
+      return expected!;
+    }
+
+    // some(value) and ok(value) infer their payload type when no expected type is present.
+    const payloadExpected = expectedMatches ? builtinTypeArgumentName(expected!) : undefined;
+    let payloadType: TypeName | undefined;
+    expr.args.forEach((arg, index) => {
+      const argType = this.checkExpr(arg, scope, payloadExpected);
+      if (index === 0) payloadType = argType;
+      if (payloadExpected !== undefined && argType !== payloadExpected) {
+        this.diagnostics.push(
+          error(
+            "E_CONSTRUCTOR_PAYLOAD_TYPE",
+            `${expr.callee} payload has type ${argType}, expected ${payloadExpected}`,
+            arg.span,
+          ),
+        );
+      }
+    });
+    if (expr.args.length !== 1) {
+      this.diagnostics.push(
+        error(
+          "E_ARITY",
+          `${expr.callee}() expects 1 argument, received ${expr.args.length}`,
+          expr.span,
+        ),
+      );
+    }
+    const inferred = payloadType ?? "i32";
+    if (isBuiltinOptionResultTypeName(inferred)) {
+      this.diagnostics.push(
+        error(
+          "E_NESTED_OPTION_RESULT",
+          `${expr.callee}() cannot carry ${inferred}; Option/Result values cannot be nested in this slice`,
+          expr.args[0]?.span ?? expr.span,
+        ),
+      );
+      const fallbackType = isOption ? optionTypeName("i32") : resultTypeName("i32");
+      this.annotateBuiltinConstructor(expr, expectedMatches ? expected! : fallbackType, expr.callee);
+      return expectedMatches ? expected! : fallbackType;
+    }
+    if (inferred !== "i32" && inferred !== "bool") {
+      this.diagnostics.push(
+        error(
+          "E_CONSTRUCTOR_PAYLOAD_TYPE",
+          `${expr.callee} payload has type ${inferred}, expected i32 or bool`,
+          expr.args[0]?.span ?? expr.span,
+        ),
+      );
+      const fallbackType = isOption ? optionTypeName("i32") : resultTypeName("i32");
+      this.annotateBuiltinConstructor(expr, expectedMatches ? expected! : fallbackType, expr.callee);
+      return expectedMatches ? expected! : fallbackType;
+    }
+    const resolved = expectedMatches
+      ? expected!
+      : isOption
+        ? optionTypeName(inferred)
+        : resultTypeName(inferred);
+    this.annotateBuiltinConstructor(expr, resolved, expr.callee);
+    return resolved;
+  }
+
+  private annotateBuiltinConstructor(
+    expr: Extract<Expr, { kind: "CallExpr" }>,
+    typeName: TypeName,
+    role: string,
+  ): void {
+    const variant = this.ensureBuiltinVariant(typeName);
+    const alternative = variant.byName.get(role);
+    if (!alternative) return;
+    expr.calleeReturnType = typeName;
+    expr.variantConstructor = {
+      variantName: typeName,
+      alternativeName: alternative.name,
+      variantTargetName: variant.targetName,
+      alternativeTargetName: alternative.targetName,
+      tag: alternative.tag,
+      payloadTypes: [...alternative.payloadTypes],
+    };
   }
 
   private checkConstructorCall(
@@ -970,8 +1237,8 @@ class Checker {
       );
     }
     expr.args.forEach((arg, index) => {
-      const argType = this.checkExpr(arg, scope);
       const expected = payloadTypes[index];
+      const argType = this.checkExpr(arg, scope, expected);
       if (expected && argType !== expected) {
         this.diagnostics.push(
           error(
@@ -985,10 +1252,14 @@ class Checker {
     return variant.name;
   }
 
-  private checkMatch(expr: MatchExpr, scope: Scope): TypeName {
+  private checkMatch(expr: MatchExpr, scope: Scope, expected?: TypeName): TypeName {
     const scrutineeType = this.checkExpr(expr.scrutinee, scope);
-    const variant = this.variants.get(scrutineeType);
-    if (!variant) {
+    const userVariant = this.variants.get(scrutineeType);
+    const builtinVariant =
+      !userVariant && isBuiltinOptionResultTypeName(scrutineeType)
+        ? this.ensureBuiltinVariant(scrutineeType)
+        : undefined;
+    if (!userVariant && !builtinVariant) {
       this.diagnostics.push(
         error(
           "E_MATCH_ON_NON_VARIANT",
@@ -996,10 +1267,24 @@ class Checker {
           expr.scrutinee.span,
         ),
       );
-      for (const arm of expr.arms) this.checkExpr(arm.body, new Scope(scope));
+      for (const arm of expr.arms) this.checkExpr(arm.body, new Scope(scope), expected);
       expr.resolvedType = "i32";
       return "i32";
     }
+    const alternatives = userVariant
+      ? [...userVariant.alternatives.values()].map((alternative) => ({
+          name: alternative.name,
+          targetName: alternative.targetName!,
+          tag: alternative.tag!,
+          payloadTypes: alternative.payloadTypes ?? [],
+        }))
+      : builtinVariant!.alternatives.map((alternative) => ({
+          name: alternative.name,
+          targetName: alternative.targetName,
+          tag: alternative.tag,
+          payloadTypes: alternative.payloadTypes,
+        }));
+    const byName = new Map(alternatives.map((alternative) => [alternative.name, alternative]));
     expr.variantName = scrutineeType;
     let armType: TypeName | undefined;
     let sawWildcard = false;
@@ -1035,21 +1320,21 @@ class Checker {
             ),
           );
         }
-        unify(this.checkExpr(arm.body, new Scope(scope)), arm.body.span);
+        unify(this.checkExpr(arm.body, new Scope(scope), expected), arm.body.span);
         return;
       }
 
-      const alternative = variant.alternatives.get(pattern.alternativeName);
+      const alternative = byName.get(pattern.alternativeName);
       if (!alternative) {
         this.diagnostics.push(
           error(
             "E_UNKNOWN_ALTERNATIVE",
             `variant "${scrutineeType}" has no alternative "${pattern.alternativeName}"`,
             pattern.alternativeNameSpan,
-            `alternatives: ${[...variant.alternatives.keys()].join(", ")}`,
+            `alternatives: ${alternatives.map((candidate) => candidate.name).join(", ")}`,
           ),
         );
-        unify(this.checkExpr(arm.body, new Scope(scope)), arm.body.span);
+        unify(this.checkExpr(arm.body, new Scope(scope), expected), arm.body.span);
         return;
       }
       if (matched.has(alternative.name)) {
@@ -1065,7 +1350,7 @@ class Checker {
       pattern.tag = alternative.tag;
       pattern.alternativeTargetName = alternative.targetName;
 
-      const payloadTypes = alternative.payloadTypes ?? [];
+      const payloadTypes = alternative.payloadTypes;
       if (pattern.bindings.length !== payloadTypes.length) {
         this.diagnostics.push(
           error(
@@ -1085,11 +1370,11 @@ class Checker {
           binding.targetName = symbol.targetName;
         }
       });
-      unify(this.checkExpr(arm.body, armScope), arm.body.span);
+      unify(this.checkExpr(arm.body, armScope, expected), arm.body.span);
     });
 
     if (!sawWildcard) {
-      const missing = [...variant.alternatives.keys()].filter((name) => !matched.has(name));
+      const missing = alternatives.map((alternative) => alternative.name).filter((name) => !matched.has(name));
       if (missing.length > 0) {
         this.diagnostics.push(
           error(
@@ -1145,6 +1430,21 @@ class Checker {
 
 function isListElementType(type: TypeName): boolean {
   return type === "i32" || type === "bool";
+}
+
+function isBuiltinConstructorName(name: string): boolean {
+  return name === "some" || name === "none" || name === "ok" || name === "err";
+}
+
+function listElementDiagnosticCode(element: TypeName, isVariant: boolean): string {
+  if (isOptionTypeName(element)) return "E_OPTION_IN_LIST";
+  if (isResultTypeName(element)) return "E_RESULT_IN_LIST";
+  if (isVariant) return "E_VARIANT_IN_LIST";
+  return "E_LIST_ELEMENT_UNSUPPORTED";
+}
+
+function entryBoundaryCode(kind: string, boundary: "PARAMETER" | "RETURN"): string {
+  return `E_${kind.toUpperCase()}_ENTRY_${boundary}_UNSUPPORTED`;
 }
 
 function definitelyReturns(block: Block): boolean {
