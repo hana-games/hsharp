@@ -8,6 +8,8 @@ const TARGET_LABELS: Record<TargetId, string> = {
   rust: "Rust",
   go: "Go",
   java: "Java",
+  cpp: "C++",
+  javascript: "JavaScript",
 };
 
 export class PreviewPanel implements vscode.Disposable {

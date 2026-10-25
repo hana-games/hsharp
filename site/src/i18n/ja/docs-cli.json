@@ -1,6 +1,6 @@
 {
   ", edit": " へエクスポートし、",
-  ", reimport, then run the reference interpreter and all four targets. It must print": " に編集し、再インポートしてから、参照インタープリタと 4 つのターゲットすべてを実行します。どこでも ",
+  ", reimport, then run the reference interpreter and all six targets. It must print": " に編集し、再インポートしてから、参照インタープリタと 6 つのターゲットすべてを実行します。どこでも ",
   ": export to": "。",
   ". No manual corrections are required.": "。手動での修正は不要です。",
   "← Profiles": "← プロファイル",
@@ -47,5 +47,6 @@
   "The command is": "コマンドは ",
   "The VS Code extension does not need the bridge: it imports": "VS Code 拡張はブリッジを必要としません。拡張は ",
   "validates the base and profile, prints a diff, and applies the change.": " はベースとプロファイルを検証し、差分を出力して、変更を適用します。",
-  "writes the personal file and a manifest;": " は個人用ファイルとマニフェストを書き出し;"
+  "writes the personal file and a manifest;": " は個人用ファイルとマニフェストを書き出し;",
+  "detects Node, .NET, Cargo, Go, Java, and a C++ compiler, checks project-version minimums, prints the versions, and writes": "Node、.NET、Cargo、Go、Java、C++ コンパイラを検出し、プロジェクトの最低バージョンを確認して、バージョンを出力し、次を書き込みます: "
 }

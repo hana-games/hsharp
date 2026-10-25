@@ -1,7 +1,7 @@
 {
   ". Source identifiers never reach generated code. An h# name such as": "。ソース識別子が生成コードに届くことはありません。次のような h# の名前は ",
   ". The conformance runner checks the outcome, the failure node, and the process status.": "。適合性ランナーは結果、失敗ノード、プロセスステータスを確認します。",
-  "; Go declares": " を対象とし、Go は ",
+  "; Go declares": "; Go は",
   "; Go requires 1.22.": " を対象とするため、C# には .NET 10 が必要です。Go には 1.22 が必要です。",
   "; Rust uses edition 2021 and no external crates; Java uses no external libraries. Generated projects are standalone executables, not libraries or packages.": " を宣言し、Rust は edition 2021 を使用して外部クレートを使わず、Java は外部ライブラリを使用しません。生成されるプロジェクトはスタンドアロンの実行可能ファイルであり、ライブラリやパッケージではありません。",
   "A success exits 0. A program failure exits non-zero. Invalid harness arguments produce": "成功時は 0 で終了します。プログラムの失敗時は非ゼロで終了します。不正なハーネス引数は次を生成します: ",
@@ -13,7 +13,7 @@
   "Execution outcomes": "実行結果",
   "Generated programs print exactly one machine-readable line on stdout. Build logs stay separate.": "生成プログラムは標準出力に機械可読な 1 行だけを出力します。ビルドログは分離されたままです。",
   "Generated projects": "生成プロジェクト",
-  "How h# generates C#, Rust, Go, and Java projects, checks arithmetic, maps names, and reports outcomes.": "h# が C#、Rust、Go、Java プロジェクトをどう生成し、算術を検査し、名前をマップし、結果を報告するか。",
+  "How h# generates C#, Rust, Go, Java, C++, and JavaScript projects, checks arithmetic, maps names, and reports outcomes.": "h# が C#、Rust、Go、Java、C++、JavaScript プロジェクトをどう生成し、算術を検査し、名前をマップし、結果を報告するか。",
   "HsProgram.csproj + Program.cs": "HsProgram.csproj + Program.cs",
   "HsProgram.java": "HsProgram.java",
   "Portable names": "ポータブルな名前",
@@ -23,7 +23,7 @@
   "Toolchain policy": "ツールチェーンポリシー",
   "Value type": "値の型",
   "Verification →": "検証 →",
-  "and makes the suite exit 2. It never becomes a passing row. C# requires .NET 10 because generated projects target": "また、スイートは終了コード 2 で終了します。合格行になることはありません。生成プロジェクトは ",
+  "and makes the suite exit 2. It never becomes a passing row. C# requires .NET 10 because generated projects target": "ブロックされ、スイートは終了コード 2 で終了します。合格行になることはありません。C# は .NET 10 が必要です。生成プロジェクトが",
   "cannot collide with a host keyword.": " といった名前でも、ホストのキーワードと衝突することはありません。",
   "checks, a": " による検査、",
   "checks, a nested": " による検査、ネストした ",
@@ -42,5 +42,12 @@
   "target_names.hs": "target_names.hs",
   "that parses arguments and prints the outcome JSON.": " は引数を解析して結果の JSON を出力します。",
   "values with": " の値と ",
-  "← CLI": "← CLI"
+  "← CLI": "← CLI",
+  "Toolchain detection is separate from program verification. An older or missing .NET SDK, Go, Rust, Java, C++ compiler, or Node.js runtime marks the target": "ツールチェーンの検出はプログラム検証とは別です。.NET SDK、Go、Rust、Java、C++ コンパイラ、または Node.js ランタイムが古いか見つからない場合、ターゲットは",
+  "; Go requires 1.22; C++ requires C++20; JavaScript requires Node 22 or later.": "を対象とするためです。Go は 1.22、C++ は C++20、JavaScript は Node 22 以降が必要です。",
+  "A standalone C++20 project with": "C++20 の独立したプロジェクト。",
+  "A standalone Node.js project with dynamic tagged values, BigInt checked arithmetic, and the same JSON outcome protocol.": "動的なタグ付き値、BigInt による検査付き算術、同じ JSON 結果プロトコルを備えた独立した Node.js プロジェクト。",
+  "; Rust uses edition 2021 and no external crates; Java uses no external libraries; C++ uses C++20; JavaScript targets Node.js CommonJS. Generated projects are standalone executables, not libraries or packages.": "; Rust は edition 2021 を使用し外部クレートなし。Java は外部ライブラリなし。C++ は C++20。JavaScript は Node.js CommonJS。生成プロジェクトはスタンドアロン実行ファイルで、ライブラリやパッケージではありません。",
+  "values,": "値、",
+  "checks, generated tagged structs, and a JSON outcome line.": "検査、生成されたタグ付き構造体、JSON 結果行。"
 }

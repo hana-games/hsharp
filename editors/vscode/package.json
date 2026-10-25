@@ -1,7 +1,7 @@
 {
   "name": "hsharp",
   "displayName": "h#",
-  "description": "h# language support: profile-aware highlighting, live diagnostics, and real-time generated-code preview for C#, Rust, Go, and Java.",
+  "description": "h# language support: profile-aware highlighting, live diagnostics, and real-time generated-code preview for C#, Rust, Go, Java, C++, and JavaScript.",
   "version": "0.1.0",
   "publisher": "hsharp",
   "private": true,
@@ -21,7 +21,9 @@
     "csharp",
     "rust",
     "go",
-    "java"
+    "java",
+    "cpp",
+    "javascript"
   ],
   "extensionKind": [
     "workspace"
@@ -124,13 +126,17 @@
             "csharp",
             "rust",
             "go",
-            "java"
+            "java",
+            "cpp",
+            "javascript"
           ],
           "enumDescriptions": [
             "C#",
             "Rust",
             "Go",
-            "Java"
+            "Java",
+            "C++",
+            "JavaScript"
           ],
           "default": "csharp",
           "description": "Target selected when the generated-code preview opens."

@@ -5,7 +5,6 @@
   "A reachable path without a value, or a value of the wrong type": "Un chemin accessible sans valeur, ou une valeur du mauvais type",
   "A target is marked blocked": "Une cible est marquée bloquée",
   "Aliases": "Alias",
-  "An ordinary C#, Rust, Go, or Java project compiled by its own toolchain.": "Un projet C#, Rust, Go ou Java ordinaire, compilé par sa propre chaîne d’outils.",
   "Build, local, and reports are generated. Profiles, examples, and the specification are inputs; generated output can be deleted and recreated.": "Build, local et reports sont générés. Les profils, exemples et la spécification sont des entrées ; la sortie générée peut être supprimée et recréée.",
   "Bundled Visual Studio Code extension.": "Extension Visual Studio Code embarquée.",
   "Calls": "Appels",
@@ -38,7 +37,7 @@
   "Fixed: braces, commas, semicolons, arrows, and operators do not change.": "Fixes : les accolades, virgules, points-virgules, flèches et opérateurs ne changent pas.",
   "Fixed: every operation is range-checked and fails with E_OVERFLOW.": "Fixe : chaque opération est vérifiée et échoue avec E_OVERFLOW.",
   "Fixed: i32, bool, arity, returns, and scopes are profile-independent.": "Fixes : i32, bool, l’arité, les retours et les portées sont indépendants du profil.",
-  "Fixed: the same typed AST produces the same four backend projects.": "Fixe : le même AST typé produit les mêmes quatre projets backend.",
+  "Fixed: the same typed AST produces the same six backend projects.": "Fixe : le même AST typé produit les mêmes six projets backend.",
   "From a clone to a checked and executed target. The command is called hs; hsharp and hcharp are aliases.": "Du clone à un programme vérifié et exécuté. La commande s’appelle hs ; hsharp et hcharp sont des alias.",
   "Generated conformance, environment, and benchmark evidence.": "Preuves générées de conformité, d’environnement et de performance.",
   "Generated programs print exactly one outcome line and no extra runtime logging.": "Les programmes générés affichent exactement une ligne de résultat, sans journalisation d’exécution supplémentaire.",
@@ -117,5 +116,6 @@
   "Validated JSON that renames seven keyword roles for one person.": "Un JSON validé qui renomme sept rôles de mots-clés pour une personne.",
   "Visual Studio Code extension and its protocol client.": "Extension Visual Studio Code et son client de protocole.",
   "What it means": "Signification",
-  "What profiles cannot change": "Ce que les profils ne peuvent pas changer"
+  "What profiles cannot change": "Ce que les profils ne peuvent pas changer",
+  "An ordinary C#, Rust, Go, Java, C++, or JavaScript project compiled by its own toolchain.": "Un projet C#, Rust, Go, Java, C++ ou JavaScript ordinaire, compilé par sa propre chaîne d’outils."
 }

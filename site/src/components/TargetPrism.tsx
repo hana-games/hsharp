@@ -13,6 +13,8 @@ const facts: Record<TargetId, { value: string; check: string; build: string }> =
   rust: { value: "i32", check: "i64", build: "cargo" },
   go: { value: "int32", check: "int64", build: "go" },
   java: { value: "int", check: "long", build: "javac" },
+  cpp: { value: "int32_t", check: "int64_t", build: "g++" },
+  javascript: { value: "number", check: "BigInt", build: "node" },
 };
 
 export function TargetPrism({ demo }: Props) {
@@ -24,7 +26,7 @@ export function TargetPrism({ demo }: Props) {
   const meta = targetMeta.find((item) => item.id === targetId) ?? targetMeta[0];
   const activeFile =
     target.files.find((file) => file.path === filePath) ??
-    target.files.find((file) => !file.path.endsWith(".csproj") && !file.path.endsWith(".toml") && !file.path.endsWith(".mod")) ??
+    target.files.find((file) => !file.path.endsWith(".csproj") && !file.path.endsWith(".toml") && !file.path.endsWith(".mod") && !file.path.endsWith(".json") && !file.path.endsWith(".gitkeep")) ??
     target.files[0];
   const targetFacts = facts[targetId];
 
@@ -32,7 +34,7 @@ export function TargetPrism({ demo }: Props) {
     setTargetId(id);
     const next = demo.targets[id];
     const preferred = next.files.find(
-      (file) => !file.path.endsWith(".csproj") && !file.path.endsWith(".toml") && !file.path.endsWith(".mod"),
+      (file) => !file.path.endsWith(".csproj") && !file.path.endsWith(".toml") && !file.path.endsWith(".mod") && !file.path.endsWith(".json") && !file.path.endsWith(".gitkeep"),
     );
     setFilePath(preferred?.path ?? next.files[0]?.path ?? "");
   }
@@ -41,7 +43,7 @@ export function TargetPrism({ demo }: Props) {
     <div className="lab target-prism">
       <div className="lab-head">
         <div className="lab-title">{t("Target prism")}</div>
-        <span className="index">{t("4 targets · real projects")}</span>
+        <span className="index">{t("6 targets · real projects")}</span>
       </div>
 
       <div className="target-workbench">

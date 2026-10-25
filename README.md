@@ -1,10 +1,10 @@
 # h#
 
-**One semantic core. Your notation. C#, Go, Rust, and Java output.**
+**One semantic core. Your notation. C#, Rust, Go, Java, C++, and JavaScript output.**
 
-h# is a small programming language with a shared semantic core, declarative per-user keyword syntax, and source generation for four target ecosystems. Programs are parsed and checked once, then executed by a reference interpreter and translated into ordinary C#, Go, Rust, and Java projects that the target toolchains compile themselves.
+h# is a small programming language with a shared semantic core, declarative per-user keyword syntax, and source generation for six target ecosystems. Programs are parsed and checked once, then executed by a reference interpreter and translated into ordinary C#, Rust, Go, Java, C++, and JavaScript projects that the target toolchains compile themselves.
 
-The proof of concept is complete and verified: **29 conformance cases × 4 profiles × 4 targets = 464 real target executions**, plus 27 negative cases, 19 unit tests, and a bridge protocol test.
+The proof of concept is complete and verified: **30 conformance cases × 4 profiles × 6 targets = 720 real target executions**, plus 29 negative cases, 57 unit tests, and a bridge protocol test.
 
 - **Language:** h# (aliases: `hsharp`, `hcharp`, `hs`)
 - **CLI:** `hs` (aliases: `hsharp`, `hcharp`)
@@ -15,9 +15,9 @@ The proof of concept is complete and verified: **29 conformance cases × 4 profi
 
 ## Why h#
 
-- **Shared meaning.** Types, evaluation order, checked arithmetic, and failure behavior come from one specification, not four independent implementations.
+- **Shared meaning.** Types, evaluation order, checked arithmetic, and failure behavior come from one specification, not six independent implementations.
 - **Personal notation.** A profile changes the seven keyword roles without changing the program's meaning. Profiles are validated JSON data, never executable grammar.
-- **Four real outputs.** Generated projects are compiled and executed by .NET, Cargo, Go, and `javac`. Nothing is simulated.
+- **Six real outputs.** Generated projects are compiled and executed by .NET, Cargo, Go, `javac`, a C++20 compiler, and Node.js. Nothing is simulated.
 - **Explicit failures.** Overflow is detected after every operation and reported as `E_OVERFLOW` with the failing source node.
 - **Lossless syntax conversion.** Conversion rewrites keyword tokens only; comments, identifiers, whitespace, and the rest of the text survive.
 
@@ -57,7 +57,7 @@ function calculate(x: i32, bonus: bool) -> i32 {
 {"status":"ok","type":"i32","value":32}
 ```
 
-The reference interpreter and all four generated programs return the same result.
+The reference interpreter and all six generated programs return the same result.
 
 ## Status
 
@@ -68,10 +68,10 @@ The reference interpreter and all four generated programs return the same result
 | Static checks | Types, arity, names, missing returns, acyclic call graph, chained comparisons |
 | Profiles | Keyword customization, validation, token-aware conversion, comment preservation |
 | Personal workflow | Export, edit, reimport, stale-base and changed-profile detection, manifest refresh |
-| Backends | C#, Go, Rust, Java — generated, compiled, executed |
-| Verification | 29 positive cases, 27 negative cases, 19 unit tests + bridge test, 0 failed/blocked |
+| Backends | C#, Rust, Go, Java, C++, and JavaScript — generated, compiled, executed |
+| Verification | 30 positive cases, 29 negative cases, 57 unit tests + bridge test, 0 failed/blocked |
 | Editor support | Visual Studio Code extension with live diagnostics and generated-code preview |
-| Performance | Sub-millisecond warm analyze + four-target generation; a few ms bridge round-trip |
+| Performance | Sub-millisecond warm analyze + six-target generation; a few ms bridge round-trip |
 | Documentation | Core spec, grammar, profiles, protocol, decisions, limitations, verification, roadmap |
 
 ## Quick start
@@ -104,8 +104,8 @@ hs build examples/calculate.hs --target rust --entry calculate --run --args 10,t
 | `hs syntax export <canonical> --profile <p> --out <personal>` | Write personal notation plus a fingerprint manifest |
 | `hs syntax import <personal>` | Validate the base/profile, diff, and reimport an edit |
 | `hs test --all-targets` | Run the complete conformance suite and write reports |
-| `hs doctor` | Detect and version-check all four toolchains |
-| `hs demo` | Run export → edit → reimport → reference + four targets |
+| `hs doctor` | Detect and version-check all six toolchains |
+| `hs demo` | Run export → edit → reimport → reference + six targets |
 | `hs bridge` | Line-delimited JSON over stdio for editor integrations |
 
 Canonical source is always interpreted with the standard profile. A personal profile is selected explicitly; there is no implicit local preference.
@@ -116,7 +116,7 @@ A Visual Studio Code extension is included under [`editors/vscode`](editors/vsco
 
 - profile-aware syntax highlighting;
 - live diagnostics with source locations;
-- a **real-time generated-code preview** for C#, Rust, Go, and Java;
+- a **real-time generated-code preview** for C#, Rust, Go, Java, C++, and JavaScript;
 - target switching without recompiling;
 - status-bar analysis timing and error count.
 
@@ -131,14 +131,14 @@ This packages `build/vscode/hsharp-vscode.vsix` and installs it. If you install 
 
 Open any `.hs` file, then run **h#: Show Generated Code** from the command palette or use the editor-title button.
 
-The extension imports the same analyzer used by the CLI, so no external `hs` process is needed. Measured warm latency is **sub-millisecond** for analysis + four-target generation. See [`docs/performance.md`](docs/performance.md).
+The extension imports the same analyzer used by the CLI, so no external `hs` process is needed. Measured warm latency is **sub-millisecond** for analysis + six-target generation. See [`docs/performance.md`](docs/performance.md).
 
 ## Website
 
 A static showcase and documentation site lives in [`site/`](site/README.md). It includes:
 
 - a live syntax-profile composer;
-- generated target inspection for C#, Rust, Go, and Java;
+- generated target inspection for C#, Rust, Go, Java, C++, and JavaScript;
 - overflow and short-circuit boundary labs;
 - an export/reimport conflict walkthrough;
 - a filterable conformance explorer;
@@ -162,7 +162,7 @@ flowchart LR
     L --> C["Semantic checker"]
     C --> T["Typed AST"]
     T --> R["Reference interpreter"]
-    T --> B["C#, Rust, Go, Java backends"]
+    T --> B["C#, Rust, Go, Java, C++, and JavaScript backends"]
     B --> X["Target toolchains"]
     R --> O["Normalized outcome"]
     X --> O
@@ -185,6 +185,8 @@ More detail: [`spec/core.md`](spec/core.md), [`spec/profiles.md`](spec/profiles.
 | Rust | `Cargo.toml`, `src/main.rs` | `cargo build --release --offline` + binary |
 | Go | `go.mod`, `main.go` | `go build` + binary |
 | Java | `HsProgram.java` | `javac` + `java -cp bin HsProgram` |
+| C++ | `main.cpp` | `g++ -std=c++20` + binary |
+| JavaScript | `main.js`, `package.json` | `node --check` + `node main.js` |
 
 Generated projects are written under `build/` by default and contain no external dependencies.
 
@@ -196,10 +198,10 @@ npm test
 hs test --all-targets
 ```
 
-- 19 unit tests: profiles, conversion, semantics, manifest lifecycle, diagnostics.
-- Bridge protocol test: ping, analyze with four targets, invalid syntax, malformed request, shutdown.
-- 29 positive cases over 4 profiles and 4 targets.
-- 27 negative program/profile cases.
+- 57 unit tests: profiles, conversion, semantics, manifest lifecycle, diagnostics.
+- Bridge protocol test: ping, analyze with six targets, invalid syntax, malformed request, shutdown.
+- 30 positive cases over 4 profiles and 6 targets.
+- 29 negative program/profile cases.
 - Independent expected outcomes, pinned overflow node IDs, process exit-status checks.
 - Performance budgets enforced by `npm run bench`; results in [`reports/benchmark.json`](reports/benchmark.json).
 - Reports: [`reports/conformance.md`](reports/conformance.md), [`reports/conformance.json`](reports/conformance.json), [`reports/environment.json`](reports/environment.json), [`reports/benchmark.json`](reports/benchmark.json).
@@ -238,7 +240,7 @@ On success the manifest is refreshed, so the edit/import cycle can continue. See
 | `src/frontend/` | Lexer, parser, profile validation, keyword conversion |
 | `src/semantic/` | Scopes, types, return analysis, call-graph checks, entry selection |
 | `src/reference/` | BigInt reference interpreter |
-| `src/backends/` | C#, Rust, Go, Java generators |
+| `src/backends/` | C#, Rust, Go, Java, C++, and JavaScript generators |
 | `src/harness/` | Toolchain detection, generated-project build/run |
 | `src/testing/` | Unit tests, conformance runner, reports |
 | `src/cli/` | `hs` command line |

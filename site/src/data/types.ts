@@ -1,4 +1,4 @@
-export type TargetId = "csharp" | "rust" | "go" | "java";
+export type TargetId = "csharp" | "rust" | "go" | "java" | "cpp" | "javascript";
 
 export type ProfileId = "standard" | "my-syntax" | "terse" | "casual";
 

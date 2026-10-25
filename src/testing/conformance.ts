@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 import { normalizeAst } from "../contracts/ast";
 import { formatDiagnostic } from "../contracts/diagnostics";
 import type { TargetId } from "../contracts/interfaces";
+import { TARGET_IDS } from "../contracts/interfaces";
 import type { Outcome } from "../contracts/outcome";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
 import { emit } from "../backends";
@@ -47,6 +48,15 @@ export interface ConformanceManifest {
   cases: PositiveCase[];
   negative: NegativeCase[];
 }
+
+const TARGET_LABELS: Record<TargetId, string> = {
+  csharp: "C#",
+  rust: "Rust",
+  go: "Go",
+  java: "Java",
+  cpp: "C++",
+  javascript: "JavaScript",
+};
 
 export interface ProfileReport {
   id: string;
@@ -448,13 +458,13 @@ function renderMarkdown(report: ConformanceReport): string {
   lines.push("");
   lines.push("## Cases");
   lines.push("");
-  lines.push("| Case | Reference | Profiles | C# | Rust | Go | Java |");
-  lines.push("|---|---|---|---|---|---|---|");
+  lines.push(`| Case | Reference | Profiles | ${TARGET_IDS.map((target) => TARGET_LABELS[target]).join(" | ")} |`);
+  lines.push(`|---|---|---|${TARGET_IDS.map(() => "---").join("|")}|`);
   for (const testCase of report.cases) {
     const profileMarks = testCase.profiles
       .map((profile) => `${profile.id}:${profile.structure && profile.roundTrip ? "ok" : "bad"}`)
       .join(" ");
-    const cells = (["csharp", "rust", "go", "java"] as TargetId[]).map((target) => {
+    const cells = TARGET_IDS.map((target) => {
       const rows = testCase.targets.filter((row) => row.target === target);
       if (rows.length === 0) return "-";
       if (rows.every((row) => row.status === "passed")) return "pass";

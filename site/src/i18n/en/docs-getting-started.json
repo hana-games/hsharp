@@ -38,7 +38,7 @@
   "prints the detected toolchain versions and writes": "prints the detected toolchain versions and writes",
   "process is needed for diagnostics or preview. Open a": "process is needed for diagnostics or preview. Open a",
   "returns": "returns",
-  "runs 19 unit tests, the VS Code typecheck, the bridge protocol test, and the full conformance suite.": "runs 19 unit tests, the VS Code typecheck, the bridge protocol test, and the full conformance suite.",
+  "runs 57 unit tests, the VS Code typecheck, the bridge protocol test, and the full conformance suite.": "runs 57 unit tests, the VS Code typecheck, the bridge protocol test, and the full conformance suite.",
   "setup": "setup",
   "standard profile": "standard profile",
   "when the source is written in a personal notation. Canonical source uses the standard profile and is never interpreted through an implicit local preference.": "when the source is written in a personal notation. Canonical source uses the standard profile and is never interpreted through an implicit local preference.",

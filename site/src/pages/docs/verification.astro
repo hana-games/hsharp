@@ -18,7 +18,7 @@ const passedCases = report.cases.filter((item) => item.reference.status === "pas
 
 <DocsLayout
   title="Verification"
-  description="The exact evidence behind h#: positive cases, negative cases, profile equivalence, four real toolchains, and measured editor latency."
+  description="The exact evidence behind h#: positive cases, negative cases, profile equivalence, six real toolchains, and measured editor latency."
   active="/docs/verification"
   toc={toc}
   prev={{ href: "/docs/targets", label: "Targets" }}
@@ -34,7 +34,7 @@ const passedCases = report.cases.filter((item) => item.reference.status === "pas
     <li>The reference interpreter.</li>
     <li>Structural AST equivalence under every profile.</li>
     <li>Exact keyword round-trip preservation.</li>
-    <li>Real compiled execution on C#, Rust, Go, and Java.</li>
+    <li>Real compiled execution on C#, Rust, Go, Java, C++, and JavaScript.</li>
   </ol>
   <p>
     Overflow cases pin the failing source node, so a backend cannot emit a generic
@@ -110,17 +110,18 @@ hs test --all-targets`} language="bash" title="reproduce" meta="one command" />
   <h2 id="performance">Performance</h2>
   <p>
     The editor pipeline is measured separately from correctness. On the verification machine
-    (Node 24.21, Windows x64), the warm analyze + four-target generation path is sub-millisecond for
+    (Node 24.21, Windows x64), the warm analyze + six-target generation path is sub-millisecond for
     normal files, and the persistent bridge round-trip stays in the low milliseconds.
   </p>
   <table>
     <thead><tr><th>Measurement</th><th>Observed</th><th>Budget</th></tr></thead>
     <tbody>
-      <tr><td>Analyze 246-character document</td><td>0.03–0.09 ms</td><td>2 ms</td></tr>
-      <tr><td>Analyze 500 functions (57 KB)</td><td>15–35 ms</td><td>150 ms</td></tr>
-      <tr><td>Generate all four targets, small</td><td>0.04–0.27 ms</td><td>8 ms</td></tr>
-      <tr><td>Analyze + generate all four</td><td>0.05–0.27 ms</td><td>25 ms</td></tr>
-      <tr><td>Bridge round-trip incl. C#</td><td>0.4–3 ms</td><td>30 ms</td></tr>
+      <tr><td>Analyze 212-character document</td><td>0.086 ms</td><td>2 ms</td></tr>
+      <tr><td>Analyze 300 functions (35 KB)</td><td>17.321 ms</td><td>150 ms</td></tr>
+      <tr><td>Generate all six targets, small</td><td>0.122 ms</td><td>8 ms</td></tr>
+      <tr><td>Generate all six targets, 300 functions</td><td>31.007 ms</td><td>150 ms</td></tr>
+      <tr><td>Analyze + generate all six</td><td>0.130 ms</td><td>25 ms</td></tr>
+      <tr><td>Bridge round-trip incl. C#</td><td>0.808 ms</td><td>30 ms</td></tr>
     </tbody>
   </table>
   <p>

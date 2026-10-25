@@ -129,6 +129,9 @@ export function detectToolchains(cwd: string): ToolchainInfo[] {
   const go = versionOf(["go", "version"], cwd);
   const javac = versionOf(["javac", "-version"], cwd);
   const java = versionOf(["java", "-version"], cwd);
+  const gpp = versionOf(["g++", "--version"], cwd);
+  const clangpp = versionOf(["clang++", "--version"], cwd);
+  const node = versionOf(["node", "--version"], cwd);
 
   // Generated projects target net10.0; an older SDK cannot build them.
   const dotnetMajor = Number.parseInt(dotnet.version, 10);
@@ -146,6 +149,20 @@ export function detectToolchains(cwd: string): ToolchainInfo[] {
   const goDetail = goSupported
     ? go.detail
     : `generated go.mod requires Go 1.22 or later; detected ${go.version || "no version"}`;
+
+  // Prefer g++, matching the emitted C++ build command, then clang++.
+  const cppCompiler = gpp.available ? "g++" : clangpp.available ? "clang++" : "g++";
+  const cppAvailable = gpp.available || clangpp.available;
+  const cppVersion = gpp.available
+    ? gpp.version
+    : clangpp.available
+      ? clangpp.version
+      : `${gpp.version}; ${clangpp.version}`;
+  const cppDetail = gpp.available
+    ? gpp.detail
+    : clangpp.available
+      ? clangpp.detail
+      : [gpp.detail, clangpp.detail].filter(Boolean).join("; ");
 
   return [
     {
@@ -179,6 +196,22 @@ export function detectToolchains(cwd: string): ToolchainInfo[] {
       version: `${javac.version}; ${java.version}`,
       detail: javac.detail || java.detail,
       commands: ["javac", "java"],
+    },
+    {
+      target: "cpp",
+      name: `C++ (${cppCompiler})`,
+      available: cppAvailable,
+      version: cppVersion,
+      detail: cppDetail,
+      commands: [cppCompiler],
+    },
+    {
+      target: "javascript",
+      name: "Node.js",
+      available: node.available,
+      version: node.version,
+      detail: node.detail,
+      commands: ["node"],
     },
   ];
 }

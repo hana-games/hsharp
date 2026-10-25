@@ -1,6 +1,6 @@
 {
   "schema": "hs-property/1",
-  "generatedAt": "2026-10-23T14:49:18.307Z",
+  "generatedAt": "2026-10-23T23:15:25.120Z",
   "compilerVersion": "0.1.0",
   "coreVersion": "0.1",
   "seed": 1,
@@ -48,6 +48,26 @@
         "javac",
         "java"
       ]
+    },
+    {
+      "target": "cpp",
+      "name": "C++ (g++)",
+      "available": true,
+      "version": "g++.exe (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
+      "detail": "",
+      "commands": [
+        "g++"
+      ]
+    },
+    {
+      "target": "javascript",
+      "name": "Node.js",
+      "available": true,
+      "version": "v24.21.0",
+      "detail": "",
+      "commands": [
+        "node"
+      ]
     }
   ],
   "cases": [
@@ -87,6 +107,24 @@
         },
         {
           "target": "java",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 39
+          }
+        },
+        {
+          "target": "cpp",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 39
+          }
+        },
+        {
+          "target": "javascript",
           "status": "passed",
           "outcome": {
             "status": "error",
@@ -143,6 +181,24 @@
             "type": "i32",
             "value": -40
           }
+        },
+        {
+          "target": "cpp",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -40
+          }
+        },
+        {
+          "target": "javascript",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -40
+          }
         }
       ],
       "reference": {
@@ -187,6 +243,24 @@
         },
         {
           "target": "java",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 26
+          }
+        },
+        {
+          "target": "cpp",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 26
+          }
+        },
+        {
+          "target": "javascript",
           "status": "passed",
           "outcome": {
             "status": "error",
@@ -243,6 +317,24 @@
             "type": "i32",
             "value": 43
           }
+        },
+        {
+          "target": "cpp",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 43
+          }
+        },
+        {
+          "target": "javascript",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 43
+          }
         }
       ],
       "reference": {
@@ -287,6 +379,24 @@
         },
         {
           "target": "java",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 37
+          }
+        },
+        {
+          "target": "cpp",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 37
+          }
+        },
+        {
+          "target": "javascript",
           "status": "passed",
           "outcome": {
             "status": "error",
@@ -343,6 +453,24 @@
             "code": "E_OVERFLOW",
             "node": 11
           }
+        },
+        {
+          "target": "cpp",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 11
+          }
+        },
+        {
+          "target": "javascript",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 11
+          }
         }
       ],
       "reference": {
@@ -387,6 +515,24 @@
         },
         {
           "target": "java",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 10
+          }
+        },
+        {
+          "target": "cpp",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 10
+          }
+        },
+        {
+          "target": "javascript",
           "status": "passed",
           "outcome": {
             "status": "ok",
@@ -443,6 +589,24 @@
             "code": "E_OVERFLOW",
             "node": 67
           }
+        },
+        {
+          "target": "cpp",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 67
+          }
+        },
+        {
+          "target": "javascript",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 67
+          }
         }
       ],
       "reference": {
@@ -487,6 +651,24 @@
         },
         {
           "target": "java",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 8
+          }
+        },
+        {
+          "target": "cpp",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 8
+          }
+        },
+        {
+          "target": "javascript",
           "status": "passed",
           "outcome": {
             "status": "error",
@@ -543,6 +725,24 @@
             "type": "i32",
             "value": 11
           }
+        },
+        {
+          "target": "cpp",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 11
+          }
+        },
+        {
+          "target": "javascript",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 11
+          }
         }
       ],
       "reference": {
@@ -554,7 +754,7 @@
   ],
   "summary": {
     "cases": 10,
-    "targetRuns": 40,
+    "targetRuns": 60,
     "passed": 10,
     "failed": 0,
     "blocked": 0

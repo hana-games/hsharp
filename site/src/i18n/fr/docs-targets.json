@@ -1,7 +1,7 @@
 {
   ". Source identifiers never reach generated code. An h# name such as": ". Les identifiants source n'atteignent jamais le code généré. Un nom h# tel que",
   ". The conformance runner checks the outcome, the failure node, and the process status.": ". Le lanceur de conformité vérifie le résultat, le nœud d'échec et le statut du processus.",
-  "; Go declares": " ; Go déclare",
+  "; Go declares": "; Go déclare",
   "; Go requires 1.22.": " ; Go exige 1.22.",
   "; Rust uses edition 2021 and no external crates; Java uses no external libraries. Generated projects are standalone executables, not libraries or packages.": " ; Rust utilise l'édition 2021 et aucune crate externe ; Java n'utilise aucune bibliothèque externe. Les projets générés sont des exécutables autonomes, pas des bibliothèques ni des paquets.",
   "A success exits 0. A program failure exits non-zero. Invalid harness arguments produce": "Un succès se termine avec le code 0. Un échec de programme se termine avec un code non nul. Des arguments de harnais invalides produisent",
@@ -13,7 +13,7 @@
   "Execution outcomes": "Résultats d'exécution",
   "Generated programs print exactly one machine-readable line on stdout. Build logs stay separate.": "Les programmes générés impriment exactement une ligne lisible par machine sur stdout. Les journaux de compilation restent séparés.",
   "Generated projects": "Projets générés",
-  "How h# generates C#, Rust, Go, and Java projects, checks arithmetic, maps names, and reports outcomes.": "Comment h# génère des projets C#, Rust, Go et Java, vérifie l'arithmétique, mappe les noms et rapporte les résultats.",
+  "How h# generates C#, Rust, Go, Java, C++, and JavaScript projects, checks arithmetic, maps names, and reports outcomes.": "Comment h# génère des projets C#, Rust, Go, Java, C++ et JavaScript, vérifie l'arithmétique, mappe les noms et rapporte les résultats.",
   "HsProgram.csproj + Program.cs": "HsProgram.csproj + Program.cs",
   "HsProgram.java": "HsProgram.java",
   "Portable names": "Noms portables",
@@ -42,5 +42,12 @@
   "target_names.hs": "target_names.hs",
   "that parses arguments and prints the outcome JSON.": "qui analyse les arguments et imprime le résultat JSON.",
   "values with": "valeurs avec",
-  "← CLI": "← CLI"
+  "← CLI": "← CLI",
+  "Toolchain detection is separate from program verification. An older or missing .NET SDK, Go, Rust, Java, C++ compiler, or Node.js runtime marks the target": "La détection des chaînes d’outils est distincte de la vérification des programmes. Un SDK .NET, Go, Rust, Java, un compilateur C++ ou un runtime Node.js plus ancien ou absent marque la cible",
+  "; Go requires 1.22; C++ requires C++20; JavaScript requires Node 22 or later.": "; Go exige 1.22 ; C++ exige C++20 ; JavaScript exige Node 22 ou plus récent.",
+  "A standalone C++20 project with": "Un projet C++20 autonome avec",
+  "A standalone Node.js project with dynamic tagged values, BigInt checked arithmetic, and the same JSON outcome protocol.": "Un projet Node.js autonome avec des valeurs dynamiques taguées, une arithmétique vérifiée en BigInt et le même protocole de résultat JSON.",
+  "; Rust uses edition 2021 and no external crates; Java uses no external libraries; C++ uses C++20; JavaScript targets Node.js CommonJS. Generated projects are standalone executables, not libraries or packages.": "; Rust utilise l’édition 2021 et aucune crate externe ; Java n’utilise aucune bibliothèque externe ; C++ utilise C++20 ; JavaScript cible Node.js CommonJS. Les projets générés sont des exécutables autonomes, pas des bibliothèques ni des paquets.",
+  "values,": "valeurs,",
+  "checks, generated tagged structs, and a JSON outcome line.": "vérifications, des structures taguées générées et une ligne de résultat JSON."
 }

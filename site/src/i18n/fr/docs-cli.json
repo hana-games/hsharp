@@ -1,6 +1,6 @@
 {
   ", edit": ", modifiez",
-  ", reimport, then run the reference interpreter and all four targets. It must print": ", réimportez, puis exécutez l'interpréteur de référence et les quatre cibles. Il doit imprimer",
+  ", reimport, then run the reference interpreter and all six targets. It must print": ", réimportez, puis exécutez l'interpréteur de référence et les six cibles. Il doit imprimer",
   ": export to": " : export vers",
   ". No manual corrections are required.": ". Aucune correction manuelle n'est requise.",
   "← Profiles": "← Profils",
@@ -47,5 +47,6 @@
   "The command is": "La commande est",
   "The VS Code extension does not need the bridge: it imports": "L'extension VS Code n'a pas besoin du bridge : elle importe",
   "validates the base and profile, prints a diff, and applies the change.": "valide la base et le profil, imprime un diff et applique la modification.",
-  "writes the personal file and a manifest;": "écrit le fichier personnel et un manifeste ;"
+  "writes the personal file and a manifest;": "écrit le fichier personnel et un manifeste ;",
+  "detects Node, .NET, Cargo, Go, Java, and a C++ compiler, checks project-version minimums, prints the versions, and writes": "détecte Node, .NET, Cargo, Go, Java et un compilateur C++, vérifie les versions minimales des projets, imprime les versions et écrit"
 }

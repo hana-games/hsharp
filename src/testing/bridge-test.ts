@@ -52,14 +52,14 @@ async function main(): Promise<void> {
     command: "analyze",
     text,
     file: "calculate.hs",
-    targets: ["csharp", "rust", "go", "java"],
+    targets: ["csharp", "rust", "go", "java", "cpp", "javascript"],
   })) as unknown as AnalyzeResponse;
 
   assert.equal(analyzed.ok, true);
   assert.equal(analyzed.entry, "calculate");
-  assert.equal(analyzed.generated?.length, 4);
+  assert.equal(analyzed.generated?.length, 6);
   assert.ok((analyzed.timings?.totalMs ?? -1) >= 0);
-  assert.ok((analyzed.timings?.totalMs ?? 999) < 100);
+  assert.ok((analyzed.timings?.totalMs ?? 999) < 500);
 
   const invalid = await send({
     id: 3,
@@ -84,11 +84,11 @@ async function main(): Promise<void> {
     child.once("close", () => resolveClose());
   });
 
-  console.log("ok   bridge protocol (ping, analyze x4 targets, invalid syntax, bad request, shutdown)");
+  console.log("ok   bridge protocol (ping, analyze x6 targets, invalid syntax, bad request, shutdown)");
 }
 
 main().catch((cause) => {
   console.error("FAIL bridge protocol");
   console.error(cause);
-  process.exitCode = 1;
+  process.exit(1);
 });

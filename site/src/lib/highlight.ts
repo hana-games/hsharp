@@ -32,8 +32,18 @@ const targetKeywords: Record<string, Set<string>> = {
     "boolean", "int", "long", "void", "String", "true", "false", "null", "new", "this", "try",
     "catch", "throw", "throws",
   ]),
+  cpp: new Set([
+    "include", "struct", "class", "enum", "namespace", "using", "static", "const", "constexpr",
+    "return", "if", "else", "bool", "int", "long", "void", "string", "true", "false", "nullptr",
+    "auto", "int32_t", "int64_t", "std", "vector", "variant", "make_unique", "main", "noexcept",
+  ]),
+  javascript: new Set([
+    "const", "let", "var", "function", "return", "if", "else", "true", "false", "null",
+    "undefined", "class", "new", "this", "typeof", "instanceof", "BigInt", "Number", "String",
+    "Array", "Object", "JSON", "process", "require", "module", "exports", "Math",
+  ]),
   json: new Set(["true", "false", "null"]),
-  bash: new Set(["npm", "node", "hs", "curl", "cd", "git", "code", "dotnet", "cargo", "go", "javac", "java"]),
+  bash: new Set(["npm", "node", "hs", "curl", "cd", "git", "code", "dotnet", "cargo", "go", "javac", "java", "g++", "clang++"]),
 };
 
 const hsharpTypes = new Set(["i32", "bool"]);

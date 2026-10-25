@@ -6,7 +6,7 @@ export const site = {
   version: siteData.meta.compilerVersion,
   coreVersion: siteData.meta.coreVersion,
   description:
-    "One semantic core. Personal syntax. Native C#, Rust, Go, and Java output.",
+    "One semantic core. Personal syntax. Native C#, Rust, Go, Java, C++, and JavaScript output.",
   github: "https://github.com/hana-games/hsharp",
   owner: "HANAGAMES.net",
   ownerUrl: "https://hanagames.net",
@@ -56,6 +56,24 @@ export const targets: {
     logo: "/brands/java.svg",
     description: "int, long checks, nested result class.",
     command: "javac + java",
+  },
+  {
+    id: "cpp",
+    label: "C++",
+    color: "var(--cpp)",
+    soft: "var(--cpp-soft)",
+    logo: "/brands/cpp.svg",
+    description: "int32_t, int64_t checks, generated tagged structs.",
+    command: "g++ -std=c++20",
+  },
+  {
+    id: "javascript",
+    label: "JavaScript",
+    color: "var(--javascript)",
+    soft: "var(--javascript-soft)",
+    logo: "/brands/javascript.svg",
+    description: "BigInt checks, dynamic tagged values, Node.js.",
+    command: "node main.js",
   },
 ];
 

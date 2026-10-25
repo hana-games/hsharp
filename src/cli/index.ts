@@ -93,7 +93,7 @@ function loadProfileOrExit(path: string | undefined): Profile {
 }
 
 function targetFrom(value: string | undefined): TargetId {
-  if (!value) throw new Error("missing --target (csharp, rust, go, or java)");
+  if (!value) throw new Error(`missing --target (${TARGET_IDS.join(", ")})`);
   if (!(TARGET_IDS as readonly string[]).includes(value)) {
     throw new Error(`unknown target "${value}"`);
   }
@@ -189,7 +189,7 @@ function commandCheck(cli: Cli): number {
 
 function commandBuild(cli: Cli): number {
   const file = cli.positionals[1];
-  if (!file) throw new Error("usage: hs build <file> --target <csharp|rust|go|java>");
+  if (!file) throw new Error(`usage: hs build <file> --target <${TARGET_IDS.join("|")}>`);
   const target = targetFrom(flagString(cli, "target"));
   const profile = loadProfileOrExit(flagString(cli, "profile"));
   const loaded = loadProgram(file, profile);
@@ -420,7 +420,7 @@ function commandDoctor(cli: Cli): number {
     console.log(`Node ${process.version} on ${process.platform}-${process.arch}`);
     for (const tool of toolchains) {
       console.log(
-        `${tool.available ? "available" : "BLOCKED  "} ${tool.target.padEnd(7)} ${tool.name.padEnd(14)} ${tool.version}`,
+        `${tool.available ? "available" : "BLOCKED  "} ${tool.target.padEnd(10)} ${tool.name.padEnd(14)} ${tool.version}`,
       );
       if (!tool.available && tool.detail) console.log(`          ${tool.detail.split("\n")[0]}`);
     }
@@ -487,16 +487,16 @@ function commandDemo(_cli: Cli): number {  const root = process.cwd();
     );
     if (result.status === "blocked") {
       blocked++;
-      console.log(`5. ${target.padEnd(7)} blocked: ${result.detail}`);
+      console.log(`5. ${target.padEnd(10)} blocked: ${result.detail}`);
     } else if (result.status === "ok" || result.status === "error") {
       const outcome = result.outcome!;
       const replaced = outcome.status === "ok" && outcome.value === 33;
       const check = outcome.status === "error" ? `failure ${outcome.code} (unexpected)` : replaced ? "matches 33" : "MISMATCH";
-      console.log(`5. ${target.padEnd(7)} ${JSON.stringify(outcome)} ${check}`);
+      console.log(`5. ${target.padEnd(10)} ${JSON.stringify(outcome)} ${check}`);
       if (!replaced) failures++;
     } else {
       failures++;
-      console.log(`5. ${target.padEnd(7)} ${result.status}: ${result.detail}`);
+      console.log(`5. ${target.padEnd(10)} ${result.status}: ${result.detail}`);
       console.log(result.buildLog.split("\n").slice(-12).join("\n"));
     }
   }
@@ -510,19 +510,19 @@ function commandBridge(): number {
 }
 
 function usage(): string {
-  return `hs ${COMPILER_VERSION} - shared program meaning, personal syntax, four targets
+  return `hs ${COMPILER_VERSION} - shared program meaning, personal syntax, ${TARGET_IDS.length} targets
 
 Usage:
   hs check <file> [--profile <profile.json>] [--json]
-  hs build <file> --target <csharp|rust|go|java> [--out <dir>]
+  hs build <file> --target <${TARGET_IDS.join("|")}> [--out <dir>]
             [--entry <function>] [--profile <profile.json>] [--run] [--args a,b]
   hs syntax export <canonical.hs> --profile <profile.json> --out <personal.hs>
             [--manifest <file>]
   hs syntax import <personal.hs> [--manifest <file>] [--dry-run]
-  hs test [--all-targets] [--targets csharp,rust,go,java] [--quick]
+  hs test [--all-targets] [--targets ${TARGET_IDS.join(",")}] [--quick]
             [--report-dir <dir>] [--json]
   hs prop [--seed <n>] [--count <n>] [--max-size <n>]
-            [--targets csharp,rust,go,java] [--report-dir <dir>]
+            [--targets ${TARGET_IDS.join(",")}] [--report-dir <dir>]
             [--no-reduce] [--quiet] [--json]
   hs doctor [--json]
   hs demo

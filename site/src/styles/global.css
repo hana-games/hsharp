@@ -31,6 +31,12 @@
   --java: #f45b78;
   --java-ink: #c22b4a;
   --java-soft: rgba(244, 91, 120, 0.14);
+  --cpp: #5c9fd6;
+  --cpp-ink: #1d5d8f;
+  --cpp-soft: rgba(92, 159, 214, 0.14);
+  --javascript: #f7df1e;
+  --javascript-ink: #8a7300;
+  --javascript-soft: rgba(247, 223, 30, 0.16);
 
   --success: #2fbf71;
   --danger: #e5484d;
@@ -472,6 +478,18 @@ ol {
   border-color: var(--java);
   background: var(--java-soft);
   color: var(--java-ink);
+}
+
+.chip-cpp {
+  border-color: var(--cpp);
+  background: var(--cpp-soft);
+  color: var(--cpp-ink);
+}
+
+.chip-javascript {
+  border-color: var(--javascript);
+  background: var(--javascript-soft);
+  color: var(--javascript-ink);
 }
 
 .band-dark .chip-csharp,
@@ -2789,6 +2807,14 @@ ol {
   --target-soft: var(--go-soft);
 }
 
+.graph-target[data-target="cpp"] {
+  --target-accent: var(--cpp);
+}
+
+.graph-target[data-target="javascript"] {
+  --target-accent: var(--javascript);
+}
+
 .graph-target[data-target="java"] {
   --target-accent: var(--java);
   --target-ink: var(--java-ink);
@@ -4270,6 +4296,8 @@ ol {
   display: flex;
   gap: 0.15rem;
   padding: 0.2rem;
+  max-width: 100%;
+  overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--paper);
@@ -4277,6 +4305,7 @@ ol {
 
 .target-option {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 0.3rem;
   min-height: 30px;
@@ -5357,6 +5386,8 @@ ol {
 .drift-row[data-target="rust"] .drift-status { color: var(--rust); }
 .drift-row[data-target="go"] .drift-status { color: var(--go); }
 .drift-row[data-target="java"] .drift-status { color: var(--java); }
+.drift-row[data-target="cpp"] .drift-status { color: var(--cpp); }
+.drift-row[data-target="javascript"] .drift-status { color: var(--javascript); }
 
 .drift-row.reference {
   background: rgba(216, 255, 62, 0.07);

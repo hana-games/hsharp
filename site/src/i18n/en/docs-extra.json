@@ -5,7 +5,6 @@
   "A reachable path without a value, or a value of the wrong type": "A reachable path without a value, or a value of the wrong type",
   "A target is marked blocked": "A target is marked blocked",
   "Aliases": "Aliases",
-  "An ordinary C#, Rust, Go, or Java project compiled by its own toolchain.": "An ordinary C#, Rust, Go, or Java project compiled by its own toolchain.",
   "Build, local, and reports are generated. Profiles, examples, and the specification are inputs; generated output can be deleted and recreated.": "Build, local, and reports are generated. Profiles, examples, and the specification are inputs; generated output can be deleted and recreated.",
   "Bundled Visual Studio Code extension.": "Bundled Visual Studio Code extension.",
   "Calls": "Calls",
@@ -38,7 +37,7 @@
   "Fixed: braces, commas, semicolons, arrows, and operators do not change.": "Fixed: braces, commas, semicolons, arrows, and operators do not change.",
   "Fixed: every operation is range-checked and fails with E_OVERFLOW.": "Fixed: every operation is range-checked and fails with E_OVERFLOW.",
   "Fixed: i32, bool, arity, returns, and scopes are profile-independent.": "Fixed: i32, bool, arity, returns, and scopes are profile-independent.",
-  "Fixed: the same typed AST produces the same four backend projects.": "Fixed: the same typed AST produces the same four backend projects.",
+  "Fixed: the same typed AST produces the same six backend projects.": "Fixed: the same typed AST produces the same six backend projects.",
   "From a clone to a checked and executed target. The command is called hs; hsharp and hcharp are aliases.": "From a clone to a checked and executed target. The command is called hs; hsharp and hcharp are aliases.",
   "Generated conformance, environment, and benchmark evidence.": "Generated conformance, environment, and benchmark evidence.",
   "Generated programs print exactly one outcome line and no extra runtime logging.": "Generated programs print exactly one outcome line and no extra runtime logging.",
@@ -117,5 +116,6 @@
   "Validated JSON that renames seven keyword roles for one person.": "Validated JSON that renames seven keyword roles for one person.",
   "Visual Studio Code extension and its protocol client.": "Visual Studio Code extension and its protocol client.",
   "What it means": "What it means",
-  "What profiles cannot change": "What profiles cannot change"
+  "What profiles cannot change": "What profiles cannot change",
+  "An ordinary C#, Rust, Go, Java, C++, or JavaScript project compiled by its own toolchain.": "An ordinary C#, Rust, Go, Java, C++, or JavaScript project compiled by its own toolchain."
 }

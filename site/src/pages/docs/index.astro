@@ -40,7 +40,7 @@ hs build examples/calculate.hs --target rust --entry calculate --run --args 10,t
   </p>
   <p>
     A program is parsed and checked once. The compiler produces a typed AST, runs a reference
-    interpreter, and generates ordinary C#, Rust, Go, and Java projects. The target toolchains then
+    interpreter, and generates ordinary C#, Rust, Go, Java, C++, and JavaScript projects. The target toolchains then
     compile and execute those projects. Generated code does not call back into the h# compiler.
   </p>
 
@@ -80,7 +80,7 @@ hs build examples/calculate.hs --target rust --entry calculate --run --args 10,t
     </div>
     <div class="card">
       <div class="eyebrow">Code generators</div>
-      <h3 class="h3" style="margin-top:0.5rem;">Four native projects</h3>
+      <h3 class="h3" style="margin-top:0.5rem;">Six native projects</h3>
       <p class="small" style="margin-top:0.4rem;">
         {targets.map((target) => target.label).join(", ")}. Each backend emits a project its own
         toolchain can build without manual edits.
@@ -103,7 +103,7 @@ hs build examples/calculate.hs --target rust --entry calculate --run --args 10,t
       <tr><td>Canonical source</td><td>The shared source program written in standard notation.</td></tr>
       <tr><td>Profile</td><td>Validated JSON that renames seven keyword roles for one person.</td></tr>
       <tr><td>Typed AST</td><td>The normalized, checked program structure used by every backend.</td></tr>
-      <tr><td>Target</td><td>An ordinary C#, Rust, Go, or Java project compiled by its own toolchain.</td></tr>
+      <tr><td>Target</td><td>An ordinary C#, Rust, Go, Java, C++, or JavaScript project compiled by its own toolchain.</td></tr>
       <tr><td>Manifest</td><td>Fingerprints that protect export and reimport from stale edits.</td></tr>
     </tbody>
   </table>
@@ -120,7 +120,7 @@ hs build examples/calculate.hs --target rust --entry calculate --run --args 10,t
       <tr><td>Core</td><td>i32, bool, functions, locals, if/else, returns</td></tr>
       <tr><td>Checks</td><td>Types, arity, names, returns, call cycles, chained comparisons</td></tr>
       <tr><td>Profiles</td><td>Validated keyword roles; export/import with fingerprints</td></tr>
-      <tr><td>Targets</td><td>C#, Rust, Go, Java generated, compiled, executed</td></tr>
+      <tr><td>Targets</td><td>C#, Rust, Go, Java, C++, and JavaScript generated, compiled, executed</td></tr>
       <tr><td>Editor</td><td>Visual Studio Code extension with live diagnostics and preview</td></tr>
       <tr><td>Not yet</td><td>Strings, lists, loops, recursion, modules, generics, async</td></tr>
     </tbody>

@@ -370,9 +370,11 @@ export function ExampleGallery({ examples }: Props) {
                       <span className="chip chip-rust">Rust</span>
                       <span className="chip chip-go">Go</span>
                       <span className="chip chip-java">Java</span>
+                      <span className="chip chip-cpp">C++</span>
+                      <span className="chip chip-javascript">JavaScript</span>
                     </div>
                     <p className="hint" style={{ marginTop: "0.8rem" }}>
-                      {t("Same source, same expected outcome, four compilers. The full matrix is available in the conformance explorer.")}
+                      {t("Same source, same expected outcome, six compilers. The full matrix is available in the conformance explorer.")}
                     </p>
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 {
   "schema": "hs-environment/1",
-  "generatedAt": "2026-10-22T12:45:31.686Z",
+  "generatedAt": "2026-10-23T21:59:48.376Z",
   "compilerVersion": "0.1.0",
   "coreVersion": "0.1",
   "node": "v24.21.0",
@@ -46,6 +46,26 @@
       "commands": [
         "javac",
         "java"
+      ]
+    },
+    {
+      "target": "cpp",
+      "name": "C++ (g++)",
+      "available": true,
+      "version": "g++.exe (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
+      "detail": "",
+      "commands": [
+        "g++"
+      ]
+    },
+    {
+      "target": "javascript",
+      "name": "Node.js",
+      "available": true,
+      "version": "v24.21.0",
+      "detail": "",
+      "commands": [
+        "node"
       ]
     }
   ]

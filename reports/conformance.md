@@ -1,11 +1,11 @@
 # h# Conformance Report
 
-- Generated: 2026-10-23T15:36:34.321Z
+- Generated: 2026-10-25T14:09:05.160Z
 - Compiler: 0.1.0 (core 0.1)
 - Node: v24.21.0
 - Mode: full (all configured targets executed)
 - Profiles: standard, my-syntax, terse, casual
-- Cases: 30; target executions: 480
+- Cases: 30; target executions: 720
 - Result: PASS (0 failed, 0 blocked)
 
 ## Toolchains
@@ -16,41 +16,43 @@
 | rust | Rust (cargo) | cargo 1.98.1 (797e8a9bc 2026-08-05); rustc 1.98.1 (48a229cea 2026-09-01) | available |
 | go | Go | go version go1.27.0 windows/amd64 | available |
 | java | Java (javac) | javac 21.0.12.1; openjdk version "21.0.12.1" 2026-08-18 LTS | available |
+| cpp | C++ (g++) | g++.exe (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0 | available |
+| javascript | Node.js | v24.21.0 | available |
 
 ## Cases
 
-| Case | Reference | Profiles | C# | Rust | Go | Java |
-|---|---|---|---|---|---|---|
-| demo-bonus-true | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| demo-bonus-false | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| function-call | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| precedence | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| parentheses | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| left-associativity | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| subtraction-grouping | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| i32-minimum | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| i32-maximum | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| overflow-add-max | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| add-at-max-boundary | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| overflow-subtract-min | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| overflow-multiply-min | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| multiply-negative-one | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| overflow-negate-min | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| negate-positive | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| short-circuit-and | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| short-circuit-or | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| comparison-true | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| comparison-false | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| bool-logic | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| if-else-negative | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| if-else-zero | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| if-else-positive | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| target-reserved-names | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| comments-preserved | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| dead-code-after-return | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| dead-code-after-if | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| grouped-comparison-equality | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
-| records-structural | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass |
+| Case | Reference | Profiles | C# | Rust | Go | Java | C++ | JavaScript |
+|---|---|---|---|---|---|---|---|---|
+| demo-bonus-true | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| demo-bonus-false | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| function-call | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| precedence | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| parentheses | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| left-associativity | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| subtraction-grouping | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| i32-minimum | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| i32-maximum | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| overflow-add-max | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| add-at-max-boundary | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| overflow-subtract-min | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| overflow-multiply-min | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| multiply-negative-one | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| overflow-negate-min | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| negate-positive | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| short-circuit-and | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| short-circuit-or | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| comparison-true | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| comparison-false | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| bool-logic | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| if-else-negative | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| if-else-zero | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| if-else-positive | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| target-reserved-names | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| comments-preserved | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| dead-code-after-return | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| dead-code-after-if | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| grouped-comparison-equality | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
+| records-structural | passed | standard:ok my-syntax:ok terse:ok casual:ok | pass | pass | pass | pass | pass | pass |
 
 Each target artifact is compiled once per program and entry function; the same profile-independent artifact is then executed for every profile. Structural equivalence and round-trip preservation are verified separately for each profile.
 
@@ -78,7 +80,7 @@ Each target artifact is compiled once per program and entry function; the same p
 | integer-range | E_INT_RANGE | passed |
 | shadow-function | E_NAME_SHADOWS_FUNCTION | passed |
 | duplicate-parameter | E_DUPLICATE_PARAMETER | passed |
-| record-return-unsupported | E_RECORD_RETURN_UNSUPPORTED | passed |
+| record-return-unsupported | E_RECORD_ENTRY_RETURN_UNSUPPORTED | passed |
 | unknown-record-field | E_UNKNOWN_FIELD | passed |
 | profile-duplicate-keyword | E_PROFILE_DUPLICATE_KEYWORD | passed |
 | profile-unknown-option | E_PROFILE_UNKNOWN_OPTION | passed |

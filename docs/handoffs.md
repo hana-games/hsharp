@@ -9,17 +9,17 @@ The execution plan asks every handoff to state what works, what verification ran
 - Profile-driven lexing, parsing, checked typed AST, and a BigInt reference interpreter.
 - Checked `i32` arithmetic with `E_OVERFLOW` after every operation, left-to-right evaluation, short-circuit Boolean operators, and explicit minimum-literal rules.
 - Function calls, immutable typed locals, `if`/`else`, returns, missing-return analysis, duplicate-name rejection, and acyclic call-graph enforcement.
-- Four source generators that produce ordinary C#, Rust, Go, and Java projects.
+- Six source generators that produce ordinary C#, Rust, Go, Java, C++, and JavaScript projects.
 - Export to personal keyword notation, reimport with canonical/profile fingerprint checks, comment preservation, and manifest refresh after apply.
 - CLI: `check`, `build` (with `--run`), `syntax export`, `syntax import`, `test`, `doctor`, `demo`.
 
 **Verification that actually ran**
 
 - `npm run build` (TypeScript 7.0.2).
-- 19/19 unit tests, plus a bridge protocol smoke test.
-- 29 positive conformance cases × 4 profiles × 4 targets = 464 target executions, all passed with 0 blocked.
-- 27 negative cases, all produced the expected diagnostic.
-- `hs demo` produced `33` through the reference interpreter and all four compiled targets.
+- 19/57 unit tests, plus a bridge protocol smoke test.
+- 30 positive conformance cases × 4 profiles × 6 targets = 720 target executions, all passed with 0 blocked.
+- 29 negative cases, all produced the expected diagnostic.
+- `hs demo` produced `33` through the reference interpreter and all six compiled targets.
 - Performance budgets passed via `npm run bench`; real-time bridge measured at sub-millisecond to low-millisecond round-trips.
 - Visual Studio Code extension bundled, packaged, and installed; interactive UI behavior was not driven by an automated test.
 - Two independent code reviews with differential fuzzing; 16 confirmed defects were fixed and the suite re-run.
@@ -75,13 +75,13 @@ None for the documented POC. Cross-platform execution and a repeatable fuzz gene
 
 **Verified correct without change**
 
-- differential execution of 28 additional programs across all four targets, including nested short-circuit, calls in conditions, failing call arguments, Booleans, minimum literals, unused locals/params, zero-argument functions, and mixed argument order;
+- differential execution of 28 additional programs across all six targets, including nested short-circuit, calls in conditions, failing call arguments, Booleans, minimum literals, unused locals/params, zero-argument functions, and mixed argument order;
 - overflow node equality between reference and targets;
 - generated target names avoid host reserved words;
-- build/run commands and paths for all four targets;
+- build/run commands and paths for all six targets;
 - blocked-toolchain handling and `hs doctor` exit status;
 - corpus expectations match the specification.
 
 ## Suggested next assignment
 
-Add a committed, seeded property-based generator that produces well-typed programs, compares the reference and all four targets, and reduces failures to minimal cases. It should treat the current conformance corpus as the regression baseline.
+Add a committed, seeded property-based generator that produces well-typed programs, compares the reference and all six targets, and reduces failures to minimal cases. It should treat the current conformance corpus as the regression baseline.

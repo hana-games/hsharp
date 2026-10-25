@@ -1,7 +1,7 @@
 {
-  "29 positive cases": "29 positive cases",
-  "4 targets": "4 targets",
-  "464 executions": "464 executions",
+  "30 positive cases": "30 positive cases",
+  "6 targets": "6 targets",
+  "720 executions": "720 executions",
   "Add At Max Boundary": "Add At Max Boundary",
   "All": "All",
   "Bool Logic": "Bool Logic",
@@ -93,5 +93,6 @@
   "Subtraction Grouping": "Subtraction Grouping",
   "Target Reserved Names": "Target Reserved Names",
   "The right operand would overflow but must not be evaluated.": "The right operand would overflow but must not be evaluated.",
-  "Unreachable declarations are checked but omitted from generated code.": "Unreachable declarations are checked but omitted from generated code."
+  "Unreachable declarations are checked but omitted from generated code.": "Unreachable declarations are checked but omitted from generated code.",
+  "Same source, same expected outcome, six compilers. The full matrix is available in the conformance explorer.": "Same source, same expected outcome, six compilers. The full matrix is available in the conformance explorer."
 }

@@ -281,7 +281,7 @@ A data feature is complete only when:
 
 1. Its semantics are in this specification.
 2. Positive and negative examples exist independently of generated code.
-3. The reference interpreter and all four targets agree on values, failures, and failure nodes.
+3. The reference interpreter and all six targets agree on values, failures, and failure nodes.
 4. Round-trip and normalized-AST checks cover every profile.
 5. Copying/ownership behavior is documented and measured for the initial model.
 6. The limitations file is updated.
@@ -301,8 +301,8 @@ The committed 0.3 corpus currently covers the record slice, a focused list examp
 access, internal record parameters, structural equality, list literals/length/indexing/equality,
 variant constructors, internal variant parameters and returns, exhaustive matching, and structural
 variant equality. `examples/option-result.hs` and its unit tests cover the focused Option/Result
-slice on all four backends, but it is not yet a conformance corpus case. `examples/entry-records.hs`
-and unit tests cover flattened entry record parameters on all four backends, also without a corpus
+slice on all six backends, but it is not yet a conformance corpus case. `examples/entry-records.hs`
+and unit tests cover flattened entry record parameters on all six backends, also without a corpus
 entry. The other bullets remain acceptance work for future slices.
 
 ## Migration

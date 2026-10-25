@@ -8,11 +8,11 @@ const phases = [
     title: "Executable POC",
     status: "Complete",
     done: true,
-    summary: "The verified core, four profiles, four targets, export/import, CLI, and editor preview.",
+    summary: "The verified core, four profiles, six targets, export/import, CLI, and editor preview.",
     points: [
       "i32/bool core with checked arithmetic",
       "standard + three personal profiles",
-      "C#, Rust, Go, Java compiled and executed",
+      "C#, Rust, Go, Java, C++, and JavaScript compiled and executed",
       `${siteData.meta.stats.executions} target executions`,
       "VS Code diagnostics and generated-code preview",
     ],
@@ -26,7 +26,7 @@ const phases = [
     points: [
       "Seeded property-based program generator",
       "Automatic failure reduction",
-      "Ubuntu CI with all four toolchains",
+      "Ubuntu CI with all six toolchains",
       "Benchmark corpus separate from correctness cases",
       "Golden diagnostic location tests",
     ],
@@ -67,9 +67,9 @@ const phases = [
     summary: "Use h# where real software lives: multi-file programs and callable libraries.",
     points: [
       "Imports, modules, visibility, versions",
-      "JavaScript/TypeScript candidate fifth backend",
-      "Reverse import from JavaScript or other hosts is a separate, lossy importer",
-      "Libraries/packages for .NET, Rust, Go, Java",
+      "JavaScript is implemented; TypeScript declaration emission remains future work",
+      "Reverse import from target languages remains separate and lossy",
+      "Libraries/packages for .NET, Rust, Go, Java, C++, Node.js",
       "Controlled exported signatures",
       "Adapters with explicit capability declarations",
     ],
@@ -156,7 +156,7 @@ const phases = [
         </div>
         <p class="lede">
           Each phase expands the portable boundary. The price is always the same: a precise
-          specification, expected examples, four translations, and real verification.
+          specification, expected examples, six translations, and real verification.
         </p>
       </div>
 
@@ -217,7 +217,7 @@ const phases = [
       <div class="grid grid-2">
         <div class="card"><h3 class="h3">Not a universal runtime</h3><p class="small" style="margin-top:0.5rem;">Generated programs are ordinary native projects. There is no h# VM to deploy.</p></div>
         <div class="card"><h3 class="h3">Not every library</h3><p class="small" style="margin-top:0.5rem;">Portable core and ecosystem access are separate contracts. Target-specific extensions stay explicit.</p></div>
-        <div class="card"><h3 class="h3">Not four independent implementations</h3><p class="small" style="margin-top:0.5rem;">A feature is portable only when the same semantics and expected outcomes hold on all targets.</p></div>
+        <div class="card"><h3 class="h3">Not six independent implementations</h3><p class="small" style="margin-top:0.5rem;">A feature is portable only when the same semantics and expected outcomes hold on all targets.</p></div>
         <div class="card"><h3 class="h3">Not performance-first</h3><p class="small" style="margin-top:0.5rem;">Correctness and conformance come first. Optimization starts with measurement and must preserve behavior.</p></div>
         <div class="card"><h3 class="h3">Not an AI-only language</h3><p class="small" style="margin-top:0.5rem;">Humans keep their notation. The machine interface follows from the semantic core; it does not replace human syntax.</p></div>
         <div class="card"><h3 class="h3">Not a replacement for native ecosystems</h3><p class="small" style="margin-top:0.5rem;">Generated projects still run on their target toolchains. h# is the shared contract before translation, not another runtime.</p></div>

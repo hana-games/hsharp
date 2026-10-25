@@ -89,7 +89,7 @@ function pagePath(file) {
 
 const SITE_URL = "https://hsharp.dev";
 const LOCALE_TAGS = { en: "en_US", fr: "fr_FR", ja: "ja_JP" };
-const SITE_DESCRIPTION = "One semantic core. Personal syntax. Four verified native outputs.";
+const SITE_DESCRIPTION = "One semantic core. Personal syntax. Six verified native outputs.";
 
 function localizedUrl(basePath, locale) {
   const pathname = basePath.endsWith(".html")

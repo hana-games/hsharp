@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { TargetId } from "../contracts/interfaces";
+import { TARGET_IDS } from "../contracts/interfaces";
 import type { Outcome } from "../contracts/outcome";
 import type { TypeName } from "../contracts/tokens";
 import { CORE_VERSION, COMPILER_VERSION } from "../contracts/version";
@@ -262,7 +263,7 @@ export function runProperty(options: PropertyOptions): {
   const seed = options.seed ?? 1;
   const count = Math.max(1, Math.min(200, options.count ?? 10));
   const maxSize = Math.max(1, Math.min(5, options.maxSize ?? 3));
-  const targets = options.targets.length > 0 ? options.targets : (["csharp", "rust", "go", "java"] as TargetId[]);
+  const targets = options.targets.length > 0 ? options.targets : ([...TARGET_IDS] as TargetId[]);
   const toolchains = detectToolchains(root);
   const cases: PropertyCaseReport[] = [];
 

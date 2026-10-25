@@ -7,7 +7,7 @@ source text + explicit profile
   -> tokens (including trivia) + source AST
   -> typed AST with stable symbol IDs
   -> reference outcome
-  -> one of four generated projects
+  -> one of six generated projects
   -> target compiler and runtime
   -> normalized outcome
 ```
@@ -69,8 +69,10 @@ This applies separately to addition, subtraction, multiplication, and negation. 
 | Rust | `Cargo.toml`, `src/main.rs` | `cargo build --release --offline` | `target/release/hs_program(.exe)` |
 | Go | `go.mod`, `main.go` | `go build -o bin/hs_program(.exe) .` | the built binary |
 | Java | `HsProgram.java` | `javac -encoding UTF-8 -d bin HsProgram.java` | `java -cp bin HsProgram` |
+| C++ | `main.cpp` | `g++ -std=c++20 -O2 -o bin/hs_program main.cpp` | the built binary |
+| JavaScript | `main.js`, `package.json` | `node --check main.js` | `node main.js` |
 
-C# targets `net10.0`. Go declares `go 1.22`. Rust uses edition 2021 and no external crates. Java uses no external libraries.
+C# targets `net10.0`. Go declares `go 1.22`. Rust uses edition 2021 and no external crates. Java uses no external libraries. C++ uses C++20 with `g++` or `clang++`. JavaScript targets Node.js CommonJS.
 
 Generated `main` functions parse command-line arguments according to the entry parameter types, call the entry function, print one JSON outcome line, and exit with the status described in [`execution-protocol.md`](execution-protocol.md).
 
@@ -80,4 +82,4 @@ Generated code depends on the typed AST, not on source spelling. All profiles fo
 
 ## 7. Diagnostics mapping
 
-Static diagnostics use source spans from the profile-specific lexer/parser, so locations point into the file the user actually wrote. Runtime failures carry the failing expression's AST node ID; the interpreter and all four targets report the same node for the same program.
+Static diagnostics use source spans from the profile-specific lexer/parser, so locations point into the file the user actually wrote. Runtime failures carry the failing expression's AST node ID; the interpreter and all six targets report the same node for the same program.

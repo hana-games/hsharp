@@ -1,6 +1,8 @@
+import { emitCpp } from "./cpp";
 import { emitCsharp } from "./csharp";
 import { emitGo } from "./go";
 import { emitJava } from "./java";
+import { emitJavascript } from "./javascript";
 import { emitRust } from "./rust";
 import type { GeneratedProject, TargetId } from "../contracts/interfaces";
 import type { TypedProgram } from "../contracts/outcome";
@@ -15,5 +17,9 @@ export function emit(program: TypedProgram, target: TargetId, entry: string): Ge
       return emitGo(program, entry);
     case "java":
       return emitJava(program, entry);
+    case "cpp":
+      return emitCpp(program, entry);
+    case "javascript":
+      return emitJavascript(program, entry);
   }
 }

@@ -58,17 +58,17 @@ async function main(): Promise<void> {
     }, `${largeSource.length} chars`),
   );
   measurements.push(
-    measure("generate all four small", 500, budgets.emitSmallAll, () => {
+    measure("generate all six small", 500, budgets.emitSmallAll, () => {
       for (const target of TARGET_IDS) emit(small.typed!, target, "calculate");
-    }, "C# + Rust + Go + Java"),
+    }, "C# + Rust + Go + Java + C++ + JavaScript"),
   );
   measurements.push(
-    measure("generate all four 300 functions", 20, budgets.emitLargeAll, () => {
+    measure("generate all six 300 functions", 20, budgets.emitLargeAll, () => {
       for (const target of TARGET_IDS) emit(large.typed!, target, "main");
-    }, "C# + Rust + Go + Java"),
+    }, "C# + Rust + Go + Java + C++ + JavaScript"),
   );
 
-  const preview = measure("analyze + generate all four", 500, budgets.previewSmall, () => {
+  const preview = measure("analyze + generate all six", 500, budgets.previewSmall, () => {
     const result = analyze(smallSource, "small.hs", STANDARD_PROFILE);
     if (!result.typed) return;
     for (const target of TARGET_IDS) emit(result.typed, target, "calculate");

@@ -48,7 +48,7 @@ hs test --targets csharp,rust --report-dir reports/local --json`;
     explicitly.
   </p>
   <StaticCode code={`hs check <file> [--profile <profile.json>] [--json]
-hs build <file> --target <csharp|rust|go|java> [--out <dir>]
+hs build <file> --target <csharp|rust|go|java|cpp|javascript> [--out <dir>]
           [--entry <function>] [--profile <profile.json>] [--run] [--args a,b]
 hs syntax export <canonical.hs> --profile <profile.json> --out <personal.hs>
             [--manifest <file>]
@@ -98,7 +98,7 @@ hs bridge`} language="bash" title="command summary" />
   <table>
     <thead><tr><th>Flag</th><th>Meaning</th></tr></thead>
     <tbody>
-      <tr><td><code>--target</code></td><td>Required: <code>csharp</code>, <code>rust</code>, <code>go</code>, or <code>java</code></td></tr>
+      <tr><td><code>--target</code></td><td>Required: <code>csharp</code>, <code>rust</code>, <code>go</code>, <code>java</code>, <code>cpp</code>, or <code>javascript</code></td></tr>
       <tr><td><code>--out</code></td><td>Output directory; default <code>build/&lt;program&gt;/&lt;target&gt;</code></td></tr>
       <tr><td><code>--entry</code></td><td>Entry function. Empty infers <code>main</code> or a single function</td></tr>
       <tr><td><code>--profile</code></td><td>Interpret the source with this profile</td></tr>
@@ -109,7 +109,8 @@ hs bridge`} language="bash" title="command summary" />
   <p>
     Generated projects are ordinary: <code>HsProgram.csproj</code> + <code>Program.cs</code>,
     <code>Cargo.toml</code> + <code>src/main.rs</code>, <code>go.mod</code> + <code>main.go</code>,
-    or <code>HsProgram.java</code>. No manual corrections are required.
+    <code>HsProgram.java</code>, <code>main.cpp</code>, or <code>main.js</code> +
+    <code>package.json</code>. No manual corrections are required.
   </p>
 
   <h2 id="syntax">syntax</h2>
@@ -152,13 +153,13 @@ hs prop --targets csharp,rust --no-reduce --json`} language="bash" title="termin
 
   <h2 id="doctor">doctor and demo</h2>
   <p>
-    <code>hs doctor</code> detects Node, .NET, Cargo, Go, and Java, checks project-version minimums,
-    prints the versions, and writes <code>reports/environment.json</code>.
+    <code>hs doctor</code> detects Node, .NET, Cargo, Go, Java, and a C++ compiler, checks
+    project-version minimums, prints the versions, and writes <code>reports/environment.json</code>.
   </p>
   <p>
     <code>hs demo</code> runs the complete workflow in <code>local/demo/</code>: export to
     <code>my-syntax</code>, edit <code>base + 2</code> to <code>base + 3</code>, reimport, then run
-    the reference interpreter and all four targets. It must print <code>33</code> everywhere.
+    the reference interpreter and all six targets. It must print <code>33</code> everywhere.
   </p>
 
   <h2 id="bridge">bridge</h2>

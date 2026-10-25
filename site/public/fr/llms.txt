@@ -1,6 +1,6 @@
 # h#
 
-> h# est un petit langage de programmation doté d’un cœur sémantique typé unique, d’une notation personnelle déclarative et de sorties natives vérifiées pour C#, Rust, Go et Java.
+> h# est un petit langage de programmation doté d’un cœur sémantique typé unique, d’une notation personnelle déclarative et de sorties natives vérifiées pour C#, Rust, Go, Java, C++ et JavaScript.
 
 - Site canonique : https://hsharp.dev/fr/
 - Dépôt source : https://github.com/hana-games/hsharp
@@ -11,18 +11,18 @@
 
 ## Ce que c’est
 
-h# sépare le sens de la notation. Un AST typé et un contrat sémantique unique sont partagés par toutes les cibles. Un profil est un JSON validé qui renomme sept rôles de mots-clés pour une personne sans changer la grammaire, les types, l’ordre d’évaluation ni le comportement d’échec. Le compilateur génère des projets C#, Rust, Go et Java ordinaires ; ces projets sont compilés et exécutés par leurs propres chaînes d’outils.
+h# sépare le sens de la notation. Un AST typé et un contrat sémantique unique sont partagés par toutes les cibles. Un profil est un JSON validé qui renomme sept rôles de mots-clés pour une personne sans changer la grammaire, les types, l’ordre d’évaluation ni le comportement d’échec. Le compilateur génère des projets C#, Rust, Go, Java, C++ et JavaScript ordinaires ; ces projets sont compilés et exécutés par leurs propres chaînes d’outils.
 
 ## Faits clés
 
-- 29 cas de conformité positifs, 4 profils de syntaxe, 4 cibles natives, 464 exécutions par cible.
+- 30 cas de conformité positifs, 4 profils de syntaxe, 6 cibles natives, 720 exécutions par cible.
 - 0 échec et 0 vérification bloquée dans le rapport actuel.
-- 27 cas négatifs vérifient des codes de diagnostic exacts.
+- 29 cas négatifs vérifient des codes de diagnostic exacts.
 - i32 et bool sont les seuls types du cœur. L’arithmétique est vérifiée après chaque opération et échoue avec `E_OVERFLOW` et le nœud source.
 - Les commentaires et les identifiants survivent à la conversion de syntaxe consciente des jetons.
 - Le playground du navigateur n’exécute pas h#. Il utilise des données précalculées et des transformations côté client.
-- JavaScript est un cinquième backend candidat, pas une cible implémentée.
-- L’import inverse de C#, Rust, Go, Java ou JavaScript vers h# n’est pas pris en charge.
+- JavaScript est une cible implémentée exécutée par Node.js ; C++ utilise C++20.
+- L’import inverse de C#, Rust, Go, Java, C++ ou JavaScript vers h# n’est pas pris en charge.
 
 ## Documentation
 

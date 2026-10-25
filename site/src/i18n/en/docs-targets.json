@@ -13,7 +13,7 @@
   "Execution outcomes": "Execution outcomes",
   "Generated programs print exactly one machine-readable line on stdout. Build logs stay separate.": "Generated programs print exactly one machine-readable line on stdout. Build logs stay separate.",
   "Generated projects": "Generated projects",
-  "How h# generates C#, Rust, Go, and Java projects, checks arithmetic, maps names, and reports outcomes.": "How h# generates C#, Rust, Go, and Java projects, checks arithmetic, maps names, and reports outcomes.",
+  "How h# generates C#, Rust, Go, Java, C++, and JavaScript projects, checks arithmetic, maps names, and reports outcomes.": "How h# generates C#, Rust, Go, Java, C++, and JavaScript projects, checks arithmetic, maps names, and reports outcomes.",
   "HsProgram.csproj + Program.cs": "HsProgram.csproj + Program.cs",
   "HsProgram.java": "HsProgram.java",
   "Portable names": "Portable names",

@@ -54,8 +54,8 @@ The language switcher in the header preserves the current page and opens the cor
 ## Direction
 
 - **Canonical ↔ personal notation** is bidirectional: export and reimport share the normalized AST, with fingerprints protecting both ends.
-- **h# → C#, Rust, Go, Java** is one-way by design: generated target source is output, not a second source of truth.
-- **JavaScript** is a candidate fifth backend. Importing JavaScript back into h# is a separate, lossy frontend problem (parsing, type inference, library semantics), not a reverse code generator.
+- **h# → C#, Rust, Go, Java, C++, and JavaScript** is one-way by design: generated target source is output, not a second source of truth.
+- **JavaScript** is an implemented target and runs on Node.js. Importing JavaScript back into h# is a separate, lossy frontend problem (parsing, type inference, library semantics), not a reverse code generator.
 
 ## Run
 
@@ -94,8 +94,8 @@ npm run site:preview
 
 `site/scripts/generate-data.mjs` imports the compiled TypeScript compiler and reads the conformance report:
 
-- the demonstration source under all four profiles;
-- exact generated projects for C#, Rust, Go, and Java;
+- the demonstration source under all six profiles;
+- exact generated projects for C#, Rust, Go, Java, C++, and JavaScript;
 - normalized AST for the standard demo;
 - all positive example programs and expected outcomes;
 - the compact conformance matrix.
@@ -116,9 +116,9 @@ No h# code executes in the browser. Interactive modules use precomputed data and
 
 ## Design
 
-- **Theme**: Prism Foundry — one core, four native outputs.
+- **Theme**: Prism Foundry — one core, six native outputs.
 - **Typography**: Instrument Serif, Inter, JetBrains Mono.
-- **Palette**: ink `#0A0C10`, paper `#F3EFE4`, signal lime `#D8FF3E`, plus target accents for C#, Rust, Go, and Java.
+- **Palette**: ink `#0A0C10`, paper `#F3EFE4`, signal lime `#D8FF3E`, plus target accents for C#, Rust, Go, Java, C++, and JavaScript.
 - **Motion**: subtle reveal and code-swap transitions, disabled under `prefers-reduced-motion`.
 - **Responsive**: mobile navigation, scrollable code frames, single-column layouts under 700 px.
 

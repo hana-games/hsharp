@@ -1,5 +1,7 @@
 # h#: AI Agent Execution Plan
 
+> Historical planning document from the original four-target POC. The current implementation ships six targets: C#, Rust, Go, Java, C++, and JavaScript. See [`README.md`](README.md) and [`ROADMAP.md`](ROADMAP.md) for current status.
+
 ## Purpose
 
 Build a programming language with a shared semantic core, customizable syntax for each user, and source-code generation for **C#, Go, Rust, and Java**.

@@ -38,7 +38,7 @@
   "prints the detected toolchain versions and writes": "検出されたツールチェーンのバージョンを出力し、次を書き込みます: ",
   "process is needed for diagnostics or preview. Open a": " プロセスは不要です。次の ",
   "returns": " は次を返します: ",
-  "runs 19 unit tests, the VS Code typecheck, the bridge protocol test, and the full conformance suite.": "19 件のユニットテスト、VS Code の型チェック、ブリッジプロトコルテスト、完全な適合性スイートを実行します。",
+  "runs 57 unit tests, the VS Code typecheck, the bridge protocol test, and the full conformance suite.": "57 件のユニットテスト、VS Code の型チェック、ブリッジプロトコルテスト、完全な適合性スイートを実行します。",
   "setup": "セットアップ",
   "standard profile": "standard プロファイル",
   "when the source is written in a personal notation. Canonical source uses the standard profile and is never interpreted through an implicit local preference.": " を使用してください。正規ソースは standard プロファイルを使い、暗黙のローカル設定で解釈されることはありません。",

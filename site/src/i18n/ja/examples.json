@@ -1,7 +1,7 @@
 {
-  "29 positive cases": "29 件のポジティブケース",
-  "4 targets": "4 ターゲット",
-  "464 executions": "464 回の実行",
+  "30 positive cases": "30 件のポジティブケース",
+  "6 targets": "6 ターゲット",
+  "720 executions": "720 回の実行",
   "Add At Max Boundary": "最大境界での加算",
   "All": "すべて",
   "Bool Logic": "真偽値ロジック",
@@ -93,5 +93,6 @@
   "Subtraction Grouping": "減算のグループ化",
   "Target Reserved Names": "ターゲット予約名",
   "The right operand would overflow but must not be evaluated.": "右オペランドはオーバーフローしますが、評価されてはなりません。",
-  "Unreachable declarations are checked but omitted from generated code.": "到達不能な宣言は検査されますが、生成コードからは省略されます。"
+  "Unreachable declarations are checked but omitted from generated code.": "到達不能な宣言は検査されますが、生成コードからは省略されます。",
+  "Same source, same expected outcome, six compilers. The full matrix is available in the conformance explorer.": "同じソース、同じ期待結果、6 つのコンパイラ。完全なマトリクスは適合性エクスプローラーで確認できます。"
 }

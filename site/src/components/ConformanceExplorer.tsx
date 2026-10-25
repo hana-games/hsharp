@@ -11,9 +11,11 @@ const targetShort: Record<TargetId, string> = {
   rust: "Rs",
   go: "Go",
   java: "Jv",
+  cpp: "C++",
+  javascript: "JS",
 };
 
-const targetIds: TargetId[] = ["csharp", "rust", "go", "java"];
+const targetIds: TargetId[] = ["csharp", "rust", "go", "java", "cpp", "javascript"];
 
 export function ConformanceExplorer({ conformance }: Props) {
   const t = useT();

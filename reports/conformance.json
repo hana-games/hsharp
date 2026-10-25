@@ -1,7 +1,7 @@
 {
   "schema": "hs-conformance-report/1",
   "mode": "full",
-  "generatedAt": "2026-10-23T15:36:34.321Z",
+  "generatedAt": "2026-10-25T14:09:05.160Z",
   "compilerVersion": "0.1.0",
   "coreVersion": "0.1",
   "nodeVersion": "v24.21.0",
@@ -64,6 +64,26 @@
       "commands": [
         "javac",
         "java"
+      ]
+    },
+    {
+      "target": "cpp",
+      "name": "C++ (g++)",
+      "available": true,
+      "version": "g++.exe (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r8) 13.2.0",
+      "detail": "",
+      "commands": [
+        "g++"
+      ]
+    },
+    {
+      "target": "javascript",
+      "name": "Node.js",
+      "available": true,
+      "version": "v24.21.0",
+      "detail": "",
+      "commands": [
+        "node"
       ]
     }
   ],
@@ -263,6 +283,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 32
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -474,6 +574,86 @@
             "type": "i32",
             "value": 30
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 30
+          }
         }
       ]
     },
@@ -671,6 +851,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 22
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -882,6 +1142,86 @@
             "type": "i32",
             "value": 14
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 14
+          }
         }
       ]
     },
@@ -1079,6 +1419,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 20
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -1290,6 +1710,86 @@
             "type": "i32",
             "value": 5
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 5
+          }
         }
       ]
     },
@@ -1487,6 +1987,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -1698,6 +2278,86 @@
             "type": "i32",
             "value": -2147483648
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -2147483648
+          }
         }
       ]
     },
@@ -1895,6 +2555,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -2106,6 +2846,86 @@
             "code": "E_OVERFLOW",
             "node": 5
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
         }
       ]
     },
@@ -2303,6 +3123,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 2147483647
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -2514,6 +3414,86 @@
             "code": "E_OVERFLOW",
             "node": 5
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 5
+          }
         }
       ]
     },
@@ -2711,6 +3691,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 6
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -2922,6 +3982,86 @@
             "type": "i32",
             "value": -5
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
         }
       ]
     },
@@ -3126,6 +4266,86 @@
             "code": "E_OVERFLOW",
             "node": 4
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "error",
+            "code": "E_OVERFLOW",
+            "node": 4
+          }
         }
       ]
     },
@@ -3323,6 +4543,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -5
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -3535,6 +4835,86 @@
             "type": "bool",
             "value": false
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
         }
       ]
     },
@@ -3732,6 +5112,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -3943,6 +5403,86 @@
             "type": "bool",
             "value": true
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
         }
       ]
     },
@@ -4140,6 +5680,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": false
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -4351,6 +5971,86 @@
             "type": "bool",
             "value": true
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
         }
       ]
     },
@@ -4548,6 +6248,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": -1
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -4759,6 +6539,86 @@
             "type": "i32",
             "value": 0
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 0
+          }
         }
       ]
     },
@@ -4956,6 +6816,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -5168,6 +7108,86 @@
             "type": "i32",
             "value": 42
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 42
+          }
         }
       ]
     },
@@ -5365,6 +7385,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 7
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -5577,6 +7677,86 @@
             "type": "i32",
             "value": 1
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
         }
       ]
     },
@@ -5774,6 +7954,86 @@
         },
         {
           "target": "java",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "i32",
+            "value": 1
+          }
+        },
+        {
+          "target": "javascript",
           "profile": "casual",
           "status": "passed",
           "outcome": {
@@ -5986,6 +8246,86 @@
             "type": "bool",
             "value": true
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
         }
       ]
     },
@@ -6191,6 +8531,86 @@
             "type": "bool",
             "value": true
           }
+        },
+        {
+          "target": "cpp",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "cpp",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "standard",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "my-syntax",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "terse",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "target": "javascript",
+          "profile": "casual",
+          "status": "passed",
+          "outcome": {
+            "status": "ok",
+            "type": "bool",
+            "value": true
+          }
         }
       ]
     }
@@ -6360,9 +8780,9 @@
     {
       "id": "record-return-unsupported",
       "status": "passed",
-      "expectedDiagnostic": "E_RECORD_RETURN_UNSUPPORTED",
+      "expectedDiagnostic": "E_RECORD_ENTRY_RETURN_UNSUPPORTED",
       "diagnostics": [
-        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_record_return.hs:5:14: error E_RECORD_RETURN_UNSUPPORTED: function \"make\" cannot return record \"Point\" in this slice\n  hint: return a scalar (i32 or bool) and keep record values inside the function body or pass them to internal calls"
+        "D:\\Github\\hsharp\\tests\\conformance\\programs\\neg_record_return.hs:5:14: error E_RECORD_ENTRY_RETURN_UNSUPPORTED: entry function \"main\" cannot return record \"Point\"\n  hint: entry outcomes are scalar; return i32 or bool and compare data inside the program"
       ]
     },
     {
@@ -6432,8 +8852,8 @@
   ],
   "summary": {
     "cases": 30,
-    "targets": 480,
-    "passed": 539,
+    "targets": 720,
+    "passed": 779,
     "failed": 0,
     "blocked": 0
   }

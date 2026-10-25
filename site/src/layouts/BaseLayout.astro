@@ -18,7 +18,7 @@ interface Props {
 }
 
 const { title, description, active = "", canonical } = Astro.props;
-const fullTitle = title === "h#" ? "h# — One core. Your syntax. Four native outputs." : `${title} — h#`;
+const fullTitle = title === "h#" ? "h# — One core. Your syntax. Six native outputs." : `${title} — h#`;
 
 const siteURL = Astro.site ?? new URL("https://hsharp.dev");
 const rawPath = Astro.url.pathname;
@@ -42,7 +42,7 @@ const robots = isNotFound ? "noindex, follow" : "index, follow, max-image-previe
 const organizationId = `${siteURL.origin}/#organization`;
 const websiteId = `${siteURL.origin}/#website`;
 const softwareId = `${siteURL.origin}/#software`;
-const siteDescription = "One semantic core. Personal syntax. Four verified native outputs.";
+const siteDescription = "One semantic core. Personal syntax. Six verified native outputs.";
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [

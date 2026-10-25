@@ -25,16 +25,16 @@ Environment: Node 24.21.0, Windows x64, h# 0.1.0. Reproduce with `npm run bench`
 
 | Measurement | Observed | Budget |
 |---|---:|---:|
-| Analyze 246-character document | 0.03–0.09 ms | 2 ms |
-| Analyze 500 functions (57,819 chars) | 15–34 ms | 150 ms |
-| Generate all four targets, small document | 0.04–0.27 ms | 8 ms |
-| Generate all four targets, 500 functions | 22–68 ms | 150 ms |
-| Analyze + generate all four targets | 0.05–0.27 ms | 25 ms |
-| Persistent bridge: analyze + C# over stdio | 0.4–3.0 ms | 30 ms |
+| Analyze 212-character document | 0.086 ms | 2 ms |
+| Analyze 300 functions (34,693 chars) | 17.321 ms | 150 ms |
+| Generate all six targets, small document | 0.122 ms | 8 ms |
+| Generate all six targets, 300 functions | 31.007 ms | 150 ms |
+| Analyze + generate all six targets | 0.130 ms | 25 ms |
+| Persistent bridge: analyze + C# over stdio | 0.808 ms | 30 ms |
 
-The typical edit path (`analyze + generate all four targets`) is well below a 16.7 ms 60 fps frame. The bridge round-trip, including JSON serialization and IPC, is a few milliseconds at most after warm-up. Values vary with CPU load; the committed report records one exact run.
+The typical edit path (`analyze + generate all six targets`) is well below a 16.7 ms 60 fps frame. The bridge round-trip, including JSON serialization and IPC, is a few milliseconds at most after warm-up. Values vary with CPU load; the committed report records one exact run.
 
-A 57 KB / 500-function file takes roughly 15–35 ms to analyze and 22–70 ms to generate all four targets. That is still interactive and remains well below the enforced budgets.
+A 35 KB / 300-function file takes roughly 17 ms to analyze and 31 ms to generate all six targets. That is still interactive and remains well below the enforced budgets.
 
 ## Budgets
 
@@ -42,9 +42,9 @@ A 57 KB / 500-function file takes roughly 15–35 ms to analyze and 22–70 ms t
 
 - small analysis: 2 ms;
 - 500-function analysis: 150 ms;
-- four-target generation on a small file: 8 ms;
-- four-target generation on 500 functions: 150 ms;
-- analyze + four-target generation: 25 ms;
+- six-target generation on a small file: 8 ms;
+- six-target generation on 300 functions: 150 ms;
+- analyze + six-target generation: 25 ms;
 - bridge round-trip: 30 ms.
 
 Budgets are intentionally much looser than current measurements to avoid false failures on slower CI machines while still catching algorithmic regressions.
@@ -56,7 +56,7 @@ Budgets are intentionally much looser than current measurements to avoid false f
 3. **String-based code generation.** Backends emit directly from typed nodes; no external formatter or process is involved.
 4. **No process per edit.** VS Code runs the analyzer in the extension host; the optional bridge removes Node startup for external editors.
 5. **Profile cache.** Profile validation/parsing is skipped until the profile file changes.
-6. **Four targets in one request.** Generation is cheap enough that the preview fetches all four and switches targets without another round-trip.
+6. **Six targets in one request.** Generation is cheap enough that the preview fetches all six and switches targets without another round-trip.
 7. **Debounce.** Editor integrations wait for a configurable idle period, so bursts of typing produce one analysis.
 
 ## Warm vs. cold

@@ -11,7 +11,7 @@ export interface AnalyzeEvent {
 }
 
 /**
- * One analysis per edit: diagnostics, status, and all four generated targets
+ * One analysis per edit: diagnostics, status, and all six generated targets
  * are produced together. The bundled compiler runs in the extension host, so
  * this avoids a subprocess round-trip.
  */
@@ -176,7 +176,7 @@ export class AnalysisController implements vscode.Disposable {
     } else {
       this.status.text = `$(check) h# ${(response.timings?.totalMs ?? 0).toFixed(2)} ms`;
       this.status.tooltip =
-        `h# analysis + four-target generation\n` +
+        `h# analysis + six-target generation\n` +
         `parse ${response.timings?.parseMs ?? 0} ms · check ${response.timings?.checkMs ?? 0} ms · ` +
         `emit ${response.timings?.emitMs ?? 0} ms`;
     }

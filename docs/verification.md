@@ -32,7 +32,7 @@ node dist/cli/index.js demo
 
 ### Unit suite
 
-**19/19 passed**, plus a bridge protocol smoke test. Coverage:
+**57/57 passed**, plus a bridge protocol smoke test. Coverage:
 
 - standard profile matches canonical keywords;
 - normalized AST equivalence across all four profiles;
@@ -50,17 +50,17 @@ node dist/cli/index.js demo
 - BOM-prefixed source is accepted;
 - leading zeros and grouped comparisons follow the core rules;
 - generated target names are deterministic and independent of source names;
-- bridge protocol: ping, four-target analysis, invalid syntax, malformed request, graceful shutdown.
+- bridge protocol: ping, six-target analysis, invalid syntax, malformed request, graceful shutdown.
 
 ### Conformance suite
 
 **PASS: 0 failed, 0 blocked.**
 
-- 29 positive cases.
+- 30 positive cases.
 - 4 profiles: `standard`, `my-syntax`, `terse`, `casual`.
-- 4 targets: C#, Rust, Go, Java.
-- 464 target executions (29 × 4 profiles × 4 targets).
-- 27 negative cases: 20 program diagnostics + 7 profile-validation diagnostics.
+- 6 targets: C#, Rust, Go, Java, C++, and JavaScript.
+- 720 target executions (30 × 4 profiles × 6 targets).
+- 29 negative cases: 22 program diagnostics + 7 profile-validation diagnostics.
 - Each positive case also verifies:
   - reference outcome against independently specified expectations;
   - structural AST equivalence for every profile;
@@ -79,12 +79,12 @@ Pinned failure-node checks are included for addition, subtraction, multiplicatio
 
 | Measurement | Latest run | Budget |
 |---|---:|---:|
-| Analyze 246-character document | 0.086 ms | 2 ms |
-| Analyze 500 functions (57,819 chars) | 34.119 ms | 150 ms |
-| Generate all four targets, small document | 0.143 ms | 8 ms |
-| Generate all four targets, 500 functions | 42.399 ms | 150 ms |
-| Analyze + generate all four targets | 0.080 ms | 25 ms |
-| Persistent bridge: analyze + C# over stdio | 0.804 ms | 30 ms |
+| Analyze 212-character document | 0.086 ms | 2 ms |
+| Analyze 300 functions (34,693 chars) | 17.321 ms | 150 ms |
+| Generate all six targets, small document | 0.122 ms | 8 ms |
+| Generate all six targets, 300 functions | 31.007 ms | 150 ms |
+| Analyze + generate all six targets | 0.130 ms | 25 ms |
+| Persistent bridge: analyze + C# over stdio | 0.808 ms | 30 ms |
 
 The bridge benchmark starts one `hs bridge` process, warms it with a ping, then performs 100 sequential analyze + C# generation requests with unique text. Every response contained the expected generated project. Raw report: `reports/benchmark.json`.
 
@@ -110,7 +110,7 @@ The bridge benchmark starts one `hs bridge` process, warms it with a ping, then 
 5. java    {"status":"ok","type":"i32","value":33} matches 33
 ```
 
-This exercises export, a personal edit, reimport, comment preservation, the reference interpreter, and all four real toolchains.
+This exercises export, a personal edit, reimport, comment preservation, the reference interpreter, and all six real toolchains.
 
 ## Independent review
 

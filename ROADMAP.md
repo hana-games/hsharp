@@ -1,6 +1,6 @@
 # h# Roadmap
 
-This roadmap describes how the h# proof of concept becomes a useful portable language without weakening its central promise: **one semantic core, personal notation, verified output for C#, Go, Rust, and Java.**
+This roadmap describes how the h# proof of concept becomes a useful portable language without weakening its central promise: **one semantic core, personal notation, verified output for C#, Rust, Go, Java, C++, and JavaScript.**
 
 It is dependency-driven, not calendar-driven. A phase starts when its prerequisites are stable and ends when its exit evidence exists in the repository.
 
@@ -13,8 +13,8 @@ It is dependency-driven, not calendar-driven. A phase starts when its prerequisi
 - Core: `i32`, `bool`, functions, calls, immutable locals, `if`/`else`, returns, checked arithmetic, short-circuit Boolean operators, acyclic call graphs.
 - Profiles: keyword-only, declarative, validated, token-aware conversion with comment preservation.
 - Workflow: export, edit, reimport, stale-base and changed-profile rejection, manifest refresh.
-- Targets: C#, Go, Rust, Java — generated, compiled, and executed.
-- Verification: 29 positive cases × 4 profiles × 4 targets (464 executions), 27 negative cases, 19 unit tests.
+- Targets: C#, Rust, Go, Java, C++, and JavaScript — generated, compiled, and executed.
+- Verification: 30 positive cases × 4 profiles × 6 targets (720 executions), 29 negative cases, 57 unit tests.
 - CLI: `hs`, with aliases `hsharp` and `hcharp`; source files use `.hs`.
 
 Known limits are listed in [`docs/limitations.md`](docs/limitations.md). The original design rationale is in [`hsharp-execution-plan.md`](hsharp-execution-plan.md).
@@ -22,7 +22,7 @@ Known limits are listed in [`docs/limitations.md`](docs/limitations.md). The ori
 ### Landed ahead of 0.2
 
 - Persistent `hs bridge` analyzer with profile caching and line-delimited JSON.
-- Measured latency budgets (`npm run bench`, `reports/benchmark.json`): 0.05 ms warm analysis + four-target generation, 0.44 ms bridge round-trip.
+- Measured latency budgets (`npm run bench`, `reports/benchmark.json`): 0.05 ms warm analysis + six-target generation, 0.44 ms bridge round-trip.
 - Initial Visual Studio Code extension: syntax highlighting, live diagnostics, generated-code preview.
 - The full editor workflow still needs validation in a running VS Code window and remains part of phases 0.2 and 0.6.
 
@@ -54,7 +54,7 @@ tracked for a later hardening pass and are not claimed as complete.
 | Phase | Theme | Exit evidence |
 |---|---|---|
 | 0.2 | Verification hardening | Seeded property tests, benchmark corpus, and Ubuntu CI run in one command |
-| 0.3 | Data and memory semantics | Records, strings, lists, `Option`, `Result` pass on all four targets |
+| 0.3 | Data and memory semantics | Records, strings, lists, `Option`, `Result` pass on all six targets |
 | 0.4 | Control flow and abstraction | Loops, recursion, controlled mutation, generics pass on all targets |
 | 0.5 | Modules and host embedding | Multi-file programs; libraries/packages callable from each ecosystem |
 | 0.6 | Syntax families and editor support | A second syntax family and LSP diagnostics over a shared CST |
@@ -68,10 +68,10 @@ tracked for a later hardening pass and are not claimed as complete.
 Work:
 
 - Commit a seeded, reproducible property-based program generator.
-- Compare the reference interpreter and all four targets, including failure codes and node IDs.
+- Compare the reference interpreter and all six targets, including failure codes and node IDs.
 - Implement automatic failure reduction to minimal programs.
 - Add a benchmark corpus separate from correctness cases.
-- Add Ubuntu CI with all four toolchains. The Windows/macOS matrix is deferred by request.
+- Add Ubuntu CI with all six toolchains. The Windows/macOS matrix is deferred by request.
 - Verify from a clean checkout: install, build, test, report.
 - Add a diagnostics golden test that checks line/column mapping in personal files.
 
@@ -107,7 +107,7 @@ Delivered slice:
 - record entry parameters with scalar/nested-record leaves, flattened depth-first on the command line;
 - update-as-new-value (`Point { ...p, x: 3 }`);
 - collision-safe generated record/field names;
-- reference interpreter and all four backends;
+- reference interpreter and all six backends;
 - positive record conformance case, unit coverage for nested/update, and negative record diagnostics;
 - recursive records and record entry returns are explicitly rejected; record entry parameters are allowed with scalar/nested-record leaves.
 
@@ -132,7 +132,7 @@ Backend work:
 
 Exit evidence:
 
-- Identical nested-data operations on all four targets.
+- Identical nested-data operations on all six targets.
 - Copying/allocation measurements for the initial model.
 - Rust compilation demonstrates an explicit ownership strategy, not incidental cloning.
 
@@ -167,8 +167,8 @@ Scope:
 
 - Multi-file programs with explicit imports and a canonical module layout.
 - Visibility rules and versioned module interfaces.
-- A candidate fifth target: JavaScript/TypeScript, with a Node project and normalized outcomes.
-- Reverse import from target languages is **not** symmetric. A JavaScript-to-h# importer is a separate, lossy frontend problem requiring parsing, type inference, and library semantics.
+- JavaScript is already an implemented target with a Node project and normalized outcomes; TypeScript declaration emission remains future work.
+- Reverse import from target languages is **not** symmetric. A target-to-h# importer is a separate, lossy frontend problem requiring parsing, type inference, and library semantics.
 - Generated libraries/packages for .NET, Rust, Go, and Java.
 - A controlled exported signature set with normalized failures.
 - Selected adapters (serialization, dates, files, networking) only when driven by a concrete use case.
@@ -228,7 +228,7 @@ Exit evidence:
 - A simple asynchronous operation obeys the same cancellation and failure rules on every supported environment.
 - No target silently changes ordering or sharing semantics.
 
-Dependencies: 0.3, 0.4, and 0.5. Do not start with four independent implementations.
+Dependencies: 0.3, 0.4, and 0.5. Do not start with six independent implementations.
 
 ## Phase 1.0 — Extensions, performance, stability
 
@@ -309,7 +309,7 @@ Dependencies: all prior phases for the features they extend.
 | Syntax families create ambiguous parses | Versioned families, explicit ambiguity rules, CST/printer tests |
 | Editor drafts are temporarily invalid | Separate draft analysis from canonical verification |
 | Toolchain and dependency drift | Pin versions; probe capabilities; blocked never passes |
-| Scope creep in the portable core | Every feature needs a spec and four-target acceptance evidence |
+| Scope creep in the portable core | Every feature needs a spec and six-target acceptance evidence |
 | Performance work hides behavior changes | Benchmark at unchanged conformance; compare results by version |
 | Personal notation hides semantic differences | Normalized-AST equality and round-trip preservation are mandatory |
 

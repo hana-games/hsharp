@@ -5,7 +5,6 @@
   "A reachable path without a value, or a value of the wrong type": "値を返さない到達可能な経路、または誤った型の値",
   "A target is marked blocked": "ターゲットがブロックされる",
   "Aliases": "エイリアス",
-  "An ordinary C#, Rust, Go, or Java project compiled by its own toolchain.": "各ツールチェーンでコンパイルされる通常の C#、Rust、Go、または Java プロジェクト。",
   "Build, local, and reports are generated. Profiles, examples, and the specification are inputs; generated output can be deleted and recreated.": "build、local、reports は生成物です。プロファイル、例、仕様は入力で、生成出力は削除して再作成できます。",
   "Bundled Visual Studio Code extension.": "同梱の Visual Studio Code 拡張。",
   "Calls": "呼び出し",
@@ -38,7 +37,7 @@
   "Fixed: braces, commas, semicolons, arrows, and operators do not change.": "固定：波括弧、カンマ、セミコロン、矢印、演算子は変わりません。",
   "Fixed: every operation is range-checked and fails with E_OVERFLOW.": "固定：すべての演算が範囲検査され、E_OVERFLOW で失敗します。",
   "Fixed: i32, bool, arity, returns, and scopes are profile-independent.": "固定：i32、bool、引数の数、戻り値、スコープはプロファイルに依存しません。",
-  "Fixed: the same typed AST produces the same four backend projects.": "固定：同じ型付き AST から同じ 4 つのバックエンドプロジェクトが生成されます。",
+  "Fixed: the same typed AST produces the same six backend projects.": "固定：同じ型付き AST から同じ 6 つのバックエンドプロジェクトが生成されます。",
   "From a clone to a checked and executed target. The command is called hs; hsharp and hcharp are aliases.": "クローンから検証・実行まで。コマンドは hs で、hsharp と hcharp はエイリアスです。",
   "Generated conformance, environment, and benchmark evidence.": "生成された適合性、環境、ベンチマークの証拠。",
   "Generated programs print exactly one outcome line and no extra runtime logging.": "生成プログラムは結果を 1 行だけ出力し、余分な実行時ログを出しません。",
@@ -117,5 +116,6 @@
   "Validated JSON that renames seven keyword roles for one person.": "1 人のために 7 つのキーワードロールを改名する、検証済みの JSON。",
   "Visual Studio Code extension and its protocol client.": "Visual Studio Code 拡張とそのプロトコルクライアント。",
   "What it means": "意味",
-  "What profiles cannot change": "プロファイルが変更できないもの"
+  "What profiles cannot change": "プロファイルが変更できないもの",
+  "An ordinary C#, Rust, Go, Java, C++, or JavaScript project compiled by its own toolchain.": "各ツールチェーンでコンパイルされる通常の C#、Rust、Go、Java、C++、JavaScript プロジェクト。"
 }

@@ -22,7 +22,7 @@ const invariants = [
   { title: "Typed AST", note: "Same structure" },
   { title: "Evaluation order", note: "Same left-to-right order" },
   { title: "Overflow behavior", note: "Same failure nodes" },
-  { title: "Generated targets", note: "Same four backend projects" },
+  { title: "Generated targets", note: "Same six backend projects" },
   { title: "Identifiers", note: "Program names are untouched" },
 ];
 
@@ -43,7 +43,7 @@ const driftStatus: Record<string, string> = {
 
 <BaseLayout
   title="Why h#"
-  description="Portability as a checked engineering property: one semantic core, a bounded portable feature set, personal notation, and four independently verified outputs."
+  description="Portability as a checked engineering property: one semantic core, a bounded portable feature set, personal notation, and six independently verified outputs."
   active="/why"
 >
   <section class="band-dark why-hero">
@@ -112,7 +112,7 @@ const driftStatus: Record<string, string> = {
           <h2 class="h2">Portability is usually a promise.<br /><em class="italic">Drift is the reality.</em></h2>
         </div>
         <p class="lede">
-          Teams rewrite the same business rule for C#, Rust, Go, and Java. The syntax is different,
+          Teams rewrite the same business rule for C#, Rust, Go, Java, C++, and JavaScript. The syntax is different,
           but so are overflow behavior, evaluation order, error propagation, naming rules, and edge
           cases. The divergences appear later, in production.
         </p>
@@ -122,7 +122,7 @@ const driftStatus: Record<string, string> = {
         <div class="thesis-sticky">
           <div class="card card-lime">
             <h3 class="h2" style="font-size:clamp(1.8rem,3.4vw,2.8rem);">
-              Specify once.<br />Generate four times.<br />Verify every time.
+              Specify once.<br />Generate six times.<br />Verify every time.
             </h3>
           </div>
         </div>
@@ -212,7 +212,7 @@ const driftStatus: Record<string, string> = {
           <span class="boundary-tag">Outside</span>
           <h3>No hidden portability</h3>
           <p>
-            Features that cannot be specified and verified across all four targets stay out of the
+            Features that cannot be specified and verified across all six targets stay out of the
             core. They are extension work, not accidental behavior.
           </p>
           <ul class="boundary-list">
@@ -235,12 +235,12 @@ const driftStatus: Record<string, string> = {
             <li><span>01</span>Written semantics</li>
             <li><span>02</span>Expected examples</li>
             <li><span>03</span>Typed AST</li>
-            <li><span>04</span>Four translations</li>
+            <li><span>04</span>Six translations</li>
             <li><span>05</span>All targets pass</li>
           </ol>
           <p class="boundary-note">
             Each future feature must earn its place: a written semantics, expected examples, typed
-            representation, four translations, and acceptance on every target. The roadmap makes that
+            representation, six translations, and acceptance on every target. The roadmap makes that
             dependency explicit.
           </p>
         </div>
@@ -380,7 +380,7 @@ const driftStatus: Record<string, string> = {
           <span class="machine-tag">Execution</span>
           <h3>Targets stay native</h3>
           <p>
-            C#, Rust, Go, and Java remain real build targets. The shared contract sits before
+            C#, Rust, Go, Java, C++, and JavaScript remain real build targets. The shared contract sits before
             translation, not instead of it.
           </p>
         </div>

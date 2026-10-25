@@ -34,7 +34,9 @@ const commands = `hs check examples/calculate.hs
 
 hs build examples/calculate.hs --target rust --entry calculate
 
-hs build examples/calculate.hs --target csharp --entry calculate --run --args 10,true`;
+hs build examples/calculate.hs --target csharp --entry calculate --run --args 10,true
+hs build examples/calculate.hs --target cpp --entry calculate --run --args 10,true
+hs build examples/calculate.hs --target javascript --entry calculate --run --args 10,true`;
 const editor = `npm run vscode:install`;
 const verify = `npm test
 
@@ -53,7 +55,7 @@ hs test --all-targets`;
   <h2 id="prerequisites">Prerequisites</h2>
   <p>
     h# {site.version} was verified with Node.js 24.21, TypeScript 7.0.2, .NET SDK 10.0.401, Rust
-    1.98, Go 1.27, and OpenJDK 21. The CLI and compiler run on Node 22 or later.
+    1.98, Go 1.27, OpenJDK 21, and g++ 13.2. The CLI, compiler, and JavaScript target run on Node 22 or later.
   </p>
   <table>
     <thead><tr><th>Target</th><th>Required command</th><th>Generated project</th></tr></thead>
@@ -62,6 +64,8 @@ hs test --all-targets`;
       <tr><td>Rust</td><td><code>cargo</code>, <code>rustc</code></td><td>Cargo binary, edition 2021</td></tr>
       <tr><td>Go</td><td><code>go</code> 1.22+</td><td><code>go.mod</code> + <code>main.go</code></td></tr>
       <tr><td>Java</td><td><code>javac</code>, <code>java</code></td><td><code>HsProgram.java</code></td></tr>
+      <tr><td>C++</td><td><code>g++</code> or <code>clang++</code></td><td>C++20 <code>main.cpp</code></td></tr>
+      <tr><td>JavaScript</td><td><code>node</code> 22+</td><td><code>main.js</code> + <code>package.json</code></td></tr>
     </tbody>
   </table>
   <p>
@@ -137,7 +141,7 @@ hs test --all-targets`;
   <h2 id="verify">Verify everything</h2>
   <StaticCode code={verify} language="bash" title="terminal" meta="full suite" />
   <p>
-    <code>npm test</code> runs 19 unit tests, the VS Code typecheck, the bridge protocol test, and
+    <code>npm test</code> runs 57 unit tests, the VS Code typecheck, the bridge protocol test, and
     the full conformance suite. <code>hs test --all-targets</code> writes
     <code>reports/conformance.json</code> and <code>reports/conformance.md</code>.
   </p>

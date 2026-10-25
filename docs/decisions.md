@@ -10,13 +10,13 @@ Reasons:
 - Syntax conversion must preserve **all** whitespace and comments exactly. Keeping trivia in one token stream and re-printing it is simpler and easier to verify than reconstructing text from a parser toolkit's hidden-channel tokens.
 - The grammar is small, fixed, and fully specified. A recursive-descent parser gives explicit control over chained-comparison rejection, the special minimum literal, and source spans.
 - Zero runtime dependencies reduces setup risk and makes the toolchain story reproducible.
-- Profile-driven keyword classification is tested by four profiles and 29 programs; parser behavior is unit-tested and conformance-tested.
+- Profile-driven keyword classification is tested by four profiles and 30 programs; parser behavior is unit-tested and conformance-tested.
 
 This is a deliberate deviation from a proposed implementation choice, not from the required behavior. If the language grows syntax families and incremental editing, a parser toolkit becomes more attractive; the current frontend is isolated behind `parse(text, profile)`.
 
 ## D2. Typed AST as the common representation
 
-The POC uses a typed AST rather than a separate optimization IR. It carries resolved symbol IDs, target names, and types, which is everything the four backends need. This avoids maintaining two representations before there is an optimization to justify one.
+The POC uses a typed AST rather than a separate optimization IR. It carries resolved symbol IDs, target names, and types, which is everything the six backends need. This avoids maintaining two representations before there is an optimization to justify one.
 
 ## D3. Stable internal names for target code
 
@@ -32,7 +32,7 @@ Every generated function returns `Res { ok, value, code, node }`. A failing chec
 
 ## D6. Widening arithmetic
 
-Checked helpers widen to signed 64-bit, compute, then range-check. This is portable across all four targets and directly matches the specification. Platform checked primitives were considered but would require more normalization per backend. Multiplication of two `i32` values is guaranteed to fit in `i64`.
+Checked helpers widen to signed 64-bit, compute, then range-check. This is portable across all six targets and directly matches the specification. Platform checked primitives were considered but would require more normalization per backend. Multiplication of two `i32` values is guaranteed to fit in `i64`.
 
 ## D7. Token-aware keyword conversion, not text replacement
 
@@ -50,7 +50,7 @@ The manifest's personal path is cross-checked against the file being imported, s
 
 ## D10. Unreachable statements are omitted from generated code
 
-The checker still checks all statements, including unreachable ones (consistent with "all branches are checked statically"). Code generation stops after a statement that definitely returns. Java rejects unreachable statements at compile time; omitting them makes all four targets accept the same valid programs without changing behavior.
+The checker still checks all statements, including unreachable ones (consistent with "all branches are checked statically"). Code generation stops after a statement that definitely returns. Java rejects unreachable statements at compile time; omitting them makes all six targets accept the same valid programs without changing behavior.
 
 ## D11. C# and Go version gates
 
@@ -58,7 +58,7 @@ Generated C# projects target `net10.0`; generated Go projects declare `go 1.22`.
 
 ## D12. One compiled artifact per program, multiple profile executions
 
-Generated code depends on the typed AST, not on source spelling. The conformance runner compiles one artifact per program/entry/target and executes it once per profile, recording separate rows. Structural equivalence and round-trip preservation are verified per profile. The report states this explicitly rather than implying four independent compilations.
+Generated code depends on the typed AST, not on source spelling. The conformance runner compiles one artifact per program/entry/target and executes it once per profile, recording separate rows. Structural equivalence and round-trip preservation are verified per profile. The report states this explicitly rather than implying independent compilations.
 
 ## D13. Import applies edits immediately unless `--dry-run`
 

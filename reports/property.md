@@ -1,11 +1,11 @@
 # h# property report
 
-Generated: 2026-10-23T14:49:18.307Z
-Seed: 1 · cases: 10 · max size: 3
+Generated: 2026-10-23T23:15:25.120Z
+Seed: 1 — cases: 10 — max size: 3
 
 | Cases | Target runs | Passed | Failed | Blocked |
 |---:|---:|---:|---:|---:|
-| 10 | 40 | 10 | 0 | 0 |
+| 10 | 60 | 10 | 0 | 0 |
 
 ## seed-1-size-1 — passed
 
@@ -15,6 +15,8 @@ Reference: E_OVERFLOW @ node 39
 - **rust**: passed — E_OVERFLOW @ node 39
 - **go**: passed — E_OVERFLOW @ node 39
 - **java**: passed — E_OVERFLOW @ node 39
+- **cpp**: passed — E_OVERFLOW @ node 39
+- **javascript**: passed — E_OVERFLOW @ node 39
 
 <details><summary>Seed source</summary>
 
@@ -37,18 +39,21 @@ fn main() -> i32 {
     }
     return (--2147483648);
 }
+
 ```
 
 </details>
 
 ## seed-2-size-2 — passed
 
-Reference: i32 -40
+Reference: ok i32 -40
 
-- **csharp**: passed — i32 -40
-- **rust**: passed — i32 -40
-- **go**: passed — i32 -40
-- **java**: passed — i32 -40
+- **csharp**: passed — ok i32 -40
+- **rust**: passed — ok i32 -40
+- **go**: passed — ok i32 -40
+- **java**: passed — ok i32 -40
+- **cpp**: passed — ok i32 -40
+- **javascript**: passed — ok i32 -40
 
 <details><summary>Seed source</summary>
 
@@ -82,6 +87,7 @@ fn main() -> i32 {
     }
     return 0;
 }
+
 ```
 
 </details>
@@ -94,6 +100,8 @@ Reference: E_OVERFLOW @ node 26
 - **rust**: passed — E_OVERFLOW @ node 26
 - **go**: passed — E_OVERFLOW @ node 26
 - **java**: passed — E_OVERFLOW @ node 26
+- **cpp**: passed — E_OVERFLOW @ node 26
+- **javascript**: passed — E_OVERFLOW @ node 26
 
 <details><summary>Seed source</summary>
 
@@ -127,18 +135,21 @@ fn main() -> i32 {
     }
     return (-((0 - 0) + (f1(10, 7) + 3)));
 }
+
 ```
 
 </details>
 
 ## seed-4-size-1 — passed
 
-Reference: i32 43
+Reference: ok i32 43
 
-- **csharp**: passed — i32 43
-- **rust**: passed — i32 43
-- **go**: passed — i32 43
-- **java**: passed — i32 43
+- **csharp**: passed — ok i32 43
+- **rust**: passed — ok i32 43
+- **go**: passed — ok i32 43
+- **java**: passed — ok i32 43
+- **cpp**: passed — ok i32 43
+- **javascript**: passed — ok i32 43
 
 <details><summary>Seed source</summary>
 
@@ -161,6 +172,7 @@ fn main() -> i32 {
     }
     return (-2147483648 + 2147483647);
 }
+
 ```
 
 </details>
@@ -173,6 +185,8 @@ Reference: E_OVERFLOW @ node 37
 - **rust**: passed — E_OVERFLOW @ node 37
 - **go**: passed — E_OVERFLOW @ node 37
 - **java**: passed — E_OVERFLOW @ node 37
+- **cpp**: passed — E_OVERFLOW @ node 37
+- **javascript**: passed — E_OVERFLOW @ node 37
 
 <details><summary>Seed source</summary>
 
@@ -206,6 +220,7 @@ fn main() -> i32 {
     }
     return 3;
 }
+
 ```
 
 </details>
@@ -218,6 +233,8 @@ Reference: E_OVERFLOW @ node 11
 - **rust**: passed — E_OVERFLOW @ node 11
 - **go**: passed — E_OVERFLOW @ node 11
 - **java**: passed — E_OVERFLOW @ node 11
+- **cpp**: passed — E_OVERFLOW @ node 11
+- **javascript**: passed — E_OVERFLOW @ node 11
 
 <details><summary>Seed source</summary>
 
@@ -254,18 +271,21 @@ fn main() -> i32 {
     }
     return ((2147483647 + 0) * ((2147483647 + 3) * (2 - 1)));
 }
+
 ```
 
 </details>
 
 ## seed-7-size-1 — passed
 
-Reference: i32 10
+Reference: ok i32 10
 
-- **csharp**: passed — i32 10
-- **rust**: passed — i32 10
-- **go**: passed — i32 10
-- **java**: passed — i32 10
+- **csharp**: passed — ok i32 10
+- **rust**: passed — ok i32 10
+- **go**: passed — ok i32 10
+- **java**: passed — ok i32 10
+- **cpp**: passed — ok i32 10
+- **javascript**: passed — ok i32 10
 
 <details><summary>Seed source</summary>
 
@@ -288,6 +308,7 @@ fn main() -> i32 {
     }
     return (2147483647 + 10);
 }
+
 ```
 
 </details>
@@ -300,6 +321,8 @@ Reference: E_OVERFLOW @ node 67
 - **rust**: passed — E_OVERFLOW @ node 67
 - **go**: passed — E_OVERFLOW @ node 67
 - **java**: passed — E_OVERFLOW @ node 67
+- **cpp**: passed — E_OVERFLOW @ node 67
+- **javascript**: passed — E_OVERFLOW @ node 67
 
 <details><summary>Seed source</summary>
 
@@ -330,6 +353,7 @@ fn main() -> i32 {
     }
     return (-(0 * 42));
 }
+
 ```
 
 </details>
@@ -342,6 +366,8 @@ Reference: E_OVERFLOW @ node 8
 - **rust**: passed — E_OVERFLOW @ node 8
 - **go**: passed — E_OVERFLOW @ node 8
 - **java**: passed — E_OVERFLOW @ node 8
+- **cpp**: passed — E_OVERFLOW @ node 8
+- **javascript**: passed — E_OVERFLOW @ node 8
 
 <details><summary>Seed source</summary>
 
@@ -372,18 +398,21 @@ fn main() -> i32 {
     }
     return (-3);
 }
+
 ```
 
 </details>
 
 ## seed-10-size-1 — passed
 
-Reference: i32 11
+Reference: ok i32 11
 
-- **csharp**: passed — i32 11
-- **rust**: passed — i32 11
-- **go**: passed — i32 11
-- **java**: passed — i32 11
+- **csharp**: passed — ok i32 11
+- **rust**: passed — ok i32 11
+- **go**: passed — ok i32 11
+- **java**: passed — ok i32 11
+- **cpp**: passed — ok i32 11
+- **javascript**: passed — ok i32 11
 
 <details><summary>Seed source</summary>
 
@@ -403,7 +432,7 @@ fn main() -> i32 {
     }
     return v1;
 }
+
 ```
 
 </details>
-

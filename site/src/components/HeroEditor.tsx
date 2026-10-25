@@ -13,6 +13,8 @@ const mainFile: Record<TargetId, string> = {
   rust: "src/main.rs",
   go: "main.go",
   java: "HsProgram.java",
+  cpp: "main.cpp",
+  javascript: "main.js",
 };
 
 const roleOrder = ["fn", "let", "if", "else", "return", "true", "false"] as const;
@@ -213,7 +215,7 @@ export function HeroEditor({ demo }: Props) {
       <div className="fake-editor-statusbar">
         <span className="status-ok">● {t("AST matched")}</span>
         <span>calculate(10, true) → 32</span>
-        <span>{t("same core · four outputs")}</span>
+        <span>{t("same core · six outputs")}</span>
       </div>
     </div>
   );

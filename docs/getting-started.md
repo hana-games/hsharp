@@ -6,7 +6,7 @@ The POC was built and verified with these versions. Pin them for reproducible re
 
 | Tool | Version used | Requirement |
 |---|---|---|
-| Node.js | 24.21.0 | 22 or later |
+| Node.js | 24.21.0 | 22 or later; compiler host and JavaScript target |
 | npm | 12.0.2 | ships with Node |
 | TypeScript | 7.0.2 | dev dependency, pinned in `package.json` |
 | @types/node | 24.10.1 | dev dependency, pinned |
@@ -14,6 +14,7 @@ The POC was built and verified with these versions. Pin them for reproducible re
 | Cargo / rustc | 1.98.1 / 1.98.1 | edition 2021 support |
 | Go | 1.27.0 | 1.22 or later |
 | Java | Microsoft OpenJDK 21.0.12.1 | `javac` and `java` on PATH |
+| C++ | MinGW-W64 g++ 13.2.0 | C++20 support (`g++` or `clang++`) |
 
 For the Visual Studio Code extension: VS Code 1.85 or later. Building the extension uses the repository's Node dependencies; no external `hs` process is required at runtime.
 
@@ -26,9 +27,10 @@ For the Visual Studio Code extension: VS Code 1.85 or later. Building the extens
 ```powershell
 winget install --id GoLang.Go -e
 winget install --id Microsoft.OpenJDK.21 -e
+winget install --id BrechtSanders.WinLibs.POSIX.UCRT -e
 ```
 
-.NET and Rust were already present in the verified environment. Restart the shell after installation if a command is not found.
+Node.js, .NET, and Rust were already present in the verified environment. Restart the shell after installation if a command is not found. `hs doctor` reports the detected C++ compiler name and version.
 
 ## 2. Build
 
@@ -70,7 +72,7 @@ hs demo
 2. exports it to the `my-syntax` profile;
 3. edits personal notation (`base + 2` → `base + 3`);
 4. reimports the edit;
-5. runs the reference interpreter and all four targets;
+5. runs the reference interpreter and all six targets;
 6. expects `33` everywhere.
 
 ## 5. Basic commands
@@ -87,6 +89,8 @@ hs check local/calculate.hs --profile profiles/my-syntax.json
 ```powershell
 hs build examples/calculate.hs --target rust --entry calculate
 hs build examples/calculate.hs --target csharp --entry calculate --run --args 10,true
+hs build examples/calculate.hs --target cpp --entry calculate --run --args 10,true
+hs build examples/calculate.hs --target javascript --entry calculate --run --args 10,true
 ```
 
 Generated projects are written under `build/<program>/<target>/` by default. They are ordinary projects; the target's own tools compile and run them.
@@ -185,7 +189,7 @@ npm run vscode:install
 
 This packages the VSIX and installs it. The installer suppresses an upstream VS Code 1.143 CLI deprecation warning from `url.parse()`; the h# extension bundle does not use that API.
 
-Restart VS Code, open any `.hs` file, then run **h#: Show Generated Code** from the command palette or use the editor-title button. The preview updates as you type and switches between C#, Rust, Go, and Java.
+Restart VS Code, open any `.hs` file, then run **h#: Show Generated Code** from the command palette or use the editor-title button. The preview updates as you type and switches between C#, Rust, Go, Java, C++, and JavaScript.
 
 The extension bundles the compiler into the extension host. No `hs` command or Node subprocess is needed at runtime.
 

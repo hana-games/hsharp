@@ -317,7 +317,7 @@ test("generated target names are deterministic and avoid source names", () => {
     STANDARD_PROFILE,
   );
   assert.ok(loaded.typed);
-  for (const target of ["csharp", "rust", "go", "java"] as const) {
+  for (const target of ["csharp", "rust", "go", "java", "cpp", "javascript"] as const) {
     const project = emit(loaded.typed!, target, "int");
     const text = project.files.map((file) => file.content).join("\n");
     assert.match(text, /f1/, `${target} should use a generated function name`);

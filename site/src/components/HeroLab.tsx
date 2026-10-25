@@ -14,6 +14,8 @@ const mainFile: Record<TargetId, string> = {
   rust: "src/main.rs",
   go: "main.go",
   java: "HsProgram.java",
+  cpp: "main.cpp",
+  javascript: "main.js",
 };
 
 export function HeroLab({ demo, initialProfile = "my-syntax", initialTarget = "csharp" }: Props) {

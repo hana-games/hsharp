@@ -15,7 +15,7 @@ const { emit } = require(resolve(root, "dist", "backends", "index.js"));
 const { normalizeAst } = require(resolve(root, "dist", "contracts", "ast.js"));
 const { COMPILER_VERSION, CORE_VERSION } = require(resolve(root, "dist", "contracts", "version.js"));
 
-const targets = ["csharp", "rust", "go", "java"];
+const targets = ["csharp", "rust", "go", "java", "cpp", "javascript"];
 const profileIds = ["standard", "my-syntax", "terse", "casual"];
 
 function loadProfile(id) {
@@ -198,7 +198,7 @@ console.log(
 );
 
 function targetLabel(target) {
-  return { csharp: "C#", rust: "Rust", go: "Go", java: "Java" }[target];
+  return { csharp: "C#", rust: "Rust", go: "Go", java: "Java", cpp: "C++", javascript: "JavaScript" }[target];
 }
 
 function profileIdLabel(id) {

@@ -4,7 +4,7 @@ Language support for **h#** (`.hs`) files:
 
 - profile-aware syntax highlighting;
 - live compiler diagnostics with source locations;
-- **real-time generated-code preview** for C#, Rust, Go, and Java;
+- **real-time generated-code preview** for C#, Rust, Go, Java, C++, and JavaScript;
 - target switching without recompiling;
 - status-bar timing and error count.
 
@@ -44,9 +44,9 @@ Then open `editors/vscode` and run the **h# Extension** launch configuration.
 2. Edit normally; diagnostics refresh after the debounce.
 3. Run **h#: Show Generated Code** from the command palette, or use the editor-title button.
 4. The preview opens beside the editor and updates as you type.
-5. Switch **Target** between C#, Rust, Go, and Java.
+5. Switch **Target** between C#, Rust, Go, Java, C++, and JavaScript.
 
-The status line shows the entry function, function count, total analysis + four-target generation time, and diagnostic count.
+The status line shows the entry function, function count, total analysis + all-target generation time, and diagnostic count.
 
 ## Settings
 
@@ -65,7 +65,7 @@ Changing a setting reanalyzes open h# documents immediately.
 | Path | Purpose |
 |---|---|
 | `src/extension.ts` | Activation and registration |
-| `src/analysis.ts` | Single analysis pipeline for diagnostics, status, and four targets |
+| `src/analysis.ts` | Single analysis pipeline for diagnostics, status, and all targets |
 | `src/profile.ts` | Cached profile loading and workspace-relative resolution |
 | `src/semanticTokens.ts` | Profile-aware keyword/type semantic tokens |
 | `src/preview.ts` | Generated-code webview panel |
@@ -79,10 +79,10 @@ Changing a setting reanalyzes open h# documents immediately.
 The extension imports the same TypeScript compiler used by the CLI. `HSharpAnalyzer` runs in the extension host and performs:
 
 ```text
-parse -> check -> choose entry -> emit C#, Rust, Go, Java
+parse -> check -> choose entry -> emit all targets
 ```
 
-One edit produces diagnostics, status-bar data, and all four generated targets. The measured warm path is sub-millisecond for normal files; see `docs/performance.md` in the repository.
+One edit produces diagnostics, status-bar data, and all generated targets. The measured warm path is sub-millisecond for normal files; see `docs/performance.md` in the repository.
 
 Profile keywords are highlighted by a document semantic-tokens provider. The TextMate grammar provides fallback coloring for comments, numbers, operators, and canonical keywords, so highlighting is useful even before semantic tokens are applied.
 

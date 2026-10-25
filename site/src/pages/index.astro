@@ -18,7 +18,7 @@ function prettyId(id: string) {
 
 <BaseLayout
   title="h#"
-  description="A universal semantic core, personal syntax, and verified native output for C#, Rust, Go, and Java."
+  description="A universal semantic core, personal syntax, and verified native output for C#, Rust, Go, Java, C++, and JavaScript."
   active="/"
 >
   <section class="hero">
@@ -32,11 +32,11 @@ function prettyId(id: string) {
           <h1 class="display">
             A universal core.<br />
             <em>Your own syntax.</em><br />
-            Four native outputs.
+            Six native outputs.
           </h1>
           <p class="lede">
             h# separates meaning from notation. Shape the language to your own vocabulary, keep one
-            checked semantic core, and generate real C#, Rust, Go, and Java projects.
+            checked semantic core, and generate real C#, Rust, Go, Java, C++, and JavaScript projects.
           </p>
           <div class="hero-actions">
             <a class="btn btn-lime" href="/why">Explore the language</a>
@@ -56,7 +56,7 @@ function prettyId(id: string) {
           <h2 class="h2">A language is a semantic promise.</h2>
         </div>
         <p class="lede">
-          h# is not four translators pretending to agree. It is one specification, one typed AST, and
+          h# is not six translators pretending to agree. It is one specification, one typed AST, and
           a conformance suite that runs every case through every profile and every target.
         </p>
       </div>
@@ -105,14 +105,6 @@ function prettyId(id: string) {
                 </div>
               ))
             }
-            <div class="graph-target future" data-target="future">
-              <div class="graph-target-top">
-                <span class="graph-target-logo future-mark">JS</span>
-                <span class="graph-target-name">JavaScript</span>
-                <span class="graph-target-check">future</span>
-              </div>
-              <small>candidate backend</small>
-            </div>
           </div>
         </div>
       </div>
@@ -128,15 +120,15 @@ function prettyId(id: string) {
         <div class="direction-card oneway">
           <h3>h# → generated targets</h3>
           <p>
-            Target source is generated output, not a second source of truth. C#, Rust, Go, and Java are
+            Target source is generated output, not a second source of truth. C#, Rust, Go, Java, C++, and JavaScript are
             compiled and executed, never parsed back as canonical source.
           </p>
         </div>
         <div class="direction-card future">
-          <h3>JavaScript target · target → h# import</h3>
+          <h3>Generated targets → h# import</h3>
           <p>
-            JavaScript is a candidate fifth backend. Importing JavaScript back into h# is a separate,
-            lossy problem: it needs a JavaScript frontend, type inference, and library semantics.
+            Reverse import is out of scope. Target source is output, not a second canonical notation;
+            importing it would require a separate frontend, type inference, and library semantics.
           </p>
         </div>
       </div>
@@ -170,7 +162,7 @@ function prettyId(id: string) {
     <div class="container">
       <div class="section-head reveal">
         <div>
-          <h2 class="h2">One typed AST.<br />Four native dialects.</h2>
+          <h2 class="h2">One typed AST.<br />Six native dialects.</h2>
         </div>
         <p class="lede">
           Each backend emits ordinary source for its ecosystem. The differences are explicit and

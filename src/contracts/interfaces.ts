@@ -4,9 +4,16 @@ import type { Outcome, RuntimeArguments, TypedProgram } from "./outcome";
 import type { Profile } from "./profile";
 import type { SourceText } from "./tokens";
 
-export type TargetId = "csharp" | "rust" | "go" | "java";
+export type TargetId = "csharp" | "rust" | "go" | "java" | "cpp" | "javascript";
 
-export const TARGET_IDS: readonly TargetId[] = ["csharp", "rust", "go", "java"];
+export const TARGET_IDS: readonly TargetId[] = [
+  "csharp",
+  "rust",
+  "go",
+  "java",
+  "cpp",
+  "javascript",
+];
 
 export interface ParseResult {
   program?: Program;
